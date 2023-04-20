@@ -208,6 +208,13 @@ RUN cd /usr/local/src/emacs && \
   make -j 64 && \
   make install
 
+# Pull in minecraft 1.18.2-40.2.0
+RUN wget "https://maven.minecraftforge.net/net/minecraftforge/forge/1.18.2-40.2.0/forge-1.18.2-40.2.0-mdk.zip" -O temp.zip
+RUN unzip temp.zip && rm temp.zip
+
+# This fails for atm
+# RUN ./gradlew genEclipseRun
+
 ARG USER=ii
 RUN useradd --groups sudo --no-create-home --shell /bin/bash ${USER} \
 	&& echo "${USER} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/${USER} \
@@ -215,6 +222,7 @@ RUN useradd --groups sudo --no-create-home --shell /bin/bash ${USER} \
 USER ${USER}
 WORKDIR /home/${USER}
 
+RUN sudo chown ii:ii /home/${USER}
 RUN mkdir -p ~/.config
 RUN git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.config/emacs
 RUN git clone --depth 1 https://github.com/humacs/.doom.d ~/.config/doom
@@ -226,4 +234,6 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-inst
 RUN curl -fsSL https://coder.com/install.sh | sh
 USER root
 RUN ln -s /usr/bin/coder /usr/local/bin/coop && DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y ttyd
+
+
 USER ${USER}

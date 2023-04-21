@@ -18,6 +18,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install --yes \
     tmux \
+    ttyd \
     tmate \
     bash-completion \
     less \
@@ -208,22 +209,21 @@ RUN cd /usr/local/src/emacs && \
   make -j 64 && \
   make install
 
+RUN ln -s /usr/bin/coder /usr/local/bin/coop
+
 ARG USER=ii
 RUN useradd --groups sudo --no-create-home --shell /bin/bash ${USER} \
 	&& echo "${USER} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/${USER} \
 	&& chmod 0440 /etc/sudoers.d/${USER}
 USER ${USER}
 WORKDIR /home/${USER}
-
 RUN mkdir -p ~/.config
-RUN git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.config/emacs
-RUN git clone --depth 1 https://github.com/humacs/.doom.d ~/.config/doom
-RUN yes | ~/.config/emacs/bin/doom install --no-env
-# Still needs some work, so we run it a reasonable number of timen on failure
-RUN PATH=$HOME/.config/emacs/bin:$HOME/.config/doom/bin ; humacs-sync-config || humacs-sync-config || humacs-sync-config || true
+
+# Doom Emacs
+RUN git clone --depth 1 https://github.com/doomemacs/doomemacs/.config/emacs
+RUN git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
+RUN yes | ~/.config/emacs/bin/doom install --env --fonts
+
 # Code Server
 RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-install.log
 RUN curl -fsSL https://coder.com/install.sh | sh
-USER root
-RUN ln -s /usr/bin/coder /usr/local/bin/coop && DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y ttyd
-USER ${USER}

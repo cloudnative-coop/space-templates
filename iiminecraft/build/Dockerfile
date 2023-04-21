@@ -209,11 +209,14 @@ RUN cd /usr/local/src/emacs && \
   make install
 
 # Pull in minecraft 1.18.2-40.2.0
-RUN wget "https://maven.minecraftforge.net/net/minecraftforge/forge/1.18.2-40.2.0/forge-1.18.2-40.2.0-mdk.zip" -O temp.zip
-RUN unzip temp.zip && rm temp.zip
 
-# This fails for atm
-# RUN ./gradlew genEclipseRun
+RUN mkdir minecraftforge && \
+  cd minecraftforge && \
+  wget "https://maven.minecraftforge.net/net/minecraftforge/forge/1.18.2-40.2.0/forge-1.18.2-40.2.0-mdk.zip" -O temp.zip && \
+  unzip temp.zip && \
+  rm temp.zip && \
+  ls -la /minecraftforge && \
+  ./gradlew genEclipseRun
 
 ARG USER=ii
 RUN useradd --groups sudo --no-create-home --shell /bin/bash ${USER} \
@@ -234,6 +237,4 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-inst
 RUN curl -fsSL https://coder.com/install.sh | sh
 USER root
 RUN ln -s /usr/bin/coder /usr/local/bin/coop && DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y ttyd
-
-
 USER ${USER}

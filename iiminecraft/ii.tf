@@ -85,6 +85,17 @@ resource "coder_agent" "ii" {
   }
 }
 
+# vnc
+resource "coder_app" "vnc" {
+  subdomain    = true
+  share        = "public"
+  agent_id     = coder_agent.ii.id
+  slug         = "vnc"
+  display_name = "noVNC"
+  icon         = "https://upload.wikimedia.org/wikipedia/commons/0/08/EmacsIcon.svg" # let's maybe get an emacs.svg somehow
+  url          = "http://localhost:6901"                                             # port 8080 + BROADWAY_DISPLAY
+}
+
 
 
 # emacs
@@ -163,23 +174,9 @@ resource "docker_volume" "iihome" {
   }
 }
 
-resource "docker_image" "iipod" {
-  name = "ii-${data.coder_workspace.ii.id}"
-  build {
-    context = "./build"
-    build_args = {
-      USER = "ii"
-      # USER = local.username
-    }
-  }
-  triggers = {
-    dir_sha1 = sha1(join("", [for f in fileset(path.module, "build/*") : filesha1(f)]))
-  }
-}
-
 resource "docker_container" "coop" {
   count = data.coder_workspace.ii.start_count
-  image = docker_image.iipod.name
+  image = "this/minecraft"
   # Uses lower() to avoid Docker restriction on container names.
   name = "coop-${data.coder_workspace.ii.owner}-${lower(data.coder_workspace.ii.name)}"
   # Hostname makes the shell more user friendly: coder@my-workspace:~$

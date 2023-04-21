@@ -220,11 +220,12 @@ WORKDIR /home/${USER}
 
 RUN sudo chown ii:ii /home/${USER}
 RUN mkdir -p ~/.config
-RUN git clone --depth 1 https://github.com/hlissner/doom-emacs ~/.config/emacs
-RUN git clone --depth 1 https://github.com/humacs/.doom.d ~/.config/doom
-RUN yes | ~/.config/emacs/bin/doom install --no-env
-# Still needs some work, so we run it a reasonable number of timen on failure
-RUN PATH=$HOME/.config/emacs/bin:$HOME/.config/doom/bin ; humacs-sync-config || humacs-sync-config || humacs-sync-config || true
+
+# Doom Emacs
+# RUN git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+# RUN git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
+# RUN yes | ~/.config/emacs/bin/doom install --env --fonts
+
 # Code Server
 RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-install.log
 RUN curl -fsSL https://coder.com/install.sh | sh
@@ -235,5 +236,7 @@ RUN mkdir minecraftforge && \
   cd minecraftforge && \
   wget "https://maven.minecraftforge.net/net/minecraftforge/forge/1.18.2-40.2.0/forge-1.18.2-40.2.0-mdk.zip" -O temp.zip && \
   unzip temp.zip && \
-  rm temp.zip && \
-  ./gradlew genEclipseRun
+  rm temp.zip
+
+RUN cd minecraftforge && \
+  ./gradlew genEclipseRun || ./gradlew genEclipseRun || ./gradlew genEclipseRun | sleep 99999

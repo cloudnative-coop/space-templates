@@ -17,6 +17,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
     && curl -fsSL https://deb.nodesource.com/setup_16.x | bash -x - \
     && apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install --yes \
+    ttyd \
     tmux \
     tmate \
     bash-completion \
@@ -208,15 +209,7 @@ RUN cd /usr/local/src/emacs && \
   make -j 64 && \
   make install
 
-# Pull in minecraft 1.18.2-40.2.0
-
-RUN mkdir minecraftforge && \
-  cd minecraftforge && \
-  wget "https://maven.minecraftforge.net/net/minecraftforge/forge/1.18.2-40.2.0/forge-1.18.2-40.2.0-mdk.zip" -O temp.zip && \
-  unzip temp.zip && \
-  rm temp.zip && \
-  ls -la /minecraftforge && \
-  ./gradlew genEclipseRun
+RUN ln -s /usr/bin/coder /usr/local/bin/coop
 
 ARG USER=ii
 RUN useradd --groups sudo --no-create-home --shell /bin/bash ${USER} \
@@ -235,6 +228,12 @@ RUN PATH=$HOME/.config/emacs/bin:$HOME/.config/doom/bin ; humacs-sync-config || 
 # Code Server
 RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-install.log
 RUN curl -fsSL https://coder.com/install.sh | sh
-USER root
-RUN ln -s /usr/bin/coder /usr/local/bin/coop && DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y ttyd
-USER ${USER}
+
+# Pull in minecraft 1.18.2-40.2.0
+
+RUN mkdir minecraftforge && \
+  cd minecraftforge && \
+  wget "https://maven.minecraftforge.net/net/minecraftforge/forge/1.18.2-40.2.0/forge-1.18.2-40.2.0-mdk.zip" -O temp.zip && \
+  unzip temp.zip && \
+  rm temp.zip && \
+  ./gradlew genEclipseRun

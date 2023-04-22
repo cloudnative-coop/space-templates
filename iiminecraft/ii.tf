@@ -62,7 +62,7 @@ resource "coder_agent" "ii" {
   login_before_ready     = false
   startup_script_timeout = 180
   startup_script         = <<-EOT
-    set -e
+    # set -e
     # start broadwayd and emacs
     broadwayd :5 2>&1 | tee broadwayd.log &
     GDK_BACKEND=broadway BROADWAY_DISPLAY=:5 emacs 2>&1 | tee emacs.log &
@@ -71,6 +71,13 @@ resource "coder_agent" "ii" {
     ttyd tmux -L ii at 2>&1 | tee ttyd.log &
     # start code-server
     code-server --auth none --port 13337 | tee code-server-install.log &
+    sudo apt-get install -y novnc websockify tigervnc-standalone-server icewm kitty
+    mkdir novnc && ln -s /usr/share/novnc/* novnc
+    cp novnc/vnc.html novnc/index.html
+    websockify -D --web=/home/ii/novnc 6080 localhost:5901
+    tigervncserver -useold -desktop ${lower(data.coder_workspace.ii.name)} -SecurityTypes None -geometry 1024x768
+    export DISPLAY=:1
+    kitty -T "${lower(data.coder_workspace.ii.name)}" --detach --hold bash -c "cd minecraftforge && ./gradlew runClient"
   EOT
 
   # These environment variables allow you to make Git commits right away after creating a
@@ -86,14 +93,14 @@ resource "coder_agent" "ii" {
 }
 
 # vnc
-resource "coder_app" "vnc" {
+resource "coder_app" "minecraftmodding" {
   subdomain    = true
   share        = "public"
   agent_id     = coder_agent.ii.id
-  slug         = "vnc"
-  display_name = "noVNC"
-  icon         = "https://upload.wikimedia.org/wikipedia/commons/0/08/EmacsIcon.svg" # let's maybe get an emacs.svg somehow
-  url          = "http://localhost:6901"                                             # port 8080 + BROADWAY_DISPLAY
+  slug         = "minecraftmodding"
+  display_name = "Minecraft Modding"
+  icon         = "https://raw.githubusercontent.com/devoxx4kids/materials/master/workshops/minecraft/images/forge-logo.png"
+  url          = "http://localhost:6080"
 }
 
 

@@ -104,7 +104,7 @@ resource "coder_app" "ttyd" {
   share        = "public"
   slug         = "ttyd"
   display_name = "ttyd for tmux"
-  icon         = "https://upload.wikimedia.org/wikipedia/commons/0/08/EmacsIcon.svg" # let's maybe get an emacs.svg somehow
+  icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
   agent_id     = coder_agent.ii.id
   url          = "http://localhost:7681" # 7681 is the default ttyd port
 }
@@ -114,8 +114,8 @@ resource "coder_app" "tmux" {
   agent_id     = coder_agent.ii.id
   display_name = "tmux"
   slug         = "tmux"
-  icon         = "https://upload.wikimedia.org/wikipedia/commons/0/08/EmacsIcon.svg" # let's maybe get an emacs.svg somehow
-  command      = "tmux -L at"
+  icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
+  command      = "tmux -L ii at"
   share        = "public"
 }
 
@@ -164,7 +164,7 @@ resource "docker_volume" "iihome" {
 }
 
 resource "docker_image" "iipod" {
-  name = "ii-${data.coder_workspace.ii.id}"
+  name = "ii-${data.coder_workspace.ii.name}"
   build {
     context = "./build"
     build_args = {

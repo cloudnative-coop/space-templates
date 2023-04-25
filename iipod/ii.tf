@@ -136,82 +136,31 @@ resource "coder_app" "code-server" {
   }
 }
 
-resource "docker_volume" "iihome" {
-  name = "coop-${data.coder_workspace.ii.id}-home"
-  # Protect the volume from being deleted due to changes in attributes.
-  lifecycle {
-    ignore_changes = all
-  }
-  # Add labels in Docker to keep track of orphan resources.
-  labels {
-    label = "coop.owner"
-    value = data.coder_workspace.ii.owner
-  }
-  labels {
-    label = "coop.owner_id"
-    value = data.coder_workspace.ii.owner_id
-  }
-  labels {
-    label = "coop.id"
-    value = data.coder_workspace.ii.id
-  }
-  # This field becomes outdated if the workspace is renamed but can
-  # be useful for debugging or cleaning out dangling volumes.
-  labels {
-    label = "coop.name_at_creation"
-    value = data.coder_workspace.ii.name
-  }
-}
-
-# resource "docker_image" "iipod" {
-#   name = "ii-${data.coder_workspace.ii.name}"
-#   build {
-#     context = "./build"
-#     build_args = {
-#       USER = "ii"
-#       # USER = local.username
-#     }
-#   }
-#   triggers = {
-#     dir_sha1 = sha1(join("", [for f in fileset(path.module, "build/*") : filesha1(f)]))
-#   }
-# }
-
-resource "docker_container" "coop" {
+resource "kubernetes_pod" "iipod" {
   count = data.coder_workspace.ii.start_count
-  image = "this/iikea:latest"
-  # image = docker_image.iipod.name
-  # Uses lower() to avoid Docker restriction on container names.
-  name = "coop-${data.coder_workspace.ii.owner}-${lower(data.coder_workspace.ii.name)}"
-  # Hostname makes the shell more user friendly: coder@my-workspace:~$
-  hostname = data.coder_workspace.ii.name
-  # Use the docker gateway if the access URL is 127.0.0.1
-  entrypoint = ["sh", "-c", replace(coder_agent.ii.init_script, "/localhost|127\\.0\\.0\\.1/", "host.docker.internal")]
-  env        = ["CODER_AGENT_TOKEN=${coder_agent.ii.token}"]
-  host {
-    host = "host.docker.internal"
-    ip   = "host-gateway"
+  metadata {
+    name      = "coop-${lower(data.coder_workspace.ii.owner)}-${lower(data.coder_workspace.ii.name)}"
+    namespace = var.namespace
+    labels = {
+      name = "coop-${lower(data.coder_workspace.ii.owner)}-${lower(data.coder_workspace.ii.name)}"
+    }
   }
-  volumes {
-    container_path = "/home/${local.username}"
-    volume_name    = docker_volume.iihome.name
-    read_only      = false
-  }
-  # Add labels in Docker to keep track of orphan resources.
-  labels {
-    label = "coop.owner"
-    value = data.coder_workspace.ii.owner
-  }
-  labels {
-    label = "coop.owner_id"
-    value = data.coder_workspace.ii.owner_id
-  }
-  labels {
-    label = "coop.id"
-    value = data.coder_workspace.ii.id
-  }
-  labels {
-    label = "coop.name"
-    value = data.coder_workspace.ii.name
+  spec {
+    security_context {
+      run_as_user = "1000"
+      fs_group    = "1000"
+    }
+    container {
+      name    = "iipod"
+      image   = "this/iikea:latest"
+      command = ["sh", "-c", coder_agent.ii.init_script]
+      security_context {
+        run_as_user = "1000"
+      }
+      env {
+        name  = "CODER_AGENT_TOKEN"
+        value = coder_agent.ii.token
+      }
+    }
   }
 }

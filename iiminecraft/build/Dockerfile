@@ -231,7 +231,6 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-inst
 RUN curl -fsSL https://coder.com/install.sh | sh
 
 # Pull in minecraft 1.18.2-40.2.0
-
 RUN mkdir minecraftforge && \
   cd minecraftforge && \
   wget "https://maven.minecraftforge.net/net/minecraftforge/forge/1.18.2-40.2.0/forge-1.18.2-40.2.0-mdk.zip" -O temp.zip && \
@@ -240,3 +239,18 @@ RUN mkdir minecraftforge && \
 
 RUN cd minecraftforge && \
   ./gradlew genEclipseRun || ./gradlew genEclipseRun || ./gradlew genEclipseRun | sleep 99999
+
+### Create desktop file for minecraft: not working yet!
+USER root 
+RUN touch minecraft.desktop
+RUN echo [Desktop Entry] \
+Encoding=UTF-8 \
+Version=1.0 \
+Type=Application \
+Terminal=false \
+Exec= ~/minecraftforge/./gradlew runClient \
+Name=Minecraft \
+Icon=/path/to/icon \ >> minecraft.desktop && mv minecraft.desktop /usr/share/applications/
+### To run from terminal: /opt/idea/bin/idea.sh
+RUN wget "https://download-cdn.jetbrains.com/idea/ideaIC-2021.2.3.tar.gz" && tar xvf ideaIC-2021.2.3.tar.gz && mv idea-IC-212.5457.46/ /opt/idea && rm ideaIC-2021.2.3.tar.gz
+USER ${USER} 

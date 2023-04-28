@@ -185,7 +185,7 @@ resource "docker_volume" "iihome" {
 
 resource "docker_container" "coop" {
   count = data.coder_workspace.ii.start_count
-  image = "this/minecraft"
+  image = "this/minecraft:homeschool"
   # Uses lower() to avoid Docker restriction on container names.
   name = "coop-${data.coder_workspace.ii.owner}-${lower(data.coder_workspace.ii.name)}"
   # Hostname makes the shell more user friendly: coder@my-workspace:~$

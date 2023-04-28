@@ -1,0 +1,4 @@
+prog kitty /usr/share/icons/hicolor/256x256/apps/kitty.png kitty
+separator
+prog Firefox /usr/lib/firefox/browser/icons/mozicon128.png firefox
+prog Chromium /usr/share/pixmaps/chromium-browser.png /usr/bin/chromium-browser

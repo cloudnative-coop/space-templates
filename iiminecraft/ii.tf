@@ -143,11 +143,11 @@ resource "coder_app" "code-server" {
   slug         = "code-server"
   display_name = "code-server"
   # url          = "http://localhost:13337/?folder=/home/${local.username}"
-  url       = "http://localhost:13337/?folder=/home/ii"
-  icon      = "/icon/code.svg"
-  public    = true
+  url  = "http://localhost:13337/?folder=/home/ii"
+  icon = "/icon/code.svg"
+  # share     = "owner"
+  share     = "public"
   subdomain = true
-  share     = "owner"
 
   healthcheck {
     url       = "http://localhost:13337/healthz"

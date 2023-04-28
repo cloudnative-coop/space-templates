@@ -71,13 +71,14 @@ resource "coder_agent" "ii" {
     ttyd tmux -L ii at 2>&1 | tee ttyd.log &
     # start code-server
     code-server --auth none --port 13337 | tee code-server-install.log &
-    sudo apt-get install -y novnc websockify tigervnc-standalone-server icewm kitty
+    # sudo apt-get install -y novnc websockify tigervnc-standalone-server icewm kitty
     mkdir novnc && ln -s /usr/share/novnc/* novnc
     cp novnc/vnc.html novnc/index.html
     websockify -D --web=/home/ii/novnc 6080 localhost:5901
     tigervncserver -useold -desktop ${lower(data.coder_workspace.ii.name)} -SecurityTypes None -geometry 1024x768
     export DISPLAY=:1
     kitty -T "${lower(data.coder_workspace.ii.name)}" --detach --hold bash -c "cd minecraftforge && ./gradlew runClient"
+    sleep 999999999
   EOT
 
   # These environment variables allow you to make Git commits right away after creating a
@@ -93,14 +94,14 @@ resource "coder_agent" "ii" {
 }
 
 # vnc
-resource "coder_app" "minecraftmodding" {
+resource "coder_app" "minecraft" {
   subdomain    = true
   share        = "public"
   agent_id     = coder_agent.ii.id
-  slug         = "minecraftmodding"
-  display_name = "Minecraft Modding"
+  slug         = "minecraft"
+  display_name = "Minecraft"
   icon         = "https://raw.githubusercontent.com/devoxx4kids/materials/master/workshops/minecraft/images/forge-logo.png"
-  url          = "http://localhost:6080"
+  url          = "http://localhost:6080?autoconnect=true"
 }
 
 
@@ -144,7 +145,8 @@ resource "coder_app" "code-server" {
   # url          = "http://localhost:13337/?folder=/home/${local.username}"
   url       = "http://localhost:13337/?folder=/home/ii"
   icon      = "/icon/code.svg"
-  subdomain = false
+  public    = true
+  subdomain = true
   share     = "owner"
 
   healthcheck {

@@ -240,3 +240,13 @@ RUN mkdir minecraftforge && \
 
 RUN cd minecraftforge && \
   ./gradlew genEclipseRun || ./gradlew genEclipseRun || ./gradlew genEclipseRun | sleep 99999
+USER root
+RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
+  && DEBIAN_FRONTEND=noninteractive apt-get install -y ./google-chrome-stable_current_amd64.deb \
+  && apt -f install \
+  && rm ./google-chrome-stable_current_amd64.deb
+RUN DEBIAN_FRONTEND=noninteractive apt-get install -y novnc websockify tigervnc-standalone-server icewm kitty
+#  firefox
+RUN wget "https://download-cdn.jetbrains.com/idea/ideaIC-2021.2.3.tar.gz" && tar xvf ideaIC-2021.2.3.tar.gz && mv idea-IC-212.5457.46/ /opt/idea && rm ideaIC-2021.2.3.tar.gz
+USER ${USER}
+COPY .icewm /home/${USER}/.icewm

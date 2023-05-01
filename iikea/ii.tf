@@ -67,8 +67,8 @@ resource "coder_agent" "ii" {
     broadwayd :5 2>&1 | tee broadwayd.log &
     GDK_BACKEND=broadway BROADWAY_DISPLAY=:5 emacs 2>&1 | tee emacs.log &
     # start ttyd / tmux
-    tmux -L ii new -d -s ii -P -F "Welcome to the ${lower(data.coder_workspace.ii.name)} cooperation! Hit q to continue..." -n "${lower(data.coder_workspace.ii.name)}"
-    ttyd tmux -L ii at 2>&1 | tee ttyd.log &
+    tmux new -d -s "${lower(data.coder_workspace.ii.name)}" -n "ii"
+    ttyd tmux at 2>&1 | tee ttyd.log &
     # start code-server
     code-server --auth none --port 13337 | tee code-server-install.log &
   EOT
@@ -115,7 +115,7 @@ resource "coder_app" "tmux" {
   display_name = "tmux"
   slug         = "tmux"
   icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
-  command      = "tmux -L ii at"
+  command      = "tmux at"
   share        = "public"
 }
 

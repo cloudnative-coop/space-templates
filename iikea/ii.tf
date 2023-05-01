@@ -88,21 +88,21 @@ resource "coder_agent" "ii" {
 
 
 # emacs
-resource "coder_app" "left-i" {
+resource "coder_app" "left" {
   subdomain    = true
   share        = "public"
   agent_id     = coder_agent.ii.id
-  slug         = "left-i"
+  slug         = "left"
   display_name = "Left i"
   icon         = "https://upload.wikimedia.org/wikipedia/commons/0/08/EmacsIcon.svg" # let's maybe get an emacs.svg somehow
   url          = "http://localhost:8085"                                             # port 8080 + BROADWAY_DISPLAY
 }
 
 # ttyd
-resource "coder_app" "right-i" {
+resource "coder_app" "right" {
   subdomain    = true
   share        = "public"
-  slug         = "right-i"
+  slug         = "right"
   display_name = "Right i"
   icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
   agent_id     = coder_agent.ii.id

@@ -179,7 +179,7 @@ resource "docker_volume" "iihome" {
 
 resource "docker_container" "coop" {
   count = data.coder_workspace.ii.start_count
-  image = "this/iikea:latest"
+  image = "this/iikea:monday"
   # image = docker_image.iipod.name
   # Uses lower() to avoid Docker restriction on container names.
   name = "coop-${data.coder_workspace.ii.owner}-${lower(data.coder_workspace.ii.name)}"

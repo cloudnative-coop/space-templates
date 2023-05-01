@@ -88,36 +88,36 @@ resource "coder_agent" "ii" {
 
 
 # emacs
-resource "coder_app" "emacs" {
+resource "coder_app" "left-i" {
   subdomain    = true
   share        = "public"
   agent_id     = coder_agent.ii.id
-  slug         = "emacs"
-  display_name = "Emacs"
+  slug         = "left-i"
+  display_name = "Left i"
   icon         = "https://upload.wikimedia.org/wikipedia/commons/0/08/EmacsIcon.svg" # let's maybe get an emacs.svg somehow
   url          = "http://localhost:8085"                                             # port 8080 + BROADWAY_DISPLAY
 }
 
 # ttyd
-resource "coder_app" "ttyd" {
+resource "coder_app" "right-i" {
   subdomain    = true
   share        = "public"
-  slug         = "ttyd"
-  display_name = "ttyd for tmux"
+  slug         = "right-i"
+  display_name = "Right i"
   icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
   agent_id     = coder_agent.ii.id
   url          = "http://localhost:7681" # 7681 is the default ttyd port
 }
 
-# tmux
-resource "coder_app" "tmux" {
-  agent_id     = coder_agent.ii.id
-  display_name = "tmux"
-  slug         = "tmux"
-  icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
-  command      = "tmux at"
-  share        = "public"
-}
+# # tmux
+# resource "coder_app" "tmux" {
+#   agent_id     = coder_agent.ii.id
+#   display_name = "tmux"
+#   slug         = "tmux"
+#   icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
+#   command      = "tmux at"
+#   share        = "public"
+# }
 
 resource "coder_app" "code-server" {
   agent_id     = coder_agent.ii.id

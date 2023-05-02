@@ -264,6 +264,6 @@ data "coder_parameter" "container-image" {
   name         = "container-image"
   display_name = "Container Image"
   description  = "The container image to use for the workspace"
-  default      = "this/workspace:austin"
+  default      = "this/workspace:512"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }

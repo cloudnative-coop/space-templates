@@ -56,6 +56,11 @@ provider "docker" {
 data "coder_workspace" "ii" {
 }
 
+# data "coder_git_auth" "github" {
+#   # Matches the ID of the git auth provider in Coder.
+#   id = "primary-github"
+# }
+
 resource "coder_agent" "ii" {
   arch                   = data.coder_provisioner.ii.arch
   os                     = data.coder_provisioner.ii.os
@@ -64,14 +69,26 @@ resource "coder_agent" "ii" {
   startup_script         = <<-EOT
     set -e
     # start broadwayd and emacs
-    broadwayd :5 2>&1 | tee broadwayd.log &
-    GDK_BACKEND=broadway BROADWAY_DISPLAY=:5 emacs 2>&1 | tee emacs.log &
+    broadwayd :5 2>&1 | tee /tmp/broadwayd.log &
+    GDK_BACKEND=broadway BROADWAY_DISPLAY=:5 emacs 2>&1 | tee /tmp/emacs.log &
     # start ttyd / tmux
     tmux new -d -s "${lower(data.coder_workspace.ii.name)}" -n "ii"
-    ttyd tmux at 2>&1 | tee ttyd.log &
+    ttyd tmux at 2>&1 | tee /tmp/ttyd.log &
     # start code-server
-    code-server --auth none --port 13337 | tee code-server-install.log &
-    echo startup_script complete
+    mv code-server-install.log /tmp
+    mkdir ~/.config/code-server
+    cat <<-EOF > ~/.config/code-server/config.yaml
+    bind-addr: 127.0.0.1:8080
+    auth: none
+    cert: false
+    disable-telemetry: true
+    disable-update-check: true
+    disable-workspace-trust: true
+    disable-getting-started-override: true
+    app-name: coop-code
+    EOF
+    code-server --auth none --port 13337 | tee /tmp/code-server.log &
+    echo startup_script complete | tee /tmp/startup_script.exit
     exit 0
   EOT
 
@@ -80,10 +97,33 @@ resource "coder_agent" "ii" {
   # You can remove this block if you'd prefer to configure Git manually or using
   # dotfiles. (see docs/dotfiles.md)
   env = {
+    # GITHUB_TOKEN        = "$${data.coder_git_auth.github.access_token}"
     GIT_AUTHOR_NAME     = "${data.coder_workspace.ii.owner}"
     GIT_COMMITTER_NAME  = "${data.coder_workspace.ii.owner}"
     GIT_AUTHOR_EMAIL    = "${data.coder_workspace.ii.owner_email}"
     GIT_COMMITTER_EMAIL = "${data.coder_workspace.ii.owner_email}"
+  }
+  metadata {
+    key          = "tmux-clients"
+    display_name = "tmux clients"
+    interval     = 5
+    timeout      = 5
+    script       = <<-EOT
+      #!/bin/bash
+      set -e
+      tmux list-clients
+    EOT
+  }
+  metadata {
+    key          = "tmux-windows"
+    display_name = "tmux windows"
+    interval     = 5
+    timeout      = 5
+    script       = <<-EOT
+      #!/bin/bash
+      set -e
+      tmux list-windows
+    EOT
   }
 }
 
@@ -121,10 +161,10 @@ resource "coder_app" "tmux" {
 #   share        = "public"
 # }
 
-resource "coder_app" "code-server" {
+resource "coder_app" "coop-code" {
   agent_id     = coder_agent.ii.id
-  slug         = "code-server"
-  display_name = "code-server"
+  slug         = "coop-code"
+  display_name = "coop-code"
   # url          = "http://localhost:13337/?folder=/home/${local.username}"
   url       = "http://localhost:13337/?folder=/home/ii"
   icon      = "/icon/code.svg"
@@ -182,7 +222,7 @@ resource "docker_volume" "iihome" {
 
 resource "docker_container" "coop" {
   count = data.coder_workspace.ii.start_count
-  image = "this/iikea:austin"
+  image = data.coder_parameter.container-image.value
   # image = docker_image.iipod.name
   # Uses lower() to avoid Docker restriction on container names.
   name = "coop-${data.coder_workspace.ii.owner}-${lower(data.coder_workspace.ii.name)}"
@@ -217,4 +257,13 @@ resource "docker_container" "coop" {
     label = "coop.name"
     value = data.coder_workspace.ii.name
   }
+}
+
+
+data "coder_parameter" "container-image" {
+  name         = "container-image"
+  display_name = "Container Image"
+  description  = "The container image to use for the workspace"
+  default      = "this/workspace:austin"
+  icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }

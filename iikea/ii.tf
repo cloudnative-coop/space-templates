@@ -151,6 +151,17 @@ resource "coder_app" "tmux" {
   url          = "http://localhost:7681" # 7681 is the default ttyd port
 }
 
+# web
+resource "coder_app" "web" {
+  subdomain    = true
+  share        = "public"
+  slug         = "web"
+  display_name = "web"
+  # icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
+  agent_id = coder_agent.ii.id
+  url      = "http://localhost:8000" # 7681 is the default ttyd port
+}
+
 # # tmux
 # resource "coder_app" "tmux" {
 #   agent_id     = coder_agent.ii.id
@@ -266,4 +277,12 @@ data "coder_parameter" "container-image" {
   description  = "The container image to use for the workspace"
   default      = "this/workspace:512"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
+}
+
+data "coder_parameter" "git-url" {
+  name         = "git-url"
+  display_name = "Git URL"
+  description  = "The Git URL to checkout for this workspace"
+  default      = "https://github.com/etcd/etcd"
+  # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }

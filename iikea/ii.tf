@@ -58,8 +58,8 @@ data "coder_workspace" "ii" {
 
 resource "coder_agent" "ii" {
   arch                   = data.coder_provisioner.ii.arch
-  os                     = "linux"
-  login_before_ready     = false
+  os                     = data.coder_provisioner.ii.os
+  login_before_ready     = true
   startup_script_timeout = 180
   startup_script         = <<-EOT
     set -e
@@ -71,6 +71,8 @@ resource "coder_agent" "ii" {
     ttyd tmux at 2>&1 | tee ttyd.log &
     # start code-server
     code-server --auth none --port 13337 | tee code-server-install.log &
+    echo startup_script complete
+    exit 0
   EOT
 
   # These environment variables allow you to make Git commits right away after creating a
@@ -88,22 +90,22 @@ resource "coder_agent" "ii" {
 
 
 # emacs
-resource "coder_app" "left" {
+resource "coder_app" "Emacs" {
   subdomain    = true
   share        = "public"
   agent_id     = coder_agent.ii.id
-  slug         = "left"
-  display_name = "Left i"
+  slug         = "emacs"
+  display_name = "Emacs"
   icon         = "https://upload.wikimedia.org/wikipedia/commons/0/08/EmacsIcon.svg" # let's maybe get an emacs.svg somehow
   url          = "http://localhost:8085"                                             # port 8080 + BROADWAY_DISPLAY
 }
 
 # ttyd
-resource "coder_app" "right" {
+resource "coder_app" "tmux" {
   subdomain    = true
   share        = "public"
-  slug         = "right"
-  display_name = "Right i"
+  slug         = "tmux"
+  display_name = "tmux"
   icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
   agent_id     = coder_agent.ii.id
   url          = "http://localhost:7681" # 7681 is the default ttyd port
@@ -126,8 +128,9 @@ resource "coder_app" "code-server" {
   # url          = "http://localhost:13337/?folder=/home/${local.username}"
   url       = "http://localhost:13337/?folder=/home/ii"
   icon      = "/icon/code.svg"
-  subdomain = false
-  share     = "owner"
+  subdomain = true
+  share     = "public"
+  # share     = "owner"
 
   healthcheck {
     url       = "http://localhost:13337/healthz"

@@ -17,7 +17,7 @@ terraform {
 
 variable "use_kubeconfig" {
   type        = bool
-  default     = true
+  default     = false
   sensitive   = true
   description = <<-EOF
   Use host kubeconfig? (true/false)
@@ -35,7 +35,7 @@ variable "namespace" {
   type        = string
   sensitive   = true
   description = "The namespace to create workspaces in (must exist prior to creating workspaces)"
-  default     = "coop"
+  default     = "coder"
 }
 
 locals {
@@ -56,108 +56,31 @@ provider "docker" {
 data "coder_workspace" "ii" {
 }
 
-resource "coder_agent" "ii" {
-  arch                   = data.coder_provisioner.ii.arch
-  os                     = "linux"
-  login_before_ready     = false
-  startup_script_timeout = 180
-  startup_script         = <<-EOT
-    set -e
-    # start broadwayd and emacs
-    broadwayd :5 2>&1 | tee broadwayd.log &
-    GDK_BACKEND=broadway BROADWAY_DISPLAY=:5 emacs 2>&1 | tee emacs.log &
-    # start ttyd / tmux
-    tmux -L ii new -d -s ii -P -F "Welcome to the ${lower(data.coder_workspace.ii.name)} cooperation! Hit q to continue..." -n "${lower(data.coder_workspace.ii.name)}"
-    ttyd tmux -L ii at 2>&1 | tee ttyd.log &
-    # start code-server
-    code-server --auth none --port 13337 | tee code-server-install.log &
-  EOT
+# data "coder_git_auth" "github" {
+#   # Matches the ID of the git auth provider in Coder.
+#   id = "primary-github"
+# }
 
-  # These environment variables allow you to make Git commits right away after creating a
-  # workspace. Note that they take precedence over configuration defined in ~/.gitconfig!
-  # You can remove this block if you'd prefer to configure Git manually or using
-  # dotfiles. (see docs/dotfiles.md)
-  env = {
-    GIT_AUTHOR_NAME     = "${data.coder_workspace.ii.owner}"
-    GIT_COMMITTER_NAME  = "${data.coder_workspace.ii.owner}"
-    GIT_AUTHOR_EMAIL    = "${data.coder_workspace.ii.owner_email}"
-    GIT_COMMITTER_EMAIL = "${data.coder_workspace.ii.owner_email}"
-  }
+data "coder_parameter" "container-image" {
+  name         = "container-image"
+  display_name = "Container Image"
+  description  = "The container image to use for the workspace"
+  default      = "this/workspace:arlington"
+  icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }
 
-
-
-# emacs
-resource "coder_app" "emacs" {
-  subdomain    = true
-  share        = "public"
-  agent_id     = coder_agent.ii.id
-  slug         = "emacs"
-  display_name = "Emacs"
-  icon         = "https://upload.wikimedia.org/wikipedia/commons/0/08/EmacsIcon.svg" # let's maybe get an emacs.svg somehow
-  url          = "http://localhost:8085"                                             # port 8080 + BROADWAY_DISPLAY
+data "coder_parameter" "git-url" {
+  name         = "git-url"
+  display_name = "Git URL"
+  description  = "The Git URL to checkout for this workspace"
+  default      = "https://github.com/etcd-io/etcd"
+  # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }
 
-# ttyd
-resource "coder_app" "ttyd" {
-  subdomain    = true
-  share        = "public"
-  slug         = "ttyd"
-  display_name = "ttyd for tmux"
-  icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
-  agent_id     = coder_agent.ii.id
-  url          = "http://localhost:7681" # 7681 is the default ttyd port
-}
-
-# tmux
-resource "coder_app" "tmux" {
-  agent_id     = coder_agent.ii.id
-  display_name = "tmux"
-  slug         = "tmux"
-  icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
-  command      = "tmux -L ii at"
-  share        = "public"
-}
-
-resource "coder_app" "code-server" {
-  agent_id     = coder_agent.ii.id
-  slug         = "code-server"
-  display_name = "code-server"
-  # url          = "http://localhost:13337/?folder=/home/${local.username}"
-  url       = "http://localhost:13337/?folder=/home/ii"
-  icon      = "/icon/code.svg"
-  subdomain = false
-  share     = "owner"
-
-  healthcheck {
-    url       = "http://localhost:13337/healthz"
-    interval  = 5
-    threshold = 6
-  }
-}
-
-resource "kubernetes_pod" "iipod" {
-  count = data.coder_workspace.ii.start_count
-  metadata {
-    name      = "${lower(data.coder_workspace.ii.owner)}-${lower(data.coder_workspace.ii.name)}"
-    namespace = var.namespace
-  }
-  spec {
-    security_context {
-      run_as_user = "1001"
-      fs_group    = "1001"
-    }
-    container {
-      name    = "iipod"
-      image   = "this/iikea:latest"
-      command = ["sh", "-c", coder_agent.ii.init_script]
-      security_context {
-        run_as_user = "1001"
-      }
-      env {
-        name  = "CODER_AGENT_TOKEN"
-        value = coder_agent.ii.token
-      }
-    }
-  }
+data "coder_parameter" "org-url" {
+  name         = "org-url"
+  display_name = "Orgfile url"
+  description  = "The Orgfile URL to load into emacs"
+  default      = "https://ii.nz/ii.org"
+  # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }

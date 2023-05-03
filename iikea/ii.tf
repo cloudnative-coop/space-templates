@@ -70,7 +70,9 @@ resource "coder_agent" "ii" {
     set -e
     # start broadwayd and emacs
     broadwayd :5 2>&1 | tee /tmp/broadwayd.log &
-    GDK_BACKEND=broadway BROADWAY_DISPLAY=:5 emacs 2>&1 | tee /tmp/emacs.log &
+    wget "${data.coder_parameter.org-url.value}"
+    ORGFILE=$(basename "${data.coder_parameter.org-url.value}")
+    GDK_BACKEND=broadway BROADWAY_DISPLAY=:5 emacs $ORGFILE 2>&1 | tee /tmp/emacs.log &
     # start ttyd / tmux
     tmux new -d -s "${lower(data.coder_workspace.ii.name)}" -n "ii"
     ttyd tmux at 2>&1 | tee /tmp/ttyd.log &
@@ -89,6 +91,7 @@ resource "coder_agent" "ii" {
     EOF
     code-server --auth none --port 13337 | tee /tmp/code-server.log &
     echo startup_script complete | tee /tmp/startup_script.exit
+    git clone "${data.coder_parameter.git-url.value}"
     exit 0
   EOT
 
@@ -283,6 +286,14 @@ data "coder_parameter" "git-url" {
   name         = "git-url"
   display_name = "Git URL"
   description  = "The Git URL to checkout for this workspace"
-  default      = "https://github.com/etcd/etcd"
+  default      = "https://github.com/etcd-io/etcd"
+  # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
+}
+
+data "coder_parameter" "org-url" {
+  name         = "org-url"
+  display_name = "Orgfile url"
+  description  = "The Orgfile URL to load into emacs"
+  default      = "https://ii.nz/ii.org"
   # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }

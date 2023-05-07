@@ -250,3 +250,10 @@ RUN DEBIAN_FRONTEND=noninteractive apt-get install -y novnc websockify tigervnc-
 RUN wget "https://download-cdn.jetbrains.com/idea/ideaIC-2021.2.3.tar.gz" && tar xvf ideaIC-2021.2.3.tar.gz && mv idea-IC-212.5457.46/ /opt/idea && rm ideaIC-2021.2.3.tar.gz
 USER ${USER}
 COPY .icewm /home/${USER}/.icewm
+
+# Doom Emacs
+RUN git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+RUN git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
+RUN yes | ~/.config/emacs/bin/doom install --env --fonts
+# Install Coder
+RUN curl -fsSL https://coder.com/install.sh | sh

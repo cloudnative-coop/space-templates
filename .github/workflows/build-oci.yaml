@@ -57,4 +57,5 @@ jobs:
         with:
           context: "{{defaultContext}}:iidoom/build"
           push: true
-          tags: "${{vars.GITHUB_REPOSITORY}}:iidoom-${{vars.GITHUB_REF_NAME}}"
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}

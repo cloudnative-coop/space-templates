@@ -1,5 +1,5 @@
 FROM nixos/nix
-LABEL org.opencontainers.image.source=https://github.com/cloudnative-coop/coop-templates
+LABEL org.opencontainers.image.source=https://github.com/cloudnative-coop/coop-templates/tree/main/iidoom/build
 LABEL org.opencontainers.image.description="Doom Nix Container"
 LABEL org.opencontainers.image.licenses=MIT
 

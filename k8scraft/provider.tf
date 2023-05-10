@@ -14,10 +14,8 @@ terraform {
 }
 
 provider "kubernetes" {
-  # If this in run in-cluster, we want kubeconfig = false
-  # See https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#file-config
-  config_path = var.use_kubeconfig == false
-  # Maybe we should use https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#in-cluster-config ?
+  # Using autodetection for within a cluster
+  # See https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs#in-cluster-config ?
 }
 
 # https://developer.hashicorp.com/terraform/language/values/variables#declaring-an-input-variable

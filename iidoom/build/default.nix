@@ -6,5 +6,7 @@ pkgs.buildEnv {
     pkgs.hello
     pkgs.cowsay
     pkgs.figlet
+    pkgs.ttyd
+    pkgs.tmux
   ];
 }

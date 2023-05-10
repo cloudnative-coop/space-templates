@@ -45,6 +45,7 @@ locals {
 provider "kubernetes" {
   # Authenticate via ~/.kube/config or a Coder-specific ServiceAccount, depending on admin preferences
   # config_path = var.use_kubeconfig == true ? "~/.kube/config" : null
+  # To use ~/.kube/config please set KUBE_CONFIG variable to "$HOME/.kube/config" or similar
 }
 
 data "coder_provisioner" "ii" {

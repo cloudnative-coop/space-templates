@@ -55,6 +55,6 @@ jobs:
       - name: Build and push iidoom
         uses: docker/build-push-action@v4
         with:
-          context: "{{defaultContext}}:mysubdir"
+          context: "{{defaultContext}}:iidoom/build"
           push: true
           tags: this/iidoom:latest

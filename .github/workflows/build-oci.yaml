@@ -67,6 +67,7 @@ jobs:
         uses: macbre/push-to-ghcr@master
         with:
           context: "iidoom/build"
+          dockerfile: "iidoom/build/Dockerfile"
           image_name: ${{ github.repository }} # it will be lowercased internally
           image_tag: iidoom-${{ github.ref_name }}
           github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -54,18 +54,18 @@ data "coder_parameter" "container-image" {
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }
 
-data "coder_parameter" "git-url" {
-  name         = "git-url"
-  display_name = "Git URL"
-  description  = "The Git URL to checkout for this workspace"
-  default      = "https://github.com/cloudnative-coop/coop-templates"
-  # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
-}
+# data "coder_parameter" "git-url" {
+#   name         = "git-url"
+#   display_name = "Git URL"
+#   description  = "The Git URL to checkout for this workspace"
+#   default      = "https://github.com/cloudnative-coop/coop-templates"
+#   # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
+# }
 
-data "coder_parameter" "org-url" {
-  name         = "org-url"
-  display_name = "Orgfile url"
-  description  = "The Orgfile URL to load into emacs"
-  default      = "https://ii.nz/ii.org"
-  # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
-}
+# data "coder_parameter" "org-url" {
+#   name         = "org-url"
+#   display_name = "Orgfile url"
+#   description  = "The Orgfile URL to load into emacs"
+#   default      = "https://ii.nz/ii.org"
+#   # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
+# }

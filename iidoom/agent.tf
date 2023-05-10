@@ -8,8 +8,8 @@ resource "coder_agent" "ii" {
     # start broadwayd and emacs with provided ORG @ url
     # TODO get broadwayd up
     # broadwayd :5 2>&1 | tee /tmp/broadwayd.log &
-    # wget "${data.coder_parameter.org-url.value}"
-    # ORGFILE=$(basename "${data.coder_parameter.org-url.value}")
+    # wget "$${data.coder_parameter.org-url.value}"
+    # ORGFILE=$(basename "$${data.coder_parameter.org-url.value}")
     # TODO ensure emacs is compiled with broadway
     # GDK_BACKEND=broadway BROADWAY_DISPLAY=:5 emacs $ORGFILE 2>&1 | tee /tmp/emacs.log &
     # start ttyd / tmux
@@ -32,7 +32,7 @@ resource "coder_agent" "ii" {
     # code-server --auth none --port 13337 | tee /tmp/code-server.log &
     # echo startup_script complete | tee /tmp/startup_script.exit
     # Check out the repo
-    # git clone "${data.coder_parameter.git-url.value}"
+    # git clone "$${data.coder_parameter.git-url.value}"
     exit 0
   EOT
 

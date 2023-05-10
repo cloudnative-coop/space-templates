@@ -17,5 +17,6 @@ pkgs.buildEnv {
     pkgs.go
     pkgs.lolcat
     pkgs.emacs
+    pkgs.gh
   ];
 }

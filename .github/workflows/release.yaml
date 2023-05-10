@@ -68,6 +68,6 @@ jobs:
         with:
           context: "iidoom/build"
           dockerfile: "iidoom/build/Dockerfile"
-          image_name: ${{ github.organization }}/iidoom # it will be lowercased internally
+          image_name: ${{ github.repository_owner }}/iidoom # it will be lowercased internally
           image_tag: ${{ github.ref_name }}
           github_token: ${{ secrets.GITHUB_TOKEN }}

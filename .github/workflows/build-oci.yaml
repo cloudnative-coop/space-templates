@@ -1,3 +1,28 @@
+name: release
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      snapshot:
+        description: Force a dev version to be generated, implies dry_run.
+        type: boolean
+        required: true
+      dry_run:
+        description: Perform a dry-run release.
+        type: boolean
+        required: true
+
+permissions:
+  # Required to publish a release
+  contents: write
+  # Necessary to push docker images to ghcr.io.
+  packages: write
+
+env:
+  CODER_RELEASE: ${{ github.event.inputs.snapshot && 'false' || 'true' }}
+
 jobs:
   release:
     runs-on: ubuntu-latest

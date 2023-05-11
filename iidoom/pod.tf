@@ -22,6 +22,16 @@ resource "kubernetes_pod" "iipod" {
         name  = "CODER_AGENT_TOKEN"
         value = coder_agent.ii.token
       }
+      volume_mount {
+        mount_path = "/nix/store"
+        name = "nix-store"
+      }
+    }
+    volume {
+      name = "nix-store"
+      persistent_volume_claim {
+        claim_name = "nix-store"
+      }
     }
   }
 }

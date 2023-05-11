@@ -11,11 +11,11 @@ mtr 8.8.8.8
 #+begin_export html
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="https://ii.nz/asciinema-player.css" />
+    <link rel="stylesheet" type="text/css" href="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css" />
     <!-- Place favicon.ico in the root directory -->
   </head>
   <div id="command1"></div>
-  <script src="https://ii.nz/asciinema-player.min.js"></script>
+  <script src="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js"></script>
   <script>
     AsciinemaPlayer.create('command1.cast', document.getElementById('command1'),
       {
@@ -39,12 +39,12 @@ vi /etc/passwd
 #+name: command2.cast
 #+begin_export html
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=2">
-    <link rel="stylesheet" type="text/css" href="https://ii.nz/asciinema-player.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css" />
     <!-- Place favicon.ico in the root directory -->
   </head>
   <div id="command2"></div>
-  <script src="https://ii.nz/asciinema-player.min.js"></script>
+  <script src="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js"></script>
   <script>
     AsciinemaPlayer.create('command2.cast', document.getElementById('command2'),
       {
@@ -66,12 +66,12 @@ coder login https://coder.ii.nz
 #+name: command3.cast
 #+begin_export html
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=3">
-    <link rel="stylesheet" type="text/css" href="https://ii.nz/asciinema-player.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css" />
     <!-- Place favicon.ico in the root directory -->
   </head>
   <div id="command3"></div>
-  <script src="https://ii.nz/asciinema-player.min.js"></script>
+  <script src="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js"></script>
   <script>
     AsciinemaPlayer.create('command3.cast', document.getElementById('command3'),
       {
@@ -95,12 +95,12 @@ emacs -nw .
 #+name: command4.cast
 #+begin_export html
   <head>
-    <meta name="viewport" content="width=device-width, initial-scale=4">
-    <link rel="stylesheet" type="text/css" href="https://ii.nz/asciinema-player.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css" />
     <!-- Place favicon.ico in the root directory -->
   </head>
   <div id="command4"></div>
-  <script src="https://ii.nz/asciinema-player.min.js"></script>
+  <script src="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js"></script>
   <script>
     AsciinemaPlayer.create('command4.cast', document.getElementById('command4'),
       {

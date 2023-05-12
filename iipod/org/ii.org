@@ -1,33 +1,28 @@
 #+title: ii
+#+begin_export html
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="asciinema-player.css" /> -->
+    <!-- <link rel="stylesheet" type="text/css" href="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css" /> -->
+    <!-- Place favicon.ico in the root directory -->
+  </head>
+   <script src="asciinema-player.min.js"></script>
+  <script src="ox-reveal-keys.js"></script>
+  <!-- <script src="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js"></script>
+  <script src="https://raw.githubusercontent.com/cloudnative-coop/coop-templates/main/iipod/org/ox-reveal-keys.js"></script> -->
+#+end_export
+
 * record command1.cast :noexport:
 #+name: command1
 #+begin_src tmux :session ":command1" :prologue "asciinema rec command1.cast --stdin --overwrite -c '" :epilogue "'" :exports none
-ping -c 5 8.8.8.8
-sudo apt-get install -y mtr
-mtr 8.8.8.8
+bash
 #+end_src
 * Recording 1
 #+name: command1.cast
 #+begin_export html
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css" />
-    <!-- Place favicon.ico in the root directory -->
-  </head>
+  <div id="keys1"></div>
   <div id="command1"></div>
-  <script src="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js"></script>
-  <script>
-    AsciinemaPlayer.create('command1.cast', document.getElementById('command1'),
-      {
-        autoPlay: true,
-        preload: true,
-        loop: true,
-        theme: 'solarized-dark',
-        poster: "data:text/plain,I'm regular \x1b[1;32mI'm bold green\x1b[3BI'm 3 lines down"
-
-      }
-      );
-  </script>
+  <script>DisplayKeys('command1.cast','command1','keys1')</script>
 #+end_export
 
 * record command2.cast :noexport:
@@ -38,23 +33,9 @@ vi /etc/passwd
 * Recording 2
 #+name: command2.cast
 #+begin_export html
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css" />
-    <!-- Place favicon.ico in the root directory -->
-  </head>
+  <div id="keys2"></div>
   <div id="command2"></div>
-  <script src="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js"></script>
-  <script>
-    AsciinemaPlayer.create('command2.cast', document.getElementById('command2'),
-      {
-        autoPlay: true,
-        preload: true,
-        loop: true,
-        theme: 'solarized-dark',
-      }
-      );
-  </script>
+  <script>DisplayKeys('command2.cast','command2','keys2')</script>
 #+end_export
 
 * record command3.cast :noexport:
@@ -65,25 +46,9 @@ coder login https://coder.ii.nz
 * Recording 3
 #+name: command3.cast
 #+begin_export html
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css" />
-    <!-- Place favicon.ico in the root directory -->
-  </head>
+  <div id="keys3"></div>
   <div id="command3"></div>
-  <script src="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js"></script>
-  <script>
-    AsciinemaPlayer.create('command3.cast', document.getElementById('command3'),
-      {
-        autoPlay: true,
-        preload: true,
-        loop: true,
-        theme: 'solarized-dark',
-        poster: "data:text/plain,I'm regular \x3b[3;32mI'm bold green\x3b[3BI'm 3 lines down"
-
-      }
-      );
-  </script>
+  <script>DisplayKeys('command3.cast','command3','keys3')</script>
 #+end_export
 
 * record command4.cast :noexport:
@@ -94,36 +59,26 @@ emacs -nw .
 * Recording 4
 #+name: command4.cast
 #+begin_export html
-  <head>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" type="text/css" href="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css" />
-    <!-- Place favicon.ico in the root directory -->
-  </head>
+  <div id="keys4"></div>
   <div id="command4"></div>
-  <script src="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js"></script>
-  <script>
-    AsciinemaPlayer.create('command4.cast', document.getElementById('command4'),
-      {
-        autoPlay: true,
-        preload: true,
-        loop: true,
-        theme: 'solarized-dark',
-        poster: "data:text/plain,I'm regular \x4b[4;32mI'm bold green\x4b[3BI'm 3 lines down"
-
-      }
-      );
-  </script>
+  <script>DisplayKeys('command4.cast','command4','keys4')</script>
 #+end_export
 
 * Footnotes
 #+REVEAL_ROOT: https://multiplex.ii.nz
-#+REVEAL_MULTIPLEX_SECRET: 16830253579594699604
+#+REVEAL_MULTIPLEX_SECRET: 16830253579594699605
 #+REVEAL_MULTIPLEX_ID: f0343d4424c81b11
 #+OPTIONS: toc:nil
 ** generating commandsX
 ** setup index.html as default
 #+begin_src shell :results silent
 ln -sf ii_client.html index.html
+#+end_src
+** get files
+#+begin_src shell :results silent
+wget https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css
+wget https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js
+wget https://raw.githubusercontent.com/cloudnative-coop/coop-templates/main/iipod/org/ox-reveal-keys.js
 #+end_src
 
 ** start up a webserver

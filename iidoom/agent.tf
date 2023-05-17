@@ -13,8 +13,8 @@ resource "coder_agent" "ii" {
     # TODO ensure emacs is compiled with broadway
     # GDK_BACKEND=broadway BROADWAY_DISPLAY=:5 emacs $ORGFILE 2>&1 | tee /tmp/emacs.log &
     # start ttyd / tmux
-    nix-shell /shell.nix --command 'tmux new -d -s ${lower(data.coder_workspace.ii.name)} -n ii'
-    nix-shell /shell.nix --command 'ttyd tmux at 2>&1 | tee /tmp/ttyd.log &'
+    tmux new -d -s ${lower(data.coder_workspace.ii.name)} -n ii
+    ttyd tmux at 2>&1 | tee /tmp/ttyd.log &
     # TODO: install code-server with nix
     # mv code-server-install.log /tmp
     # start code-server

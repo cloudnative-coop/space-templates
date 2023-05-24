@@ -71,3 +71,12 @@ jobs:
           image_name: ${{ github.repository_owner }}/iidoom # it will be lowercased internally
           image_tag: ${{ github.ref_name }}
           github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and publish a Docker image for ${{ github.repository }}
+        uses: macbre/push-to-ghcr@master
+        with:
+          context: "iipod/build"
+          dockerfile: "iipod/build/Dockerfile"
+          image_name: ${{ github.repository_owner }}/iipod # it will be lowercased internally
+          image_tag: ${{ github.ref_name }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

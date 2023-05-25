@@ -1,6 +1,9 @@
 resource "coder_agent" "ii" {
-  arch                   = data.coder_provisioner.ii.arch
-  os                     = data.coder_provisioner.ii.os
+  # The following coder_provisioner only works if the target matches the host!
+  # arch                   = data.coder_provisioner.ii.arch
+  # os                     = data.coder_provisioner.ii.os
+  arch                   = "amd64"
+  os                     = "linux"
   login_before_ready     = true
   startup_script_timeout = 180
   startup_script         = <<-EOT
@@ -72,25 +75,21 @@ resource "coder_agent" "ii" {
 
 
 
-# resource "coder_agent" "infrasnoop" {
-#   arch                   = data.coder_provisioner.ii.arch
-#   os                     = data.coder_provisioner.ii.os
-#   login_before_ready     = true
-#   startup_script_timeout = 180
-#   startup_script         = <<-EOT
-#     set -e
-#     # start ttyd / tmux
-#     # tmux new -d -s "${lower(data.coder_workspace.ii.name)}" -n "infrasnoop"
-#     # ttyd tmux at 2>&1 | tee /tmp/ttyd.log &
-#   EOT
+resource "coder_agent" "infrasnoop" {
+  arch                   = data.coder_provisioner.ii.arch
+  os                     = data.coder_provisioner.ii.os
+  login_before_ready     = true
+  startup_script_timeout = 180
+  startup_script         = <<-EOT
+    set -e
+    # start ttyd / tmux
+    # tmux new -d -s "${lower(data.coder_workspace.ii.name)}" -n "infrasnoop"
+    # ttyd tmux at 2>&1 | tee /tmp/ttyd.log &
+  EOT
 
-#   # These environment variables allow you to make Git commits right away after creating a
-#   # workspace. Note that they take precedence over configuration defined in ~/.gitconfig!
-#   # You can remove this block if you'd prefer to configure Git manually or using
-#   # dotfiles. (see docs/dotfiles.md)
-#   env = {
-#   }
-# }
+  env = {
+  }
+}
 
 # resource "coder_agent" "sideloader" {
 #   arch                   = data.coder_provisioner.ii.arch

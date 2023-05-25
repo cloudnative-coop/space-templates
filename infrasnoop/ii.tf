@@ -45,6 +45,8 @@ data "coder_parameter" "space-image" {
   description  = "The container image to use for the space"
   default      = "ghcr.io/cloudnative-coop/iipod:v0.0.12"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
+  mutable      = true
+  type         = "string"
 }
 
 data "coder_parameter" "infrasnoop-image" {
@@ -53,6 +55,8 @@ data "coder_parameter" "infrasnoop-image" {
   description  = "The service container image used for infrasnoop / postgresql"
   default      = "ghcr.io/ii/infrasnoop:2023.05.25-02"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
+  mutable      = true
+  type         = "string"
 }
 
 data "coder_parameter" "sideloader-image" {
@@ -61,6 +65,8 @@ data "coder_parameter" "sideloader-image" {
   description  = "The sidecar container image used to populate recent successful prow jobs"
   default      = "ghcr.io/ii/infrasnoop-sideloader:2023.05.25-02"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
+  mutable      = true
+  type         = "string"
 }
 
 data "coder_parameter" "git-url" {
@@ -68,6 +74,8 @@ data "coder_parameter" "git-url" {
   display_name = "Git URL"
   description  = "The Git URL to checkout for this workspace"
   default      = "https://github.com/kubernetes/test-infra"
+  mutable      = true
+  type         = "string"
   # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }
 
@@ -75,6 +83,8 @@ data "coder_parameter" "org-url" {
   name         = "org-url"
   display_name = "Orgfile url"
   description  = "The Orgfile URL to load into emacs"
-  default      = "https://github.com/cloudnative-coop/coop-templates/raw/main/iipod/org/ii.org"
+  default      = "https://github.com/cloudnative-coop/coop-templates/raw/main/infrasnoop/org/ii.org"
+  mutable      = true
+  type         = "string"
   # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }

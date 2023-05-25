@@ -23,6 +23,7 @@ provider "kubernetes" {
   # Authenticate via ~/.kube/config or a Coder-specific ServiceAccount, depending on admin preferences
   # config_path = var.use_kubeconfig == true ? "~/.kube/config" : null
   # To use ~/.kube/config please set KUBE_CONFIG variable to "$HOME/.kube/config" or similar
+  # config_path = "~/.kube/config"
 }
 
 data "coder_provisioner" "ii" {
@@ -43,7 +44,7 @@ data "coder_parameter" "space-image" {
   name         = "space-image"
   display_name = "Space Container Image"
   description  = "The container image to use for the space"
-  default      = "ghcr.io/cloudnative-coop/iipod:v0.0.12"
+  default      = "ghcr.io/cloudnative-coop/iipod:v0.0.13"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
   mutable      = true
   type         = "string"

@@ -4,15 +4,6 @@
 select * from add_prow_deck_jobs();
 #+end_src
 
-#+RESULTS:
-#+begin_SRC example
-select * from add_prow_deck_jobs();
-         add_prow_deck_jobs
--------------------------------------
- Inserted 53 new jobs into prow deck
-(1 row)
-
-#+end_SRC
 * prow.job_spec table
 #+begin_src sql-mode
 select count(*) from prow.job_spec;
@@ -82,6 +73,7 @@ select job from coolview where labels contain 'x' and annotations contain 'y' an
 #+NOREVEAL_MULTIPLEX_SECRET: 16830253579594699605
 #+NOREVEAL_MULTIPLEX_ID: f0343d4424c81b11
 #+OPTIONS: toc:nil
+** TODO export via clicking
 ** setup index.html as default
 #+begin_src shell :results silent
 # ln -sf ii_client.html index.html

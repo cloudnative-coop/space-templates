@@ -84,7 +84,8 @@ select job from coolview where labels contain 'x' and annotations contain 'y' an
 #+OPTIONS: toc:nil
 ** setup index.html as default
 #+begin_src shell :results silent
-ln -sf ii_client.html index.html
+# ln -sf ii_client.html index.html
+ln -sf ii.html index.html
 #+end_src
 ** start up a webserver
 #+name: http.server

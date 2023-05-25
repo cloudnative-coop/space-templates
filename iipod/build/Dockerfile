@@ -228,4 +228,4 @@ RUN yes | ~/.config/emacs/bin/doom install --env --fonts
 RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-install.log
 RUN curl -fsSL https://coder.com/install.sh | sh
 
-RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync && true && true && true && true
+RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && true || true && true

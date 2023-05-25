@@ -6,18 +6,29 @@ resource "coder_agent" "ii" {
   os                     = "linux"
   login_before_ready     = true
   startup_script_timeout = 180
+  dir = "~/${local.repo_folder_name}"
   startup_script         = <<-EOT
     set -e
+    # Check out the git_url repo
+    if test -z "${data.coder_parameter.git_url.value}"
+    then
+      echo "No git repo specified, skipping"
+    else
+      if [ ! -d "${local.repo_folder_name}" ]
+      then
+        echo "Cloning git repo..."
+        git clone ${data.coder_parameter.git_url.value}
+      fi
+      cd ${local.repo_folder_name}
+    fi
     # start broadwayd and emacs with provided ORG @ url
     broadwayd :5 2>&1 | tee /tmp/broadwayd.log &
-    wget "${data.coder_parameter.org-url.value}"
-    ORGFILE=$(basename "${data.coder_parameter.org-url.value}")
+    wget "${data.coder_parameter.org_url.value}"
+    ORGFILE=$(basename "${data.coder_parameter.org_url.value}")
     GDK_BACKEND=broadway BROADWAY_DISPLAY=:5 emacs $ORGFILE 2>&1 | tee /tmp/emacs.log &
     # start ttyd / tmux
     tmux new -d -s "${lower(data.coder_workspace.ii.name)}" -n "ii"
     ttyd tmux at 2>&1 | tee /tmp/ttyd.log &
-    # TODO: don't dump logs into $HOME
-    mv code-server-install.log /tmp
     # start code-server
     mkdir ~/.config/code-server
     cat <<-EOF > ~/.config/code-server/config.yaml
@@ -28,12 +39,10 @@ resource "coder_agent" "ii" {
     disable-update-check: true
     disable-workspace-trust: true
     disable-getting-started-override: true
-    app-name: coop-code
+    app-name: code
     EOF
     code-server --auth none --port 13337 | tee /tmp/code-server.log &
     echo startup_script complete | tee /tmp/startup_script.exit
-    # Check out the repo
-    git clone "${data.coder_parameter.git-url.value}"
     exit 0
   EOT
 

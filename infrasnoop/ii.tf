@@ -6,11 +6,11 @@ terraform {
     }
     docker = {
       source  = "kreuzwerker/docker"
-      version = "~> 3.0.1"
+      version = "~> 3.0.2"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "~> 2.19.0" # Current as of April 13th
+      version = "~> 2.20.0" # Current as of April 13th
     }
   }
 }
@@ -37,11 +37,15 @@ data "coder_workspace" "ii" {
 
 # data "coder_git_auth" "github" {
 #   # Matches the ID of the git auth provider in Coder.
-#   id = "primary-github"
+#   id = "github"
 # }
 
-data "coder_parameter" "space-image" {
-  name         = "space-image"
+locals {
+    repo_folder_name = try(element(split("/", data.coder_parameter.git_url.value), length(split("/", data.coder_parameter.git_url.value)) - 1), "")
+}
+
+data "coder_parameter" "space_image" {
+  name         = "space_image"
   display_name = "Space Container Image"
   description  = "The container image to use for the space"
   default      = "ghcr.io/cloudnative-coop/iipod:v0.0.13"
@@ -50,18 +54,18 @@ data "coder_parameter" "space-image" {
   type         = "string"
 }
 
-data "coder_parameter" "infrasnoop-image" {
-  name         = "infrasnoop-image"
+data "coder_parameter" "infrasnoop_image" {
+  name         = "infrasnoop_image"
   display_name = "Infrasnoop Container Image"
   description  = "The service container image used for infrasnoop / postgresql"
-  default      = "ghcr.io/ii/infrasnoop:2023.05.25-02"
+  default      = "ghcr.io/cncf-infra/infrasnoop:2023.05.26-01"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
   mutable      = true
   type         = "string"
 }
 
-data "coder_parameter" "sideloader-image" {
-  name         = "sideloader-image"
+data "coder_parameter" "sideloader_image" {
+  name         = "sideloader_image"
   display_name = "Sideloader Container Image"
   description  = "The sidecar container image used to populate recent successful prow jobs"
   default      = "ghcr.io/ii/infrasnoop-sideloader:2023.05.25-02"
@@ -70,8 +74,8 @@ data "coder_parameter" "sideloader-image" {
   type         = "string"
 }
 
-data "coder_parameter" "git-url" {
-  name         = "git-url"
+data "coder_parameter" "git_url" {
+  name         = "git_url"
   display_name = "Git URL"
   description  = "The Git URL to checkout for this workspace"
   default      = "https://github.com/kubernetes/test-infra"
@@ -80,8 +84,8 @@ data "coder_parameter" "git-url" {
   # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }
 
-data "coder_parameter" "org-url" {
-  name         = "org-url"
+data "coder_parameter" "org_url" {
+  name         = "org_url"
   display_name = "Orgfile url"
   description  = "The Orgfile URL to load into emacs"
   default      = "https://github.com/cloudnative-coop/coop-templates/raw/main/infrasnoop/org/ii.org"

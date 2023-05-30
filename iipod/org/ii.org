@@ -78,7 +78,7 @@ ln -sf ii_client.html index.html
 #+begin_src shell :results silent
 wget https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css
 wget https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js
-wget https://raw.githubusercontent.com/cloudnative-coop/coop-templates/main/iipod/org/ox-reveal-keys.js
+wget https://raw.githubusercontent.com/cloudnative-coop/coop-templates/canon/iipod/org/ox-reveal-keys.js
 #+end_src
 
 ** start up a webserver

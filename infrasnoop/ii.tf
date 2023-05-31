@@ -58,7 +58,7 @@ data "coder_parameter" "infrasnoop_image" {
   name         = "infrasnoop_image"
   display_name = "Infrasnoop Container Image"
   description  = "The service container image used for infrasnoop / postgresql"
-  default      = "ghcr.io/cncf-infra/infrasnoop:2023.05.26-01"
+  default      = "ghcr.io/cncf-infra/infrasnoop:2023.05.31-01"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
   mutable      = true
   type         = "string"
@@ -68,7 +68,7 @@ data "coder_parameter" "sideloader_image" {
   name         = "sideloader_image"
   display_name = "Sideloader Container Image"
   description  = "The sidecar container image used to populate recent successful prow jobs"
-  default      = "ghcr.io/ii/infrasnoop-sideloader:2023.05.25-02"
+  default      = "ghcr.io/cncf-infra/infrasnoop-sideloader:2023.05.31-01"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
   mutable      = true
   type         = "string"
@@ -88,7 +88,7 @@ data "coder_parameter" "org_url" {
   name         = "org_url"
   display_name = "Orgfile url"
   description  = "The Orgfile URL to load into emacs"
-  default      = "https://github.com/cloudnative-coop/coop-templates/raw/main/infrasnoop/org/ii.org"
+  default      = "https://github.com/cloudnative-coop/coop-templates/raw/canon/infrasnoop/org/ii.org"
   mutable      = true
   type         = "string"
   # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"

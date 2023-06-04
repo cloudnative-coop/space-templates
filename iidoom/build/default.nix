@@ -16,7 +16,7 @@ pkgs.buildEnv {
     pkgs.ssh-import-id
     pkgs.go
     pkgs.lolcat
-    pkgs.emacs
     pkgs.gh
+    pkgs.vim
   ];
 }

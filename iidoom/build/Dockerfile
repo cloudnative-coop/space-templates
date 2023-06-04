@@ -19,7 +19,7 @@ RUN nix-shell shell.nix
 # Install our doom config
 RUN git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
 RUN git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
-RUN nix-shell --run "yes | ~/.config/emacs/bin/doom install --env --fonts"
+RUN nix-shell --run "bash -c 'yes | ~/.config/emacs/bin/doom install --env --fonts'"
 CMD nix-shell
 
 # Attempted https://github.com/teamniteo/nix-docker-base/#usage

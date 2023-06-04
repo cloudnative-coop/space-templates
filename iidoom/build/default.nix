@@ -18,5 +18,8 @@ pkgs.buildEnv {
     pkgs.lolcat
     pkgs.gh
     pkgs.vim
+    pkgs.emacs29-pgtk
+    pkgs.gtk3
+    pkgs.shadow
   ];
 }

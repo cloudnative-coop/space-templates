@@ -1,6 +1,6 @@
 with (import <nixpkgs> {});
 
-(emacs-nox.override {
+(emacs.override {
      nativeComp = true;
 }).overrideAttrs (old : {
      pname = "emacs";

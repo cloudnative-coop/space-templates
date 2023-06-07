@@ -15,7 +15,7 @@ packages:
   - tmux
   - kitty-terminfo
 write_files:
-  - path: /etc/kubernetes/audit-policy.yaml
+  - path: /etc/kubernetes/pki/audit-policy.yaml
     permissions: "0644"
     content: |
       apiVersion: audit.k8s.io/v1
@@ -24,7 +24,7 @@ write_files:
       - level: Metadata
         stages:
           - ResponseComplete
-  - path: /etc/kubernetes/audit-sink.yaml
+  - path: /etc/kubernetes/pki/audit-sink.yaml
     permissions: "0644"
     content: |
       apiVersion: v1
@@ -59,8 +59,8 @@ write_files:
       apiServer:
         timeoutForControlPlane: 4m0s
         extraArgs:
-         audit-policy-file: /etc/kubernetes/audit-policy.yaml
-         audit-webhook-config-file: /etc/kubernetes/audit-sink.yaml
+         audit-policy-file: /etc/kubernetes/pki/audit-policy.yaml
+         audit-webhook-config-file: /etc/kubernetes/pki/audit-sink.yaml
       certificatesDir: /etc/kubernetes/pki
       clusterName: kubernetes
       controllerManager: {}
@@ -190,10 +190,10 @@ write_files:
       WantedBy=multi-user.target
 
 runcmd:
-  - /opt/cloud/repo-setup
-  - /opt/cloud/install-software
   - systemctl enable coder-agent
   - systemctl start coder-agent
+  - /opt/cloud/repo-setup
+  - /opt/cloud/install-software
   - /opt/cloud/setup-k8s
   - /opt/cloud/setup-cilium
   - /opt/cloud/setup-repos

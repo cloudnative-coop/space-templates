@@ -97,6 +97,10 @@ data "coder_parameter" "os" {
   description  = "The Equinix Metal Operating System for the machine"
   default      = "ubuntu_22_04"
   option {
+    name  = "Ubuntu 20.04 LTS"
+    value = "ubuntu_20_04"
+  }
+  option {
     name  = "Ubuntu 22.04 LTS"
     value = "ubuntu_22_04"
   }
@@ -112,5 +116,9 @@ resource "coder_metadata" "device_info" {
   item {
     key   = "serial console"
     value = "ssh ${equinix_metal_device.amd_machine.id}@sos.${equinix_metal_device.amd_machine.deployed_facility}.platformequinix.com"
+  }
+  item {
+    key   = "equinix console"
+    value = "https://console.equinix.com/devices/${equinix_metal_device.amd_machine.id}/overview"
   }
 }

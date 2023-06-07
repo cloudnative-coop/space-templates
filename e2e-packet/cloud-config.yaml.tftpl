@@ -15,6 +15,64 @@ packages:
   - tmux
   - kitty-terminfo
 write_files:
+  - path: /etc/kubernetes/audit-policy.yaml
+    permissions: "0644"
+    content: |
+      apiVersion: audit.k8s.io/v1
+      kind: Policy
+      rules:
+      - level: Metadata
+        stages:
+          - ResponseComplete
+  - path: /etc/kubernetes/audit-sink.yaml
+    permissions: "0644"
+    content: |
+      apiVersion: v1
+      kind: Config
+      current-context: auditsink-context
+      clusters:
+      - cluster:
+          server: http://127.0.0.1:9900/events
+        name: auditsink-cluster
+      contexts:
+      - context:
+          cluster: auditsink-cluster
+          user: ""
+        name: auditsink-context
+      users: []
+      preferences: {}
+  - path: /etc/kubernetes/kubeadm-config.yaml
+    permissions: "0644"
+    content: |
+      # https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta3/
+      apiVersion: kubeadm.k8s.io/v1beta3
+      kind: InitConfiguration
+      nodeRegistration:
+        criSocket: unix:///var/run/containerd/containerd.sock
+        imagePullPolicy: IfNotPresent
+        name: node
+        taints: null
+      ---
+      apiVersion: kubeadm.k8s.io/v1beta3
+      kind: ClusterConfiguration
+      kubernetesVersion: 1.27.0
+      apiServer:
+        timeoutForControlPlane: 4m0s
+        extraArgs:
+         audit-policy-file: /etc/kubernetes/audit-policy.yaml
+         audit-webhook-config-file: /etc/kubernetes/audit-sink.yaml
+      certificatesDir: /etc/kubernetes/pki
+      clusterName: kubernetes
+      controllerManager: {}
+      dns: {}
+      etcd:
+        local:
+          dataDir: /var/lib/etcd
+      imageRepository: registry.k8s.io
+      networking:
+        dnsDomain: cluster.local
+        serviceSubnet: 10.96.0.0/12
+      scheduler: {}
   - path: /opt/cloud/repo-setup
     permissions: "0755"
     content: |
@@ -54,7 +112,7 @@ write_files:
     content: |
       swapoff /dev/sda2 # not compatible with Kubernetes
       kubeadm config images pull
-      kubeadm init # install k8s
+      kubeadm init --config /etc/kubernetes/kubeadm-config.yaml # install k8s
       mkdir -p /root/.kube
       ln -sf /etc/kubernetes/admin.conf /root/.kube/config
       mkdir -p /home/${username}/.kube
@@ -132,10 +190,10 @@ write_files:
       WantedBy=multi-user.target
 
 runcmd:
-  - systemctl enable coder-agent
-  - systemctl start coder-agent
   - /opt/cloud/repo-setup
   - /opt/cloud/install-software
+  - systemctl enable coder-agent
+  - systemctl start coder-agent
   - /opt/cloud/setup-k8s
   - /opt/cloud/setup-cilium
   - /opt/cloud/setup-repos

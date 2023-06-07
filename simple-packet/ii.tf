@@ -114,4 +114,8 @@ resource "coder_metadata" "device_info" {
     key   = "serial console"
     value = "ssh ${equinix_metal_device.amd_machine.id}@sos.${equinix_metal_device.amd_machine.deployed_facility}.platformequinix.com"
   }
+  item {
+    key   = "equinix console"
+    value = "https://console.equinix.com/devices/${equinix_metal_device.amd_machine.id}/overview"
+  }
 }

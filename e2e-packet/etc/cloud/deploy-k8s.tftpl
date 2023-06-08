@@ -1,0 +1,14 @@
+#!/bin/bash
+swapoff -a # not compatible with Kubernetes
+kubeadm config images pull
+kubeadm init --config /etc/kubernetes/kubeadm-config.yaml # install k8s
+mkdir -p /root/.kube
+ln -sf /etc/kubernetes/admin.conf /root/.kube/config
+mkdir -p /home/${username}/.kube
+cp -i /etc/kubernetes/admin.conf /home/${username}/.kube/config
+chown -R ${username}:${username} /home/${username}/.kube
+# Untaint the node so we can schedule workloads
+# TODO: Deploy without taints
+kubectl taint nodes \
+    $(kubectl get nodes --selector=node-role.kubernetes.io/control-plane | awk 'FNR==2{print $1}') \
+    node-role.kubernetes.io/control-plane:NoSchedule-

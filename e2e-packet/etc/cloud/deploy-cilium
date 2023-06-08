@@ -1,0 +1,12 @@
+#!/bin/bash
+export KUBECONFIG=/etc/kubernetes/admin.conf
+helm repo add cilium https://helm.cilium.io/
+helm install cilium cilium/cilium \
+    --version 1.13.3 \
+    --namespace kube-system \
+    --set operator.replicas=1
+kubectl wait --for=condition=Ready \
+    --selector=node-role.kubernetes.io/control-plane="" \
+    --timeout=120s node
+kubectl get pods -A
+kubectl get nodes -owide

@@ -8,23 +8,33 @@ resource "coder_agent" "ii" {
   # login_before_ready = true
   startup_script = <<EOT
     #!/bin/bash
-    # start ttyd / tmux
+    echo "Starting TMUX"
     tmux new -d -s "${lower(data.coder_workspace.ii.name)}" -n "ii"
     tmux send-keys "sudo tail -f /var/log/cloud-init-output.log
     "
+    echo "Starting TTYD"
     ttyd tmux at 2>&1 | tee /tmp/ttyd.log &
-    # # Runner Setup
-    # mkdir actions-runner && cd actions-runner
-    # # Download the latest runner package
-    # curl -o actions-runner-linux-arm64-2.304.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.304.0/actions-runner-linux-arm64-2.304.0.tar.gz
-    # # Optional: Validate the hash
-    # echo "34c49bd0e294abce6e4a073627ed60dc2f31eee970c13d389b704697724b31c6  actions-runner-linux-arm64-2.304.0.tar.gz" | shasum -a 256 -c
-    # # Extract the installer
-    # tar xzf ./actions-runner-linux-arm64-2.304.0.tar.gz
-    # # Create the runner and start the configuration experience
-    # ./config.sh --url https://github.com/cloudnative-coop --token "${data.github_actions_organization_registration_token.runner.token}"
-    # # Last step, run it!
-    # ./run.sh 2&>1 | tee /tmp/runner.log &
+    echo "Setting up repos..."
+    mkdir repos
+    cd repos
+    git clone https://github.com/cncf/apisnoop.git
+    git clone https://github.com/apisnoop/ticket-writing.git
+    # Setup Ticket-Writing
+    cd ~/repos/ticket-writing
+    git remote add upstream git@github.com:apisnoop/ticket-writing.git
+    # Setup APISnoop
+    cd ~/repos/apisnoop
+    echo "Waiting for Kubernetes API to be readyz..."
+    until kubectl get --raw='/readyz?verbose' ; do sleep 5 ; done
+    kubectl get ns apisnoop || kubectl create ns apisnoop
+    helm upgrade --install snoopdb -n apisnoop ./charts/snoopdb
+    helm upgrade --install auditlogger -n apisnoop ./charts/auditlogger
+    # Setup Kubernetes src
+    mkdir -p ~/go/src/k8s.io
+    cd ~/go/src/k8s.io
+    git clone https://github.com/kubernetes/kubernetes.git
+    cd kubernetes
+    git remote add ii git@github.com:ii/kubernetes.git
   EOT
   env = {
     # GITHUB_TOKEN        = "$${data.coder_git_auth.github.access_token}"

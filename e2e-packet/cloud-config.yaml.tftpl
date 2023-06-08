@@ -1,204 +1,126 @@
 #cloud-config
+# Create docker group early
+groups:
+  - docker
+# Create ii user as part of docker group
 users:
   - name: ${username}
     sudo: ["ALL=(ALL) NOPASSWD:ALL"]
-    groups: sudo
+    groups: "sudo, docker"
     shell: /bin/bash
+# docker, kube*, and helm are from repos configured via write_file
+# /etc/apt/sources.list.d/*list pointing to
+# /etc/apt/keyrings/*list
+# not pinning for now, but we could:
+# https://cloudinit.readthedocs.io/en/latest/reference/examples.html#install-arbitrary-packages
 packages:
-  - apt-transport-https
-  - ca-certificates
   - curl
   - gnupg-agent
-  - software-properties-common
   - git
   - ttyd
   - tmux
   - kitty-terminfo
+  - docker-ce
+  - docker-ce-cli
+  - containerd.io
+  - kubelet
+  - kubeadm
+  - helm
+  # - emacs-snapshot
+# mounts:
+#   # we don't want swap (k8s incompatible)
+#   - [swap, null]
 write_files:
-  - path: /etc/kubernetes/pki/audit-policy.yaml
-    permissions: "0644"
-    content: |
-      apiVersion: audit.k8s.io/v1
-      kind: Policy
-      rules:
-      - level: Metadata
-        stages:
-          - ResponseComplete
-  - path: /etc/kubernetes/pki/audit-sink.yaml
-    permissions: "0644"
-    content: |
-      apiVersion: v1
-      kind: Config
-      current-context: auditsink-context
-      clusters:
-      - cluster:
-          server: http://127.0.0.1:9900/events
-        name: auditsink-cluster
-      contexts:
-      - context:
-          cluster: auditsink-cluster
-          user: ""
-        name: auditsink-context
-      users: []
-      preferences: {}
-  - path: /etc/kubernetes/kubeadm-config.yaml
-    permissions: "0644"
-    content: |
-      # https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta3/
-      apiVersion: kubeadm.k8s.io/v1beta3
-      kind: InitConfiguration
-      nodeRegistration:
-        criSocket: unix:///var/run/containerd/containerd.sock
-        imagePullPolicy: IfNotPresent
-        name: node
-        taints: null
-      ---
-      apiVersion: kubeadm.k8s.io/v1beta3
-      kind: ClusterConfiguration
-      kubernetesVersion: 1.27.2
-      apiServer:
-        timeoutForControlPlane: 4m0s
-        extraArgs:
-         audit-policy-file: /etc/kubernetes/pki/audit-policy.yaml
-         audit-webhook-config-file: /etc/kubernetes/pki/audit-sink.yaml
-      certificatesDir: /etc/kubernetes/pki
-      clusterName: kubernetes
-      controllerManager: {}
-      dns: {}
-      etcd:
-        local:
-          dataDir: /var/lib/etcd
-      imageRepository: registry.k8s.io
-      networking:
-        dnsDomain: cluster.local
-        serviceSubnet: 10.96.0.0/12
-      scheduler: {}
-  - path: /opt/cloud/repo-setup
-    permissions: "0755"
-    content: |
-      apt-get update -y
-      curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add -
-      add-apt-repository "deb [arch=$(dpkg --print-architecture)] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-      curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/keyrings/kubernetes-archive-keyring.gpg
-      echo "deb [signed-by=/etc/apt/keyrings/kubernetes-archive-keyring.gpg] https://apt.kubernetes.io/ kubernetes-xenial main" | sudo tee /etc/apt/sources.list.d/kubernetes.list
-      curl https://baltocdn.com/helm/signing.asc | gpg --dearmor | sudo tee /usr/share/keyrings/helm.gpg > /dev/null
-      sudo apt-get install apt-transport-https --yes
-      echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/helm.gpg] https://baltocdn.com/helm/stable/debian/ all main" | sudo tee /etc/apt/sources.list.d/helm-stable-debian.list
-      apt-get update -y
-  - path: /opt/cloud/install-software
-    permissions: "0755"
-    content: |
-      apt-get install -y docker-ce docker-ce-cli containerd.io \
-         kubelet kubeadm kubectl \
-         helm
-      apt-mark hold kubelet kubeadm kubectl helm
-      # fix containerd for Ubuntu 22.04
-      containerd config default | tee /etc/containerd/config.toml
-      sed -i 's/SystemdCgroup \= false/SystemdCgroup \= true/g' /etc/containerd/config.toml
-      systemctl restart containerd # to detect updated Cgroup
-      # cilium
-      curl -L --remote-name-all https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz{,.sha256sum}
-      sha256sum --check cilium-linux-amd64.tar.gz.sha256sum
-      tar xzvfC cilium-linux-amd64.tar.gz /usr/local/bin
-      rm cilium-linux-amd64.tar.gz cilium-linux-amd64.tar.gz.sha256sum
-      # Ensure our user is part of the docker group
-      chown ${username}:${username} /home/${username}
-      usermod -aG docker ${username}
-      # start and enable docker for it to take affect
-      systemctl start docker
-      systemctl enable docker
-      # add "node" to host file
-      sed -i "s/$(hostname)/$(hostname)\tnode/" /etc/hosts
-  - path: /opt/cloud/setup-k8s
-    permissions: "0755"
-    content: |
-      swapoff /dev/sda2 # not compatible with Kubernetes
-      kubeadm config images pull
-      kubeadm init --config /etc/kubernetes/kubeadm-config.yaml # install k8s
-      mkdir -p /root/.kube
-      ln -sf /etc/kubernetes/admin.conf /root/.kube/config
-      mkdir -p /home/${username}/.kube
-      cp -i /etc/kubernetes/admin.conf /home/${username}/.kube/config
-      chown -R ${username}:${username} /home/${username}/.kube
-      # Untaint the node so we can schedule workloads
-  - path: /opt/cloud/setup-cilium
-    permissions: "0755"
-    content: |
-      export KUBECONFIG=/etc/kubernetes/admin.conf
-      helm repo add cilium https://helm.cilium.io/
-      helm install cilium cilium/cilium --version 1.13.3 --namespace kube-system --set operator.replicas=1
-      kubectl wait --for=condition=Ready --selector=node-role.kubernetes.io/control-plane="" --timeout=120s node
-      kubectl get pods -A
-      kubectl get nodes -owide
-  - path: /etc/crictl.yaml
-    permissions: "0644"
-    content: |
-      runtime-endpoint: unix:///var/run/containerd/containerd.sock
-      image-endpoint: unix:///var/run/containerd/containerd.sock
-      timeout: 10
-      debug: false
-  - path: /opt/cloud/setup-repos
-    permissions: "0755"
-    content: |
-      echo "Setting up repos..."
-      mkdir /home/${username}/repos
-      cd /home/${username}/repos
-      git clone https://github.com/cncf/apisnoop.git
-      git clone https://github.com/apisnoop/ticket-writing.git
-      cd ticket-writing
-      git remote add upstream git@github.com:apisnoop/ticket-writing.git
-      mkdir -p /home/${username}/go/src/k8s.io
-      cd /home/${username}/go/src/k8s.io
-      git clone https://github.com/kubernetes/kubernetes.git
-      cd kubernetes
-      git remote add ii git@github.com:ii/kubernetes.git
-      chown -R ${username}:${username} /home/${username}/repos
-      chown -R ${username}:${username} /home/${username}/go
-  - path: /opt/cloud/install-apisnoop
-    permissions: "0755"
-    content: |
-      echo "Install APISnoop into this cluster..."
-      export KUBECONFIG=/etc/kubernetes/admin.conf
-      kubectl taint nodes $(kubectl get nodes --selector=node-role.kubernetes.io/control-plane | awk 'FNR==2{print $1}') node-role.kubernetes.io/control-plane:NoSchedule-
-      APISNOOP_PATH=/home/${username}/repos/apisnoop
-      kubectl get ns apisnoop || kubectl create ns apisnoop
-      helm upgrade --install snoopdb -n apisnoop "$APISNOOP_PATH"/charts/snoopdb
-      helm upgrade --install auditlogger -n apisnoop "$APISNOOP_PATH"/charts/auditlogger
+  # The cert/key ownership needs to defer until users are created
+  - path: /etc/ssl/wildcard.cert.pem
+    content: ${wildcard_cert_pem}
+    permissions: "0660"
+    owner: root:ii
+    encoding: b64
+    defer: true
+  - path: /etc/ssl/wildcard.key.pem
+    content: ${wildcard_key_pem}
+    permissions: "0660"
+    owner: root:ii
+    encoding: b64
+    defer: true
   - path: /opt/coder/init
+    content: ${coder_init_script}
     permissions: "0755"
     encoding: b64
-    content: ${init_script}
   - path: /etc/systemd/system/coder-agent.service
+    content: ${coder_init_service}
     permissions: "0644"
-    content: |
-      [Unit]
-      Description=Coder Agent
-      After=network-online.target
-      Wants=network-online.target
-
-      [Service]
-      User=${username}
-      ExecStart=/opt/coder/init
-      Environment=CODER_AGENT_TOKEN=${coder_agent_token}
-      Restart=always
-      RestartSec=10
-      TimeoutStopSec=90
-      KillMode=process
-
-      OOMScoreAdjust=-900
-      SyslogIdentifier=coder-agent
-
-      [Install]
-      WantedBy=multi-user.target
-
+    encoding: b64
+    # https://deploy.equinix.com/developers/docs/metal/networking/elastic-ips/
+  - path: /etc/network/interfaces.d/elastic
+    content: ${elastic_network_config}
+    permissions: "0644"
+    encoding: b64
+  - path: /etc/crictl.yaml
+    content: ${crictl_config}
+    permissions: "0644"
+    encoding: b64
+  - path: /etc/containerd/config.toml
+    content: ${containerd_config}
+    permissions: "0644"
+    encoding: b64
+  - path: /etc/cloud/deploy-k8s
+    content: ${deploy_k8s}
+    permissions: "0755"
+    encoding: b64
+  - path: /etc/cloud/deploy-cilium
+    content: ${deploy_cilium}
+    permissions: "0755"
+    encoding: b64
+  - path: /etc/cloud/install-cilium
+    content: ${install_cilium}
+    permissions: "0755"
+    encoding: b64
+  - path: /etc/kubernetes/pki/audit-policy.yaml
+    content: ${audit_policy}
+    permissions: "0644"
+    encoding: b64
+  - path: /etc/kubernetes/pki/audit-sink.yaml
+    content: ${audit_sink}
+    permissions: "0644"
+    encoding: b64
+  - path: /etc/kubernetes/kubeadm-config.yaml
+    content: ${kubeadm_config}
+    permissions: "0644"
+    encoding: b64
+# https://github.com/number5/cloud-init/blob/main/doc/examples/cloud-config-apt.txt
+apt_pipelining: False
+apt:
+  preserve_sources_list: true
+  # disabled_suites: [$RELEASE-updates, backports, $RELEASE, mysuite]
+  sources:
+    # From https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+    docker.list:
+      source: "deb https://download.docker.com/linux/ubuntu $RELEASE stable"
+      keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    # From https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+    kubernetes.list:
+      source: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+      # keyid: 35BAA0B33E9EB396F59CA838C0BA5CE6DC6315A3
+      keyid: B53DC80D13EDEF05
+    # From https://helm.sh/docs/intro/install/#from-apt-debianubuntu
+    helm.list:
+      source: "deb https://baltocdn.com/helm/stable/debian/ all main"
+      keyid: 81BF832E2F19CD2AA0471959294AC4827C1A168A
+    # From https://launchpad.net/~hippiehacker/+archive/ubuntu/emacs-broadway
+    emacs.list:
+      # source: "ppa:hippiehacker/emacs-broadway"
+      source: "deb http://ppa.launchpad.net/hippiehacker/emacs-broadway/ubuntu kinetic main"
+      keyid: 78F37A14C8142D21 #keyid for Hippie Hacker
+      filename: hippiehacker-emacsbroadway-ppa.list
 runcmd:
+  - ip addr add ${elastic_ip} dev lo:0
+  - systemctl stop ttyd
   - systemctl enable coder-agent
   - systemctl start coder-agent
-  - /opt/cloud/repo-setup
-  - /opt/cloud/install-software
-  - /opt/cloud/setup-k8s
-  - /opt/cloud/setup-cilium
-  - /opt/cloud/setup-repos
-  - /opt/cloud/install-apisnoop
+  - /etc/cloud/install-cilium
+  - /etc/cloud/deploy-k8s
+  - /etc/cloud/deploy-cilium
 
 final_message: "The system is finally up, after $UPTIME seconds"

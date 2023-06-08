@@ -19,11 +19,13 @@ resource "equinix_metal_device" "machine" {
   plan             = data.coder_parameter.plan.value
   operating_system = data.coder_parameter.os.value
   user_data = templatefile("cloud-config.yaml.tftpl", {
-    username               = "ii"
-    elastic_ip             = cidrhost(equinix_metal_reserved_ip_block.public_network.cidr_notation, 0)
-    coder_agent_token      = coder_agent.ii.token
-    coder_init_script      = base64encode(coder_agent.ii.init_script)
-    wildcard_cert_pem      = base64encode(acme_certificate.certificate.certificate_pem)
+    username          = "ii"
+    elastic_ip        = cidrhost(equinix_metal_reserved_ip_block.public_network.cidr_notation, 0)
+    coder_agent_token = coder_agent.ii.token
+    coder_init_script = base64encode(coder_agent.ii.init_script)
+    # https://registry.terraform.io/providers/vancluever/acme/latest/docs/resources/certificate#attribute-reference
+    # "${acme_certificate.certificate.certificate_pem}${acme_certificate.certificate.issuer_pem}"
+    wildcard_cert_pem      = base64encode("${acme_certificate.certificate.certificate_pem}${acme_certificate.certificate.issuer_pem}")
     wildcard_key_pem       = base64encode(acme_certificate.certificate.private_key_pem)
     audit_policy           = base64encode(file("./etc/kubernetes/pki/audit-policy.yaml"))
     audit_sink             = base64encode(file("./etc/kubernetes/pki/audit-sink.yaml"))

@@ -55,7 +55,7 @@ write_files:
       ---
       apiVersion: kubeadm.k8s.io/v1beta3
       kind: ClusterConfiguration
-      kubernetesVersion: 1.27.0
+      kubernetesVersion: 1.27.2
       apiServer:
         timeoutForControlPlane: 4m0s
         extraArgs:
@@ -107,6 +107,8 @@ write_files:
       # start and enable docker for it to take affect
       systemctl start docker
       systemctl enable docker
+      # add "node" to host file
+      sed -i "s/$(hostname)/$(hostname)\tnode/" /etc/hosts
   - path: /opt/cloud/setup-k8s
     permissions: "0755"
     content: |

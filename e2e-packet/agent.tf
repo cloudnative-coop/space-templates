@@ -26,6 +26,8 @@ resource "coder_agent" "ii" {
     cd ~/repos/apisnoop
     echo "Waiting for Kubernetes API to be readyz..."
     until kubectl get --raw='/readyz?verbose' ; do sleep 5 ; done
+    # Untaint control-plane... we only have one node
+    kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
     kubectl get ns apisnoop || kubectl create ns apisnoop
     helm upgrade --install snoopdb -n apisnoop ./charts/snoopdb
     helm upgrade --install auditlogger -n apisnoop ./charts/auditlogger

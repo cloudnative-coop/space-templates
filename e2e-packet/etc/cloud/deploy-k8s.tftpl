@@ -9,6 +9,4 @@ cp -i /etc/kubernetes/admin.conf /home/${username}/.kube/config
 chown -R ${username}:${username} /home/${username}/.kube
 # Untaint the node so we can schedule workloads
 # TODO: Deploy without taints
-kubectl taint nodes \
-    $(kubectl get nodes --selector=node-role.kubernetes.io/control-plane | awk 'FNR==2{print $1}') \
-    node-role.kubernetes.io/control-plane:NoSchedule-
+kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-

@@ -49,6 +49,13 @@ resource "coder_agent" "ii" {
     helm ls -n istio-system
     helm status istiod -n istio-system
     kubectl get deployments -n istio-system --output wide
+    # Setup Knative
+    echo "Install knative into this cluster..."
+    kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.10.2/serving-crds.yaml
+    kubectl apply -f https://github.com/knative/serving/releases/download/knative-v1.10.2/serving-core.yaml
+    kubectl apply -f https://github.com/knative/net-istio/releases/download/knative-v1.10.1/net-istio.yaml
+    kubectl --namespace istio-system get service istio-ingressgateway
+    kubectl get pods -n knative-serving
   EOT
   env = {
     # GITHUB_TOKEN        = "$${data.coder_git_auth.github.access_token}"

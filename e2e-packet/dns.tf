@@ -1,3 +1,6 @@
+locals {
+  dns_zone   = "${lower(data.coder_workspace.ii.name)}-${lower(data.coder_workspace.ii.owner)}.ii.nz"
+}
 resource "powerdns_record" "a_record" {
   name    = "${lower(data.coder_workspace.ii.owner)}-${lower(data.coder_workspace.ii.name)}.ii.nz."
   records = [cidrhost(equinix_metal_reserved_ip_block.public_network.cidr_notation, 0)]

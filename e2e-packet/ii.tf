@@ -12,19 +12,6 @@ terraform {
       source  = "integrations/github"
       version = "5.25.1" # Current as of May 30th 2023
     }
-    # https://registry.terraform.io/providers/pan-net/powerdns/latest/docs
-    # TODO: Possibly migrate to postgresql
-    # https://github.com/pan-net/terraform-provider-powerdns/issues/75
-    # https://doc.powerdns.com/authoritative/backends/generic-postgresql.html
-    # https://doc.powerdns.com/authoritative/migration.html#moving-from-source-to-target
-    # TODO: Possibly configure parallelism=1
-    # https://registry.terraform.io/providers/pan-net/powerdns/latest/docs#argument-reference
-    # PDNS_API_KEY = (copied secret over from powerdns admin)
-    # PDNS_SERVER_URL = https://pdns.ii.nz
-    powerdns = {
-      source  = "pan-net/powerdns"
-      version = "1.5.0" # Current as of June 8th 2023
-    }
     acme = {
       source  = "vancluever/acme"
       version = "2.14.0" # Current as of June 8th 2023
@@ -33,14 +20,10 @@ terraform {
       source  = "hashicorp/tls"
       version = "4.0.4" # Current as of June 8th 2023
     }
-    # TODO: LUA Records? https://github.com/dmachard/terraform-provider-powerdns-gslb
-    # https://registry.terraform.io/providers/pan-net/powerdns/latest/docs/resources/record
-    #
-    # This approach added complexity without certain value, but if others see something I don't, I'd like to know!
-    # cloudinit = {
-    #   source  = "hashicorp/cloudinit"
-    #   version = "2.3.2" # Current as of June 18th 2023
-    # }
+    powerdns = {
+      source  = "pan-net/powerdns"
+      version = "1.5.0" # Current as of June 8th 2023
+    }
   }
 }
 

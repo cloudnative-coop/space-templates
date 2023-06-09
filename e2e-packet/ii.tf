@@ -153,10 +153,6 @@ resource "coder_metadata" "device_info" {
   resource_id = equinix_metal_device.machine.id
   item {
     key   = "direct ssh"
-    value = "ssh ii@${local.dns_zone}"
-  }
-  item {
-    key   = "direct ssh"
     value = "ssh root@${equinix_metal_device.machine.access_public_ipv4}"
   }
   item {

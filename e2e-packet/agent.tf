@@ -37,6 +37,18 @@ resource "coder_agent" "ii" {
     git clone https://github.com/kubernetes/kubernetes.git
     cd kubernetes
     git remote add ii git@github.com:ii/kubernetes.git
+    # Setup Istio
+    echo "Install istio into this cluster..."
+    helm repo add istio https://istio-release.storage.googleapis.com/charts
+    helm repo update
+    kubectl get ns istio-system || kubectl create ns istio-system
+    helm install istio-base istio/base -n istio-system
+    kubectl api-resources | grep istio
+    helm ls -n istio-system
+    helm install istiod istio/istiod -n istio-system --wait
+    helm ls -n istio-system
+    helm status istiod -n istio-system
+    kubectl get deployments -n istio-system --output wide
   EOT
   env = {
     # GITHUB_TOKEN        = "$${data.coder_git_auth.github.access_token}"

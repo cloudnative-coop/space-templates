@@ -1,0 +1,23 @@
+policyEnforcementMode: "never"
+operator:
+  replicas: 1
+# We need this because our lo (loopback) on Equinix boxes is over 64k
+# Seems like a known issue: https://github.com/cilium/cilium/issues/14339
+# Work around is to set it if we know it...
+MTU: 1500
+hubble:
+  enabled: true
+  listenAddress: ":4244"
+  metrics:
+    enabled:
+      - dns
+      - drop
+      - tcp
+      - flow
+      - port-distribution
+      - icmp
+      - http
+  relay:
+    enabled: true
+  ui:
+    enabled: true

@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Config
+current-context: auditsink-context
+clusters:
+  - cluster:
+      server: http://127.0.0.1:9900/events
+    name: auditsink-cluster
+contexts:
+  - context:
+      cluster: auditsink-cluster
+      user: ""
+    name: auditsink-context
+users: []
+preferences: {}

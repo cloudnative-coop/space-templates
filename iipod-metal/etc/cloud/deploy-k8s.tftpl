@@ -1,0 +1,28 @@
+#!/bin/bash
+set -x
+DEBIAN_FRONTENT=noninteractive apt-fast \
+    -o Dpkg::Options::="--force-confdef" \
+    -o Dpkg::Options::="--force-confold" install -y \
+    docker-ce \
+    docker-ce-cli \
+    containerd.io \
+    kubelet \
+    kubeadm \
+    helm
+swapoff -a # not compatible with Kubernetes
+kubeadm config images pull
+kubeadm init --config /etc/kubernetes/kubeadm-config.yaml # install k8s
+export KUBECONFIG=/etc/kubernetes/admin.conf
+mkdir -p /root/.kube
+ln -sf $KUBECONFIG /root/.kube/config
+mkdir -p /home/${username}/.kube
+cp -i $KUBECONFIG /home/${username}/.kube/config
+chown -R ${username}:${username} /home/${username}/.kube
+# Wait until k8s in up
+until kubectl get --raw='/readyz?verbose'; do sleep 5; done
+# Untaint the node so we can schedule workloads
+# TODO: Deploy without taints
+kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
+# Deploy cilium and iipod
+kubectl apply -f /etc/kubernetes/manifests/cilium.yaml
+kubectl apply -f /etc/kubernetes/manifests/iipod.yaml

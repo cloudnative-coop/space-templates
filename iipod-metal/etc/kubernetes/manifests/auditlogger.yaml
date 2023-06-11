@@ -1,0 +1,127 @@
+---
+# Source: auditlogger/templates/secret.yaml
+apiVersion: v1
+kind: Secret
+metadata:
+  name: auditlogger
+  labels:
+    helm.sh/chart: auditlogger-0.1.0
+    app.kubernetes.io/name: auditlogger
+    app.kubernetes.io/instance: auditlogger
+    app.kubernetes.io/version: "v20210829-0.2.0-73-g62230c7"
+    app.kubernetes.io/managed-by: Helm
+type: Opaque
+data:
+  postgresConnectionString: cG9zdGdyZXM6Ly9hcGlzbm9vcDphcGlzbm9vcEBzbm9vcGRiL2FwaXNub29wP3NzbG1vZGU9ZGlzYWJsZQ==
+---
+# Source: auditlogger/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: auditlogger
+  labels:
+    helm.sh/chart: auditlogger-0.1.0
+    app.kubernetes.io/name: auditlogger
+    app.kubernetes.io/instance: auditlogger
+    app.kubernetes.io/version: "v20210829-0.2.0-73-g62230c7"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  type: ClusterIP
+  clusterIP: 10.96.96.96
+  ports:
+    - port: 9900
+      targetPort: http
+      protocol: TCP
+      name: http
+  selector:
+    app.kubernetes.io/name: auditlogger
+    app.kubernetes.io/instance: auditlogger
+---
+# Source: auditlogger/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: auditlogger
+  labels:
+    io.cncf.component-group: apisnoop
+    io.cncf.apisnoop-component: auditlogger
+    helm.sh/chart: auditlogger-0.1.0
+    app.kubernetes.io/name: auditlogger
+    app.kubernetes.io/instance: auditlogger
+    app.kubernetes.io/version: "v20210829-0.2.0-73-g62230c7"
+    app.kubernetes.io/managed-by: Helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      io.cncf.component-group: apisnoop
+      io.cncf.apisnoop-component: auditlogger
+      app.kubernetes.io/name: auditlogger
+      app.kubernetes.io/instance: auditlogger
+  template:
+    metadata:
+      labels:
+        io.cncf.component-group: apisnoop
+        io.cncf.apisnoop-component: auditlogger
+        app.kubernetes.io/name: auditlogger
+        app.kubernetes.io/instance: auditlogger
+    spec:
+      serviceAccountName: default
+      securityContext:
+        {}
+      containers:
+        - name: auditlogger
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            runAsGroup: 1000
+            runAsUser: 1000
+          image: "gcr.io/k8s-staging-apisnoop/auditlogger:v20210829-0.2.0-73-g62230c7"
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: APP_DB_CONNECTION_STRING
+              valueFrom:
+                secretKeyRef:
+                  name: auditlogger
+                  key: postgresConnectionString
+            - name: APP_DB_AUDIT_EVENT_TABLE
+              value: testing.audit_event
+            - name: APP_PORT
+              value: "9900"
+            - name: APP_DISABLE_LOGS
+              value: "false"
+          ports:
+            - name: http
+              containerPort: 9900
+              protocol: TCP
+          livenessProbe:
+            httpGet:
+              path: /
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /
+              port: http
+          resources:
+            {}
+---
+# Source: auditlogger/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "auditlogger-test-connection"
+  labels:
+    helm.sh/chart: auditlogger-0.1.0
+    app.kubernetes.io/name: auditlogger
+    app.kubernetes.io/instance: auditlogger
+    app.kubernetes.io/version: "v20210829-0.2.0-73-g62230c7"
+    app.kubernetes.io/managed-by: Helm
+  annotations:
+    "helm.sh/hook": test-success
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['auditlogger:9900']
+  restartPolicy: Never

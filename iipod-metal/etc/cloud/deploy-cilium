@@ -1,0 +1,15 @@
+#!/bin/bash
+export KUBECONFIG=/etc/kubernetes/admin.conf
+# TODO : Find a way to deploy controlplane without taints
+# https://github.com/kubernetes/kubeadm/issues/1621
+kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
+helm repo add cilium https://helm.cilium.io/
+helm install cilium cilium/cilium \
+    --version 1.13.3 \
+    --namespace kube-system \
+    -f /etc/cloud/values-cilium.yaml
+kubectl wait --for=condition=Ready \
+    --selector=node-role.kubernetes.io/control-plane="" \
+    --timeout=120s node
+kubectl get pods -A
+kubectl get nodes -owide

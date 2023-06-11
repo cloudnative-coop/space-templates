@@ -1,0 +1,6 @@
+metro: da 
+plan: c3.small.x86
+os: ubuntu_22_04
+container-image: ghcr.io/cloudnative-coop/iipod:v0.0.12
+git-url: https://github.com/etcd-io/etcd
+org-url: https://github.com/cloudnative-coop/coop-templates/raw/canon/iipod/org/ii.org

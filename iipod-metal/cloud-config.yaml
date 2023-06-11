@@ -142,10 +142,11 @@ packages:
 runcmd:
   - ip addr add ${elastic_ip} dev lo:0
   - su - ii -c "ssh-import-id gh:${username} gh:hh gh:heyste gh:zachmandeville"
-  - DEBIAN_FRONTENT=noninteractive apt-fast -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -y ttyd tmux kitty-terminfo
+  - DEBIAN_FRONTENT=noninteractive apt-fast -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -y ttyd tmux kitty-terminfo novnc websockify tigervnc-standalone-server icewm kitty
   # emacs-gtk kitty novnc websockify postgresql-client tigervnc-standalone-server asciinema silversearcher-ag direnv jq
   - systemctl stop ttyd
   - systemctl enable coder-agent
   - systemctl start coder-agent
   - sh -c "(/etc/cloud/install-cilium ; /etc/cloud/deploy-k8s) 2>&1 > /var/log/k8s-deploy.log &"
+  - sh -c "/etc/cloud/install-desktop 2>&1 > /var/log/install-desktop.log &"
 final_message: "The system is finally up, after $UPTIME seconds"

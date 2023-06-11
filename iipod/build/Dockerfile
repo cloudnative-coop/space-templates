@@ -74,6 +74,8 @@ RUN DEBIAN_FRONTEND=noninteractive \
     asciinema \
     ssh-import-id \
     docker-ce-cli \
+    ubuntu-desktop \
+    novnc \
 	&& ln -s /usr/bin/fdfind /usr/local/bin/fd \
 	&& rm -rf /var/lib/apt/lists/*
 

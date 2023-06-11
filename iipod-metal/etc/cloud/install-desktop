@@ -1,47 +1,61 @@
 #!/bin/bash
 # Base Packages... install these first
-# apt-get install -y \
-#   emacs-gtk \
-#   kitty \
-#   novnc \
-#   websockify \
-#   postgresql-client \
-#   tigervnc-standalone-server \
-#   asciinema \
-#   silversearcher-ag \
-#   direnv \
-#   jq
+until jq --version; do
+  sleep 5
+  DEBIAN_FRONTENT=noninteractive apt-fast \
+    -o Dpkg::Options::="--force-confdef" \
+    -o Dpkg::Options::="--force-confold" \
+    install -y \
+    emacs-gtk \
+    kitty \
+    novnc \
+    websockify \
+    postgresql-client \
+    tigervnc-standalone-server \
+    asciinema \
+    silversearcher-ag \
+    direnv \
+    jq
+done
 #
 # desktop
-DEBIAN_FRONTENT=noninteractive apt-fast \
-  -o Dpkg::Options::="--force-confdef" \
-  -o Dpkg::Options::="--force-confold" \
-  install -y \
-  apache2-utils \
-  inotify-tools \
-  xtermcontrol \
-  unzip \
-  rlwrap \
-  fonts-powerline \
-  tree \
-  iftop \
-  ripgrep \
-  locate \
-  fd-find \
-  python-is-python3 \
-  gettext-base \
-  graphviz \
-  golang-1.20 \
-  google-chrome-stable \
-  ubuntu-desktop \
-  pipenv \
-  python3-pip \
-  openjdk-17-jdk
+until kubectl get --raw='/readyz?verbose'; do sleep 5; done
+
+until gnome-session --version; do
+  sleep 5
+  DEBIAN_FRONTENT=noninteractive apt-fast \
+    -o Dpkg::Options::="--force-confdef" \
+    -o Dpkg::Options::="--force-confold" \
+    install -y \
+    apache2-utils \
+    inotify-tools \
+    xtermcontrol \
+    unzip \
+    rlwrap \
+    fonts-powerline \
+    tree \
+    iftop \
+    ripgrep \
+    locate \
+    fd-find \
+    python-is-python3 \
+    gettext-base \
+    graphviz \
+    golang-1.20 \
+    google-chrome-stable \
+    ubuntu-desktop \
+    pipenv \
+    python3-pip \
+    openjdk-17-jdk
+done
 # gh / aws / gcloud commands
-DEBIAN_FRONTENT=noninteractive apt-fast \
-  -o Dpkg::Options::="--force-confdef" \
-  -o Dpkg::Options::="--force-confold" \
-  install -y \
-  gh \
-  awscli \
-  google-cloud-sdk
+until gh --version; do
+  sleep 5
+  DEBIAN_FRONTENT=noninteractive apt-fast \
+    -o Dpkg::Options::="--force-confdef" \
+    -o Dpkg::Options::="--force-confold" \
+    install -y \
+    gh \
+    awscli \
+    google-cloud-sdk
+done

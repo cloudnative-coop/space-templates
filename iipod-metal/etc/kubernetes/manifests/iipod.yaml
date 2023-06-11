@@ -68,6 +68,8 @@ spec:
               name: home-ii
             - mountPath: /var/run/host
               name: host
+            - mountPath: /etc/crictl.yaml
+              name: crictl
       nodeSelector:
         node-role.kubernetes.io/control-plane: ""
       restartPolicy: Always
@@ -83,18 +85,21 @@ spec:
             path: /run/containerd/containerd.sock
             type: Socket
           name: run-containerd-containerd-sock
-        - hostPath:
+        - name: tmp
+          hostPath:
             path: /tmp
-          name: tmp
-        - hostPath:
+        - name: cloud
+          hostPath:
             path: /etc/cloud
-          name: cloud
         - name: home-ii
           hostPath:
             path: /home/ii
-        - hostPath:
+        - name: host
+          hostPath:
             path: /
-          name: host
+        - name: crictl
+          hostPath:
+            path: /etc/crictl.yaml
         - name: podlabels
           downwardAPI:
             items:

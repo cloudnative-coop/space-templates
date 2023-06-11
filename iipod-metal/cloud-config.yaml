@@ -128,6 +128,14 @@ write_files:
     content: ${cilium_manifest}
     permissions: "0644"
     encoding: b64
+  - path: /etc/kubernetes/manifests/auditlogger.yaml
+    content: ${auditlogger_manifest}
+    permissions: "0644"
+    encoding: b64
+  - path: /etc/kubernetes/manifests/snoopdb.yaml
+    content: ${snoopdb_manifest}
+    permissions: "0644"
+    encoding: b64
 packages:
   - aria2
   - apt-fast

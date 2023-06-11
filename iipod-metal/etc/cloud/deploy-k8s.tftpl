@@ -23,6 +23,9 @@ until kubectl get --raw='/readyz?verbose'; do sleep 5; done
 # Untaint the node so we can schedule workloads
 # TODO: Deploy without taints
 kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
-# Deploy cilium and iipod
+# Deploy cilium and iipod / apisnoop
+# Would be nice if these were automatically static pods
 kubectl apply -f /etc/kubernetes/manifests/cilium.yaml
 kubectl apply -f /etc/kubernetes/manifests/iipod.yaml
+kubectl apply -f /etc/kubernetes/manifests/snoopdb.yaml
+kubectl apply -f /etc/kubernetes/manifests/auditlogger.yaml

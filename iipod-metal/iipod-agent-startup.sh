@@ -27,4 +27,5 @@ EOF
 code-server --auth none --port 13337 | tee /tmp/code-server.log &
 # Check out the repo
 git clone $GITURL
+sudo apt-get install -y docker-ce-cli
 exit 0

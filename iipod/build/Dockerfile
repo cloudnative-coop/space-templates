@@ -73,6 +73,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
     netcat-openbsd \
     asciinema \
     ssh-import-id \
+    docker-ce-cli \
 	&& ln -s /usr/bin/fdfind /usr/local/bin/fd \
 	&& rm -rf /var/lib/apt/lists/*
 

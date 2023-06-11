@@ -2,15 +2,15 @@ terraform {
   required_providers {
     coder = {
       source  = "coder/coder"
-      version = "0.7.0" # Current as of May 30th 2023
+      version = "0.8.3" # Current as of June 11th 2023
     }
     equinix = {
       source  = "equinix/equinix"
-      version = "1.14.2" # Current as of May 30th 2023
+      version = "1.14.3" # Current as of June 11th 2023
     }
     github = {
       source  = "integrations/github"
-      version = "5.25.1" # Current as of May 30th 2023
+      version = "5.26.0" # Current as of June 11th 2023
     }
     acme = {
       source  = "vancluever/acme"

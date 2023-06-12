@@ -55,11 +55,13 @@ resource "equinix_metal_device" "machine" {
     install_kind      = base64encode(file("./etc/cloud/install-kind"))
     install_desktop   = base64encode(file("./etc/cloud/install-desktop"))
     deploy_cilium     = base64encode(file("./etc/cloud/deploy-cilium"))
-    cilium_config = base64encode(templatefile("./etc/cloud/values-cilium.yaml", {
-      k8s_service_host = local.dns_zone
+    values_cilium = base64encode(
+      templatefile("./etc/cloud/values-cilium.yaml", {
+        k8s_service_host = local.dns_zone
     }))
-    deploy_k8s = base64encode(templatefile("./etc/cloud/deploy-k8s.tftpl", {
-      username = "ii"
+    deploy_k8s = base64encode(
+      templatefile("./etc/cloud/deploy-k8s.tftpl", {
+        username = "ii"
     }))
     elastic_network_config = base64encode(
       templatefile("./etc/network/interfaces.d/elastic.tftpl", {

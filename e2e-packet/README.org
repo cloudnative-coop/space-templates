@@ -1,2 +1,0 @@
-#+title: Creating a space for Kubernetes e2e test writing
-* Steps

@@ -68,6 +68,10 @@ write_files:
     content: ${coder_init_service}
     permissions: "0644"
     encoding: b64
+  - path: /etc/kubernetes/manifests/ips.yaml
+    content: ${ip_manifest}
+    permissions: "0644"
+    encoding: b64
   - path: /etc/kubernetes/manifests/iipod.yaml
     content: ${iipod_manifest}
     permissions: "0644"
@@ -153,9 +157,8 @@ packages:
   - aria2
   - apt-fast
 runcmd:
-  - ip addr add ${elastic_ip} dev lo:0
+  # - ip addr add ${elastic_ip} dev lo:0
   - su - ii -c "ssh-import-id gh:${username} gh:hh gh:heyste gh:zachmandeville"
-  - su - git -c "ssh-import-id gh:${username} gh:hh gh:heyste gh:zachmandeville"
   - DEBIAN_FRONTENT=noninteractive apt-fast -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -y ttyd tmux kitty-terminfo
   # emacs-gtk kitty novnc websockify postgresql-client tigervnc-standalone-server asciinema silversearcher-ag direnv jq
   - systemctl stop ttyd

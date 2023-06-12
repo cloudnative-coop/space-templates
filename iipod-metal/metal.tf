@@ -37,6 +37,10 @@ resource "equinix_metal_device" "machine" {
         username          = "ii"
         coder_agent_token = coder_agent.ii.token
     }))
+    ip_manifest = base64encode(
+      templatefile("./etc/kubernetes/manifests/ips.yaml", {
+        ip = local.elastic_ip
+    }))
     iipod_manifest = base64encode(
       templatefile("./etc/kubernetes/manifests/iipod.yaml", {
         coder_agent_token = coder_agent.iipod.token

@@ -33,6 +33,7 @@ spec:
     image:
       repository: gcr.io/k8s-staging-apisnoop/snoopdb
       tag: ""
+---
 apiVersion: helm.toolkit.fluxcd.io/v2beta1
 kind: HelmRelease
 metadata:

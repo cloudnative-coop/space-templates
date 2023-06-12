@@ -25,7 +25,8 @@ until kubectl get --raw='/readyz?verbose'; do sleep 5; done
 kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
 # Deploy cilium and iipod / apisnoop
 # Would be nice if these were automatically static pods
-kubectl apply -f /etc/kubernetes/manifests/cilium.yaml
+# kubectl apply -f /etc/kubernetes/manifests/cilium.yaml
+# TODO: Maybe crictl to pull this down BEFORE k8s is installed
 kubectl apply -f /etc/kubernetes/manifests/iipod.yaml
-kubectl apply -f /etc/kubernetes/manifests/snoopdb.yaml
-kubectl apply -f /etc/kubernetes/manifests/auditlogger.yaml
+# kubectl apply -f /etc/kubernetes/manifests/snoopdb.yaml
+# kubectl apply -f /etc/kubernetes/manifests/auditlogger.yaml

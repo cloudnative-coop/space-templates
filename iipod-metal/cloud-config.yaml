@@ -124,18 +124,18 @@ write_files:
     content: ${kubeadm_config}
     permissions: "0644"
     encoding: b64
-  - path: /etc/kubernetes/manifests/cilium.yaml
-    content: ${cilium_manifest}
-    permissions: "0644"
-    encoding: b64
-  - path: /etc/kubernetes/manifests/auditlogger.yaml
-    content: ${auditlogger_manifest}
-    permissions: "0644"
-    encoding: b64
-  - path: /etc/kubernetes/manifests/snoopdb.yaml
-    content: ${snoopdb_manifest}
-    permissions: "0644"
-    encoding: b64
+  # - path: /etc/kubernetes/manifests/cilium.yaml
+  #   content: $${cilium_manifest}
+  #   permissions: "0644"
+  #   encoding: b64
+  # - path: /etc/kubernetes/manifests/auditlogger.yaml
+  #   content: $${auditlogger_manifest}
+  #   permissions: "0644"
+  #   encoding: b64
+  # - path: /etc/kubernetes/manifests/snoopdb.yaml
+  #   content: $${snoopdb_manifest}
+  #   permissions: "0644"
+  #   encoding: b64
 packages:
   - aria2
   - apt-fast
@@ -147,6 +147,6 @@ runcmd:
   - systemctl stop ttyd
   - systemctl enable coder-agent
   - systemctl start coder-agent
-  - sh -c "(/etc/cloud/install-cilium ; /etc/cloud/deploy-k8s) 2>&1 > /var/log/k8s-deploy.log &"
+  - sh -c "(/etc/cloud/install-cilium ; /etc/cloud/deploy-k8s ; /etc/cloud/deploy-cilium) 2>&1 > /var/log/k8s-deploy.log &"
   - sh -c "/etc/cloud/install-desktop 2>&1 > /var/log/install-desktop.log &"
 final_message: "The system is finally up, after $UPTIME seconds"

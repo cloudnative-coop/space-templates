@@ -162,5 +162,6 @@ runcmd:
   - systemctl enable coder-agent
   - systemctl start coder-agent
   - sh -c "(/etc/cloud/install-cilium ; /etc/cloud/deploy-k8s ; /etc/cloud/deploy-cilium) 2>&1 > /var/log/k8s-deploy.log &"
+  - sh -c "crictl pull ${iipod_image} &"
   - sh -c "/etc/cloud/install-desktop 2>&1 > /var/log/install-desktop.log &"
 final_message: "The system is finally up, after $UPTIME seconds"

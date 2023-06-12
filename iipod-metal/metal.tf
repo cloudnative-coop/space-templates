@@ -30,6 +30,7 @@ resource "equinix_metal_device" "machine" {
   user_data = templatefile("cloud-config.yaml", {
     username          = data.coder_workspace.ii.owner
     elastic_ip        = local.elastic_ip
+    iipod_image       = data.coder_parameter.container-image.value
     coder_init_script = base64encode(coder_agent.ii.init_script)
     coder_init_service = base64encode(
       templatefile("./etc/systemd/system/coder-agent.service.tftpl", {

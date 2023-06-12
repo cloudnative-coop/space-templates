@@ -16,3 +16,6 @@ sudo su - ii -c \
 cd space-templates
 git remote add upstream git@github.com:cloudnative-coop/space-templates
 "
+sleep 15
+export KUBECONFIG=/etc/kubernetes/admin.conf
+kubectl apply -f /etc/kubernetes/ips.yaml

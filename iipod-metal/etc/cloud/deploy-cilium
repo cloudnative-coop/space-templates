@@ -1,8 +1,18 @@
 #!/bin/bash
+# We made changes to kubeadm-config.yaml and values-cilium.yaml accordingly:
+# https://docs.cilium.io/en/latest/installation/k8s-install-kubeadm/
 export KUBECONFIG=/etc/kubernetes/admin.conf
 # TODO : Find a way to deploy controlplane without taints
 # https://github.com/kubernetes/kubeadm/issues/1621
 kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
+
+# New let's install the gatway API
+# https://isovalent.com/blog/post/tutorial-getting-started-with-the-cilium-gateway-api/
+# Looks like there's a new version at:
+# https://gateway-api.sigs.k8s.io/guides/#install-standard-channel
+kubectl apply -f \
+    https://github.com/kubernetes-sigs/gateway-api/releases/download/v0.7.1/standard-install.yaml
+
 helm repo add cilium https://helm.cilium.io/
 helm install cilium cilium/cilium \
     --version 1.13.3 \

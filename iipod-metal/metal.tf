@@ -51,6 +51,7 @@ resource "equinix_metal_device" "machine" {
     audit_sink        = base64encode(file("./etc/kubernetes/pki/audit-sink.yaml"))
     kubeadm_config    = base64encode(file("./etc/kubernetes/kubeadm-config.yaml"))
     install_nix       = base64encode(file("./etc/cloud/install-nix"))
+    install_flux      = base64encode(file("./etc/cloud/install-flux"))
     nix_config        = base64encode(file("./etc/nix/nix.conf"))
     install_kind      = base64encode(file("./etc/cloud/install-kind"))
     install_desktop   = base64encode(file("./etc/cloud/install-desktop"))

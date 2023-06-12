@@ -19,10 +19,10 @@ data "coder_parameter" "metro" {
   name         = "metro"
   display_name = "Metro"
   description  = "The Equinix Metal Metro for the machine"
-  default      = "dc"
+  default      = "ny"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
   option {
-    name  = "Dallas, Texas, USA"
+    name  = "New York, USA"
     value = "ny"
     icon  = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Flag_of_Texas.svg/1200px-Flag_of_Texas.svg.png"
   }
@@ -36,6 +36,11 @@ data "coder_parameter" "metro" {
     value = "ty"
     icon  = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg/1200px-Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg.png"
   }
+  # option {
+  #   name  = "Dallas, Texas, USA"
+  #   value = "da"
+  #   icon  = "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f7/Flag_of_Texas.svg/1200px-Flag_of_Texas.svg.png"
+  # }
   # option {
   #   name  = "Sydney, Australia"
   #   value = "sy"

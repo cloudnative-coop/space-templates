@@ -1,10 +1,10 @@
 resource "coder_agent" "iipod" {
   arch = "amd64" # Intel
   # arch = "arm64" # Arm
-  os                 = "linux" # Linux
-  dir                = "$HOME" # Could set to somewhere
-  login_before_ready = true
-  startup_script     = file("./iipod-agent-startup.sh")
+  os  = "linux" # Linux
+  dir = "$HOME" # Could set to somewhere
+  # login_before_ready = true
+  startup_script = file("./iipod-agent-startup.sh")
   env = {
     # GITHUB_TOKEN        = "$${data.coder_git_auth.github.access_token}"
     # GITHUB_TOKEN        = "$${var.GITHUB_TOKEN}"

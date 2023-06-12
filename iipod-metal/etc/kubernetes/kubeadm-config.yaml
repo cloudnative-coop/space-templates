@@ -1,6 +1,10 @@
 # https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta3/
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: InitConfiguration
+# https://docs.cilium.io/en/latest/network/kubernetes/kubeproxy-free/#quick-start
+# https://kubernetes.io/docs/reference/config-api/kubeadm-config.v1beta3/#kubeadm-k8s-io-v1beta3-InitConfiguration
+skipPhases:
+  - addon/kube-proxy
 nodeRegistration:
   criSocket: unix:///var/run/containerd/containerd.sock
   imagePullPolicy: IfNotPresent

@@ -54,6 +54,9 @@ resource "equinix_metal_device" "machine" {
     nix_config        = base64encode(file("./etc/nix/nix.conf"))
     install_kind      = base64encode(file("./etc/cloud/install-kind"))
     install_desktop   = base64encode(file("./etc/cloud/install-desktop"))
+    cilium_config = base64encode(templatefile("./etc/cloud/cilium-values.yaml", {
+      k8s_service_host = local.dns_zone
+    }))
     deploy_k8s = base64encode(templatefile("./etc/cloud/deploy-k8s.tftpl", {
       username = "ii"
     }))
@@ -71,7 +74,6 @@ resource "equinix_metal_device" "machine" {
     #   #     coder_agent_token = coder_agent.iipod.token
     #   # }))
     # deploy_cilium          = base64encode(file("./etc/cloud/deploy-cilium"))
-    #   #cilium_config = base64encode(file("./etc/cloud/cilium-values.yaml"))
     # coder_agent_script = coder_agent.iipod.init_script,
     #   iipod_agent_token    = coder_agent.iipod.token
   })

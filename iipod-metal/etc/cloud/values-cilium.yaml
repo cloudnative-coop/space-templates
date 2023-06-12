@@ -1,6 +1,13 @@
+# https://github.com/cilium/cilium/tree/v1.13.3/install/kubernetes/cilium#values
+# https://docs.cilium.io/en/latest/network/kubernetes/kubeproxy-free/#quick-start
+k8sServiceHost: ${k8s_service_host}
+k8sServicePort: 443
+kubeProxyReplacement: strict
 policyEnforcementMode: "never"
 operator:
   replicas: 1
+gatewayAPI:
+  enabled: true
 # We need this because our lo (loopback) on Equinix boxes is over 64k
 # Seems like a known issue: https://github.com/cilium/cilium/issues/14339
 # Work around is to set it if we know it...

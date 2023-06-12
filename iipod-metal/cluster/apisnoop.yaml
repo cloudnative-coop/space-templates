@@ -1,0 +1,54 @@
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: GitRepository
+metadata:
+  name: apisnoop
+  namespace: default
+spec:
+  interval: 30m
+  url: https://github.com/cncf/apisnoop
+  ref:
+    branch: main
+  ignore: |-
+    # exclude all
+    /*
+    # include charts directory
+    !/charts/
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: snoopdb
+  namespace: default
+spec:
+  interval: 30m
+  releaseName: snoopdb
+  chart:
+    spec:
+      chart: charts/snoopdb
+      sourceRef:
+        kind: GitRepository
+        name: apisnoop
+  # https://github.com/cncf/apisnoop/blob/main/charts/snoopdb/values.yaml
+  values:
+    image:
+      repository: gcr.io/k8s-staging-apisnoop/snoopdb
+      tag: ""
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: auditlogger
+  namespace: default
+spec:
+  interval: 30m
+  releaseName: auditlogger
+  chart:
+    spec:
+      chart: charts/auditlogger
+      sourceRef:
+        kind: GitRepository
+        name: apisnoop
+  # https://github.com/cncf/apisnoop/blob/main/charts/auditlogger/values.yaml
+  values:
+    image:
+      repository: gcr.io/k8s-staging-apisnoop/auditlogger
+      tag: ""

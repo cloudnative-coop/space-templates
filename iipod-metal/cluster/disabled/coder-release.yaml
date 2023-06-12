@@ -1,0 +1,174 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: coder
+  namespace: coder
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: coder
+      version: "0.24.0"
+      sourceRef:
+        kind: HelmRepository
+        name: coder-v2
+        namespace: coder
+      interval: 12h
+  values:
+    # service:
+    #   type: LoadBalancer
+    #   loadBalancerIP: ""
+    coder:
+      # ingressWildcardHost: "*-coder.ii.nz"
+      service:
+        # coder.service.enable -- Whether to create the Service object.
+        # enable: true
+        # # coder.service.type -- The type of service to expose. See:
+        # # https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+        type: ClusterIP
+        externalTrafficPolicy: Local
+      env:
+        - name: CODER_VERBOSE
+          value: "true"
+        - name: CODER_PROVISIONER_DAEMONS
+          value: "10"
+        - name: CODER_PG_CONNECTION_URL
+          valueFrom:
+            secretKeyRef:
+              name: coder
+              key: dburl
+        # Two different providers look for the URL in different places
+        # https://registry.terraform.io/providers/pan-net/powerdns/1.0.0/docs#argument-reference
+        - name: PDNS_SERVER_URL
+          value: "https://pdns.ii.nz"
+        # https://registry.terraform.io/providers/vancluever/acme/latest/docs/guides/dns-providers-pdns#argument-reference
+        - name: PDNS_API_URL
+          value: "https://pdns.ii.nz"
+        - name: PDNS_TTL
+          value: "60"
+        - name: PDNS_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: powerdns
+              key: api_key
+        - name: CODER_ACCESS_URL
+          value: "https://coder.ii.nz"
+        - name: CODER_WILDCARD_ACCESS_URL
+          value: "*.ii.nz"
+        - name: CODER_SWAGGER_ENABLE
+          value: "true"
+        - name: CODER_PROMETHEUS_ADDRESS
+          value: "0.0.0.0:2112"
+        - name: CODER_TELEMETRY
+          value: "false"
+        - name: CODER_OAUTH2_GITHUB_ALLOW_SIGNUPS
+          value: "true"
+        - name: CODER_OAUTH2_GITHUB_ALLOW_EVERYONE
+          value: "true"
+        # - name: CODER_OAUTH2_GITHUB_ALLOWED_ORGS
+        #   value: "ii,coder,kubermatic"
+        - name: GITHUB_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: github
+              key: coop-token
+        - name: CODER_OAUTH2_GITHUB_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: coder-github
+              key: oauth2-id
+        - name: CODER_OAUTH2_GITHUB_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: coder-github
+              key: oauth2-secret
+        - name: CODER_GITAUTH_0_ID
+          value: "github"
+        - name: CODER_GITAUTH_0_TYPE
+          value: "github"
+        - name: CODER_GITAUTH_0_SCOPES
+          value: "repo write:gpg_key"
+        - name: CODER_GITAUTH_0_CLIENT_ID
+          valueFrom:
+            secretKeyRef:
+              name: coder-github
+              key: gitauth-id
+        - name: CODER_GITAUTH_0_CLIENT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: coder-github
+              key: gitauth-secret
+        - name: METAL_AUTH_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: coder
+              key: metal-auth-token
+        # https://coder.com/docs/v2/latest/admin/git-providers#multiple-git-providers-enterprise
+        # - name: CODER_OIDC_SIGN_IN_TEXT
+        #   value: "Sign in with Gitea"
+        # - name: CODER_OIDC_IGNORE_EMAIL_VERIFIED
+        #   value: "true"
+        # - name: CODER_OIDC_ICON_URL
+        #   value: "https://gitea.io/images/gitea.png"
+        # - name: CODER_OIDC_SCOPES
+        #   value: "openid,profile,email,groups"
+        # Gitlab
+        # - name: CODER_OIDC_ISSUER_URL
+        #   value: "https://gitlab.com"
+        # - name: CODER_OIDC_EMAIL_DOMAIN
+        #   value: "ii.coop,cncf.io,linuxfoundation.org"
+        # - name: CODER_OIDC_CLIENT_ID
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: coder-gitlab
+        #       key: oidc-id
+        # - name: CODER_OIDC_CLIENT_SECRET
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: coder-gitlab
+        #       key: oidc-secret
+        # Google
+        # - name: CODER_OIDC_ISSUER_URL
+        #   value: "https://accounts.google.com"
+        # - name: CODER_OIDC_EMAIL_DOMAIN
+        #   value: "ii.coop,cncf.io,linuxfoundation.org"
+        # - name: CODER_OIDC_CLIENT_ID
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: coder-google
+        #       key: id
+        # - name: CODER_OIDC_CLIENT_SECRET
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: coder-google
+        #       key: secret
+      ingress:
+        enable: false
+        # This ingress part of the chart needs wildcard love!
+        className: nginx
+        tls:
+          enable: true
+          # wildcardSecretName:
+        host: "coder..ii.nz"
+        wildCardHost: "*.coder.ii.nz"
+        service:
+          type: ClusterIP
+        annotations:
+          nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
+          nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
+          # https://www.nginx.com/blog/websocket-nginx/
+          # https://kubernetes.github.io/ingress-nginx/user-guide/miscellaneous/#websockets
+          nginx.ingress.kubernetes.io/server-snippets: |
+            location / {
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_http_version 1.1;
+            proxy_set_header X-Forwarded-Host $http_host;
+            proxy_set_header X-Forwarded-Proto $scheme;
+            proxy_set_header X-Forwarded-For $remote_addr;
+            proxy_set_header Host $host;
+            proxy_set_header Connection "upgrade";
+            proxy_cache_bypass $http_upgrade;
+            }
+        # - name: CODER_ACCESS_URL
+        #  value: "https://coder.ii.nz"

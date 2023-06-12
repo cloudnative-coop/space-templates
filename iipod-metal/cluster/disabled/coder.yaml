@@ -1,0 +1,68 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: coder
+  labels:
+    toolkit.fluxcd.io/tenant: sre-team
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: bitnami
+  namespace: coder
+spec:
+  interval: 24h
+  url: https://charts.bitnami.com/bitnami
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: coder-v2
+  namespace: coder
+spec:
+  interval: 24h
+  url: https://helm.coder.com/v2
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: coder-db
+  namespace: coder
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: postgresql
+      version: "12.5.7" # Current as of June 12, 2023
+      sourceRef:
+        kind: HelmRepository
+        name: bitnami
+        namespace: coder
+      interval: 12h
+  values:
+    auth:
+      existingSecret: coder
+      username: coder
+      database: coder
+    persistence:
+      size: 10Gi
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: cluster-admin
+  namespace: coder
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: cluster-admin
+subjects:
+  - kind: ServiceAccount
+    namespace: coder
+    name: cluster-admin
+roleRef:
+  kind: ClusterRole
+  name: admin
+  apiGroup: rbac.authorization.k8s.io

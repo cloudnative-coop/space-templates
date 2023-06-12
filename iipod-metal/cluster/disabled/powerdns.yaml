@@ -1,0 +1,214 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: powerdns
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: admin
+  namespace: powerdns
+spec:
+  type: ClusterIP
+  # loadBalancerIP: 192.168.1.155
+  ports:
+    - name: "powerdns-admin"
+      port: 80
+      targetPort: 80
+  selector:
+    powerdns: admin
+# status:
+#   loadBalancer: {}
+# ---
+# apiVersion: v1
+# kind: PersistentVolumeClaim
+# metadata:
+#   name: powerdns-admin-data
+#   labels:
+#     powerdns: admin
+# spec:
+#   accessModes:
+#     - ReadWriteOnce
+#   resources:
+#     requests:
+#       storage: 100Mi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: admin
+  namespace: powerdns
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      powerdns: admin
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        powerdns: admin
+    spec:
+      initContainers:
+        # As root, let's chown the data folder correctly
+        # FIXME There is likely a cleaner way
+        - name: data
+          image: powerdnsadmin/pda-legacy:v0.3.0
+          command: ["sh", "-c", "chown -R pda:pda /data"]
+          securityContext:
+            runAsUser: 0
+            runAsGroup: 0
+          volumeMounts:
+            - mountPath: /data
+              name: powerdns-admin
+      restartPolicy: Always
+      containers:
+        - env:
+            - name: SECRET_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: powerdns
+                  key: api_key
+            - name: SQLALCHEMY_DATABASE_URI
+              value: sqlite:////data/powerdns-admin.db
+            - name: PDNS_ADMIN_USER
+              valueFrom:
+                secretKeyRef:
+                  name: powerdns
+                  key: admin_user
+            - name: PDNS_ADMIN_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: powerdns
+                  key: admin_password
+            - name: PDNS_ADMIN_EMAIL
+              value: hh@ii.coop
+            - name: PDNS_VERSION
+              value: 4.7.3
+            - name: PDNS_URL
+              value: http://auth:8081
+            - name: PDNS_SITE_NAME
+              value: powerdns.ii.nz Administration
+            - name: PDNS_ZONES
+              value: |-
+                ii.nz
+                fop.nz
+          image: powerdnsadmin/pda-legacy:v0.3.0
+          name: admin
+          ports:
+            - containerPort: 80
+          # https://github.com/PowerDNS-Admin/PowerDNS-Admin#option-2-using-docker-compose (port 9191 or 80?)
+          livenessProbe:
+            exec:
+              command: ["/bin/sh", "-c", "nc -vz 127.0.0.1 80 2>/dev/null"]
+            initialDelaySeconds: 80
+          volumeMounts:
+            - mountPath: /data
+              name: powerdns-admin
+            - mountPath: /config
+              name: powerdns-config
+          resources: {}
+          # FIXME: Better approach to dns-poststart
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - "sh"
+                  - "-c"
+                  - "cd /app && cp /config/pdns-poststart.py . && /usr/bin/python3 pdns-poststart.py"
+      volumes:
+        - name: powerdns-admin
+          persistentVolumeClaim:
+            claimName: powerdns-admin
+        - name: powerdns-config
+          configMap:
+            name: powerdns-admin
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: powerdns-ii-nz
+  namespace: powerdns
+  labels:
+    environment: production
+  annotations:
+    cert-manager.io/cluster-issuer: ii-nz-letsencrypt-prod
+    # kubernetes.io/ingress.class: nginx
+spec:
+  ingressClassName: nginx
+  tls:
+    - hosts:
+        - "powerdns.ii.nz"
+  rules:
+    - host: "powerdns.ii.nz"
+      http:
+        paths:
+          - path: /
+            pathType: ImplementationSpecific
+            backend:
+              service:
+                name: admin
+                port:
+                  number: 80
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: powerdns-admin
+  namespace: powerdns
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 5Gi
+  # storageClassName: ceph-block
+---
+apiVersion: v1
+data:
+  pdns-poststart.py: |
+    #!/usr/bin/env python3
+    import os
+
+    from powerdnsadmin import create_app
+    from powerdnsadmin.models.base import db
+    from powerdnsadmin.models.user import User, Role
+    from powerdnsadmin.models.domain import Domain
+    from powerdnsadmin.models.setting import Setting
+
+    app = create_app()
+    ctx = app.app_context()
+    ctx.push()
+
+    db.session.add(Setting("pdns_api_key", os.environ["SECRET_KEY"]))
+    db.session.add(Setting("allow_user_create_domain", True))
+    db.session.add(Setting("otp_field_enabled", False))
+    db.session.add(Setting("session_timeout", 60))
+    db.session.add(Setting("site_name", os.environ["PDNS_SITE_NAME"]))
+    db.session.add(Setting("pdns_api_url", os.environ["PDNS_URL"]))
+    db.session.add(Setting("pdns_version", os.environ["PDNS_VERSION"]))
+
+    admin_user = os.environ["PDNS_ADMIN_USER"]
+    admin_pass = os.environ["PDNS_ADMIN_PASSWORD"]
+    admin_email = os.environ["PDNS_ADMIN_EMAIL"]
+    admin_user = User(
+        username=admin_user,
+        plain_text_password=admin_pass,
+        email=admin_email,
+        role_id=Role.query.filter_by(name="Administrator").first().id,
+    )
+    admin_user.create_local_user()
+    db.session.commit()
+
+    # Decided configuration for zones is better left with auth
+    # DNS Admin just needs admin users created
+    # for declared_domain in os.environ["PDNS_DOMAINS"].split(" "):
+    #     db.session.add(Domain(name=declared_domain))
+kind: ConfigMap
+metadata:
+  creationTimestamp: null
+  name: powerdns-admin
+  namespace: powerdns

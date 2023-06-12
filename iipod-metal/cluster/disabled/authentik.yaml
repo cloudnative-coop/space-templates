@@ -1,0 +1,59 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: authentik
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  interval: 24h
+  url: https://charts.goauthentik.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: authentik
+  namespace: authentik
+spec:
+  interval: 30m
+  chart:
+    spec:
+      chart: authentik
+      version: "2023.4.1" # Current as of April 28, 2023
+      sourceRef:
+        kind: HelmRepository
+        name: authentik
+        namespace: authentik
+      interval: 12h
+  values:
+    authentik:
+      # Let's figure a way to store this better
+      secret_key: "BJRl0HKI7i3T0XZOQiBYm9kDsx9WgzhaeiDAyyAq753MudVlcJ"
+      # This sends anonymous usage-data, stack traces on errors and
+      # performance data to sentry.io, and is fully opt-in
+      error_reporting:
+        enabled: false
+      postgresql:
+        password: "/erJXa5usdMmtWoR3/rbmhjWNjg1/neSpjn2E8ipme0/znHP"
+
+    ingress:
+      ingressClassName: "nginx"
+      enabled: true
+      tls:
+        - hosts:
+            - sso.ii.nz
+      hosts:
+        - host: sso.ii.nz
+          paths:
+            - path: "/"
+              pathType: Prefix
+
+    postgresql:
+      enabled: true
+      postgresqlPassword: "/erJXa5usdMmtWoR3/rbmhjWNjg1/neSpjn2E8ipme0/znHP"
+    redis:
+      enabled: true

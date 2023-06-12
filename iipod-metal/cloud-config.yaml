@@ -100,6 +100,10 @@ write_files:
     content: ${install_cilium}
     permissions: "0755"
     encoding: b64
+  - path: /etc/cloud/deploy-cilium
+    content: ${deploy_cilium}
+    permissions: "0755"
+    encoding: b64
   - path: /etc/cloud/install-nix
     content: ${install_nix}
     permissions: "0755"

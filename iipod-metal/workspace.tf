@@ -23,6 +23,10 @@ resource "coder_metadata" "device_info" {
     value = "ssh root@${equinix_metal_device.machine.access_public_ipv4}:.kube/config /tmp/kubeconfig ; export KUBECONFIG=/tmp/kubeconfig"
   }
   item {
+    key   = "Gnome/VNC"
+    value = "http://${local.dns_fqdn}:6080/?resize=remote&autoconnect=true"
+  }
+  item {
     key   = "direct ssh"
     value = "ssh root@${equinix_metal_device.machine.access_public_ipv4}"
   }
@@ -34,4 +38,18 @@ resource "coder_metadata" "device_info" {
     key   = "equinix console"
     value = "https://console.equinix.com/devices/${equinix_metal_device.machine.id}/overview"
   }
+}
+
+output "vnc_desktop" {
+  value = "http://${local.dns_fqdn}:6080/?resize=remote&autoconnect=true"
+}
+
+output "ssh" {
+  value = "ssh -tA ii@${local.dns_fqdn} tmux at"
+}
+output "ssh_pod" {
+  value = "ssh -t ii@${local.dns_fqdn} kubectl exec -it iipod-0 -- tmux at"
+}
+output "scp_kubeconfig" {
+  value = "ssh root@${equinix_metal_device.machine.access_public_ipv4}:.kube/config /tmp/kubeconfig ; export KUBECONFIG=/tmp/kubeconfig"
 }

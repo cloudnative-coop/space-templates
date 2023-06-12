@@ -17,6 +17,7 @@ until jq --version; do
         direnv \
         jq
 done
+
 #
 # desktop
 export KUBECONFIG=/etc/kubernetes/admin.conf
@@ -49,6 +50,13 @@ until gnome-session --version; do
         python3-pip \
         openjdk-17-jdk \
         dbus-x11
+    # Ideally we don't install these at all
+    # We don't need them
+    DEBIAN_FRONTENT=noninteractive apt-get \
+        remove -y --autoremove \
+        gnome-initial-setup \
+        thunderbird \
+        rhythmbox -y
 done
 # gh / aws / gcloud commands
 until gh --version; do

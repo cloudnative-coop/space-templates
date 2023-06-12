@@ -1,7 +1,7 @@
 #!/bin/bash
 echo "Starting TMUX"
 tmux new -d -s $SESSION_NAME -n "ii"
-tmux send-keys "sudo tail -F /var/log/cloud-init-output.log /var/log/k8s-deploy.log /var/log/install-desktop.log
+tmux send-keys "sudo tail -F /var/log/cloud-init-output.log /var/log/k8s-deploy.log /var/log/install-desktop.log ~/.config/emacs-install.log
 "
 # tmux neww -n "iii"
 echo "Starting TTYD"
@@ -56,11 +56,23 @@ git remote add ii git@github.com:ii/kubernetes.git
 # kitty -T "${lower(data.coder_workspace.ii.name)}" --detach --hold bash -c "cd minecraftforge && ./gradlew runClient"
 echo "Waiting for Kubernetes API to be readyz..."
 until kubectl get --raw='/readyz?verbose'; do sleep 5; done
+echo "Waiting for emacs to be available"
+until emacs --version; do sleep 5; done
+mkdir -p ~/.config
+(
+    git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+    git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
+    yes | ~/.config/emacs/bin/doom install --env --fonts
+    yes | ~/.config/emacs/bin/doom sync
+) 2>&1 >~/.config/emacs-install.log &
 echo "Waiting for gnome-session to be available"
-until gnome-session --version; do sleep 5; done
-mkdir novnc && ln -s /usr/share/novnc/* novnc
-cp novnc/vnc.html novnc/index.html
+until gnome-session --version; do sleep 10; done
+# We don't want this popping up... maybe we can tag to NOT install
+mkdir ~/novnc && ln -s /usr/share/novnc/* ~/novnc
+cp ~/novnc/vnc.html ~/novnc/index.html
 websockify -D --web=/home/ii/novnc 6080 localhost:5901
+# Get rid of the inital-setup-first-login
+systemctl --user --now mask gnome-initial-setup-first-login.service
 tigervncserver -useold -desktop $SESSION_NAME -SecurityTypes None
 # Setup Istio
 # echo "Install istio into this cluster..."

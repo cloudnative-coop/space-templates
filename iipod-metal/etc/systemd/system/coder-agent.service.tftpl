@@ -7,7 +7,8 @@ Wants=network-online.target
 User=${username}
 ExecStart=/etc/cloud/coder-init
 Environment=CODER_AGENT_TOKEN=${coder_agent_token}
-Environment=CODER_AGENT_LOG_DIR=/var/log
+# Setting this makes the logs go.... away. Nothing in /var/log
+# Environment=CODER_AGENT_LOG_DIR=/var/log
 Restart=always
 RestartSec=10
 TimeoutStopSec=90

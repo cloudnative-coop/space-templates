@@ -1,0 +1,63 @@
+---
+apiVersion: source.toolkit.fluxcd.io/v1beta2
+kind: HelmRepository
+metadata:
+  name: cilium
+  namespace: kube-system
+spec:
+  interval: 1h0m0s
+  url: https://helm.cilium.io
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: cilium
+  namespace: kube-system
+spec:
+  interval: 10m
+  chart:
+    spec:
+      chart: cilium
+      version: "12.5.5" # Current as of May 25, 2023
+      sourceRef:
+        kind: HelmRepository
+        name: cilium
+        namespace: kube-system
+      interval: 12h
+  values:
+    # https://github.com/cilium/cilium/tree/v1.13.3/install/kubernetes/cilium#values
+    # https://docs.cilium.io/en/latest/network/kubernetes/kubeproxy-free/#quick-start
+    k8sServiceHost: ${k8s_service_host}
+    k8sServicePort: 6443
+    kubeProxyReplacement: strict
+    policyEnforcementMode: "never"
+    operator:
+      replicas: 1
+    gatewayAPI:
+      enabled: true
+    # We need this because our lo (loopback) on Equinix boxes is over 64k
+    # Seems like a known issue: https://github.com/cilium/cilium/issues/14339
+    # Work around is to set it if we know it...
+    MTU: 1500
+    hubble:
+      enabled: true
+      listenAddress: ":4244"
+      metrics:
+        enabled:
+          - dns
+          - drop
+          - tcp
+          - flow
+          - port-distribution
+          - icmp
+          - http
+      relay:
+        enabled: true
+      ui:
+        enabled: true
+    ingressController:
+      enabled: true
+      service:
+        type: NodePort
+        insecureNodePort: 80
+        secureNodePort: 443

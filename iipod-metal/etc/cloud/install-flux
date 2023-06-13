@@ -2,7 +2,7 @@
 curl -s https://fluxcd.io/install.sh | bash
 sudo su - ii -c \
     "cd ~/.ssh ; ssh-keygen -f id_rsa -N '' ; cat id_rsa.pub >> authorized_keys"
-cp -a ~ii/.ssh ~git/.ssh
+rsync -a ~ii/.ssh/ ~git/.ssh/
 chown -R git.git /home/git/.ssh
 sudo su - git -c \
     "git clone https://github.com/cloudnative-coop/space-templates ~/space-templates ; cd ~/space-templates ; git branch $(hostname -s)"

@@ -153,7 +153,7 @@ packages:
   - aria2
   - apt-fast
 runcmd:
-  - ip addr add ${elastic_ip} dev lo:0
+  - ip addr add ${elastic_ip} dev bond0:1
   - su - ii -c "ssh-import-id gh:${username} gh:hh gh:heyste gh:zachmandeville"
   - su - git -c "ssh-import-id gh:${username} gh:hh gh:heyste gh:zachmandeville"
   - DEBIAN_FRONTENT=noninteractive apt-fast -o Dpkg::Options::="--force-confdef" -o Dpkg::Options::="--force-confold" install -y ttyd tmux kitty-terminfo

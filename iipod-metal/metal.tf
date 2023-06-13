@@ -31,11 +31,11 @@ resource "equinix_metal_device" "machine" {
     username          = data.coder_workspace.ii.owner
     elastic_ip        = local.elastic_ip
     iipod_image       = data.coder_parameter.container-image.value
-    coder_init_script = base64encode(coder_agent.ii.init_script)
+    coder_init_script = base64encode(coder_agent.iibox.init_script)
     coder_init_service = base64encode(
       templatefile("./etc/systemd/system/coder-agent.service.tftpl", {
         username          = "ii"
-        coder_agent_token = coder_agent.ii.token
+        coder_agent_token = coder_agent.iibox.token
     }))
     iipod_manifest = base64encode(
       templatefile("./etc/kubernetes/manifests/iipod.yaml", {

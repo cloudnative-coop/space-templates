@@ -1,4 +1,4 @@
-resource "coder_agent" "ii" {
+resource "coder_agent" "iibox" {
   arch = "amd64" # Intel
   # arch = "arm64" # Arm
   os  = "linux" # Linux
@@ -13,5 +13,5 @@ resource "coder_agent" "ii" {
     GIT_AUTHOR_EMAIL    = "${data.coder_workspace.ii.owner_email}"
     GIT_COMMITTER_EMAIL = "${data.coder_workspace.ii.owner_email}"
   }
-  startup_script = file("./ii-agent-startup.sh")
+  startup_script = file("./iibox-agent-startup.sh")
 }

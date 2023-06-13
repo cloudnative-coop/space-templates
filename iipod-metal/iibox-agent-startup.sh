@@ -36,10 +36,13 @@ mkdir -p ~/.config
     echo "Waiting for emacs && gnome-session to be available"
     until gnome-session --version; do sleep 10; done
     tmux neww -n "vnc"
-    tmux send-keys -t "vnc" "
-    websockify -D --web=/home/ii/novnc 6080 localhost:5901
-    tigervncserver :1 -desktop $SESSION_NAME -SecurityTypes None
-    "
+    tmux send-keys -t "vnc" "websockify -D --web=/home/ii/novnc 6080 localhost:5901
+tigervncserver :1 -desktop $SESSION_NAME -SecurityTypes None
+sleep 5
+wget $ORGURL
+ORGFILE=$(basename $ORGURL)
+emacs $ORGFILE &
+"
 ) 2>&1 >~/.config/emacs-install.log &
 mkdir ~/novnc && ln -s /usr/share/novnc/* ~/novnc
 cp ~/novnc/vnc.html ~/novnc/index.html

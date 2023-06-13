@@ -1,33 +1,32 @@
 #!/bin/bash
 # Base Packages... install these first
-until jq --version; do
-    sleep 5
-    DEBIAN_FRONTENT=noninteractive apt-fast \
-        -o Dpkg::Options::="--force-confdef" \
-        -o Dpkg::Options::="--force-confold" \
-        install -y \
-        emacs-gtk \
-        kitty \
-        novnc \
-        websockify \
-        postgresql-client \
-        tigervnc-standalone-server \
-        asciinema \
-        silversearcher-ag \
-        direnv \
-        whowatch \
-        aptitude \
-        jq
-done
-
-#
-# desktop
+export DEBIAN_FRONTEND=noninteractive
+export NEEDRESTART_MODE=a
 export KUBECONFIG=/etc/kubernetes/admin.conf
+apt-fast \
+    -o Dpkg::Options::="--force-confdef" \
+    -o Dpkg::Options::="--force-confold" \
+    install -y \
+    emacs-gtk \
+    kitty \
+    novnc \
+    websockify \
+    postgresql-client \
+    tigervnc-standalone-server \
+    asciinema \
+    silversearcher-ag \
+    direnv \
+    whowatch \
+    aptitude \
+    jq
+
+# Give Kubernetes a chance to install / be ready
 until kubectl get --raw='/readyz?verbose'; do sleep 5; done
 
+# now loop here, tryingto intall everything needed for desktop
 until gnome-session --version; do
     sleep 5
-    DEBIAN_FRONTENT=noninteractive apt-fast \
+    apt-fast \
         -o Dpkg::Options::="--force-confdef" \
         -o Dpkg::Options::="--force-confold" \
         install -y \
@@ -55,7 +54,7 @@ until gnome-session --version; do
         dbus-x11
     # Ideally we don't install these at all
     # We don't need them
-    DEBIAN_FRONTENT=noninteractive apt-get \
+    apt-get \
         remove -y --autoremove \
         gnome-initial-setup \
         thunderbird \
@@ -64,7 +63,7 @@ done
 # gh / aws / gcloud commands
 until gh --version; do
     sleep 5
-    DEBIAN_FRONTENT=noninteractive apt-fast \
+    apt-fast \
         -o Dpkg::Options::="--force-confdef" \
         -o Dpkg::Options::="--force-confold" \
         install -y \
@@ -72,3 +71,5 @@ until gh --version; do
         awscli \
         google-cloud-sdk
 done
+apt-get \
+    upgrade -y

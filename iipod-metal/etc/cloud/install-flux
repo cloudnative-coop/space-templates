@@ -13,6 +13,7 @@ rsync -a ~ii/.ssh/ ~git/.ssh/
 chown -R git.git /home/git/.ssh
 sudo su - ii -c \
     "cd ~/
+echo '. <(flux completion bash)' >> ~/.bashrc
 git clone --branch $(hostname -s) git@$(hostname):space-templates
 cd space-templates
 git remote add upstream git@github.com:cloudnative-coop/space-templates
@@ -22,4 +23,6 @@ yes | flux bootstrap git \
     --path=iipod-metal/cluster \
     --url=ssh://git@$(hostname):22/home/git/space-templates
     --silent
+git config pull.rebase true
+git pull
 "

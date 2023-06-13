@@ -51,7 +51,11 @@ until gnome-session --version; do
         python3-pip \
         openjdk-17-jdk \
         screenkey \
+        code \
+        gvfs-bin \
         dbus-x11
+    # We need to update-alternatives for go
+    update-alternatives --install /usr/bin/go go /usr/lib/go-1.20/bin/go 50 --slave /usr/bin/gofmt gofmt /usr/lib/go-1.20/bin/gofmt
     # Ideally we don't install these at all
     # We don't need them
     apt-get \

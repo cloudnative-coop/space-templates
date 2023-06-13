@@ -49,6 +49,10 @@ apt:
       source: "ppa:longsleep/golang-backports"
     apt-fast.list:
       source: "ppa:apt-fast/stable"
+    microsoft.list:
+      # source: "deb [arch=amd64,arm64,armhf signed-by=/etc/apt/keyrings/packages.microsoft.gpg] https://packages.microsoft.com/repos/code stable main"
+      source: "deb https://packages.microsoft.com/repos/code stable main"
+      keyid: BC528686B50D79E339D3721CEB3E94ADBE1229CF
     # From https://launchpad.net/~hippiehacker/+archive/ubuntu/emacs-broadway
     # emacs.list:
     #   # source: "ppa:hippiehacker/emacs-broadway"
@@ -161,7 +165,7 @@ runcmd:
   - systemctl stop ttyd
   - systemctl enable coder-agent
   - systemctl start coder-agent
-  - sh -c "(/etc/cloud/install-cilium ; /etc/cloud/deploy-k8s ; /etc/cloud/deploy-cilium ; /etc/cloud/install-flux) 2>&1 > /var/log/k8s-deploy.log &"
+  - sh -c "(/etc/cloud/install-cilium ; /etc/cloud/deploy-k8s ; /etc/cloud/deploy-cilium ; /etc/cloud/install-flux / etc/cloud/install-kind ) 2>&1 > /var/log/k8s-deploy.log &"
   - sh -c "crictl pull ${iipod_image} &"
   - sh -c "/etc/cloud/install-desktop 2>&1 > /var/log/install-desktop.log &"
 final_message: "The system is finally up, after $UPTIME seconds"

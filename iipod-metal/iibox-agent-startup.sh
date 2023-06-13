@@ -34,14 +34,15 @@ mkdir -p ~/.config
     yes | ~/.config/emacs/bin/doom install --env --fonts
     yes | ~/.config/emacs/bin/doom sync
     echo "Waiting for emacs && gnome-session to be available"
-    until gnome-session --version; do sleep 10; done
+    # And maybe 60 seconds? Not sure why we get the x-terminal-emulator
+    until gnome-session --version; do sleep 60; done
     tmux neww -n "vnc"
     tmux send-keys -t "vnc" "websockify -D --web=/home/ii/novnc 6080 localhost:5901
 tigervncserver :1 -desktop $SESSION_NAME -SecurityTypes None
 sleep 5
 wget $ORGURL
 ORGFILE=$(basename $ORGURL)
-emacs $ORGFILE &
+emacs \$ORGFILE &
 "
 ) 2>&1 >~/.config/emacs-install.log &
 mkdir ~/novnc && ln -s /usr/share/novnc/* ~/novnc

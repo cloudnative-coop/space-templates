@@ -6,6 +6,52 @@ tmux send-keys "sudo tail -F /var/log/cloud-init-output.log /var/log/k8s-deploy.
 # tmux neww -n "iii"
 echo "Starting TTYD"
 ttyd tmux at 2>&1 | tee /tmp/ttyd.log &
+# TODO : Install docker into the image
+(
+    echo "Setting up repos..."
+    mkdir repos
+    cd repos
+    git clone https://github.com/cncf/apisnoop.git
+    # Setup Ticket-Writing
+    git clone https://github.com/apisnoop/ticket-writing.git
+    cd ~/repos/ticket-writing
+    git remote add upstream git@github.com:apisnoop/ticket-writing.git
+
+    # Setup Kubernetes src
+    mkdir -p ~/go/src/k8s.io
+    cd ~/go/src/k8s.io
+    git clone https://github.com/kubernetes/kubernetes.git
+    cd kubernetes
+    git remote add ii git@github.com:ii/kubernetes.git
+) 2>&1 >/tmp/src-clone.log &
+
+echo "Waiting for emacs to be available"
+until emacs --version; do sleep 5; done
+mkdir -p ~/.config
+(
+    git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+    git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
+    yes | ~/.config/emacs/bin/doom install --env --fonts
+    yes | ~/.config/emacs/bin/doom sync
+    echo "Waiting for emacs && gnome-session to be available"
+    until gnome-session --version; do sleep 10; done
+    tmux neww -n "vnc"
+    tmux send-keys -t "vnc" "
+    websockify -D --web=/home/ii/novnc 6080 localhost:5901
+    tigervncserver :1 -desktop $SESSION_NAME -SecurityTypes None
+    "
+) 2>&1 >~/.config/emacs-install.log &
+mkdir ~/novnc && ln -s /usr/share/novnc/* ~/novnc
+cp ~/novnc/vnc.html ~/novnc/index.html
+
+echo "Waiting for kubectl to be installed"
+until kubectl version; do sleep 5; done
+cat <<EOF >>~/.bashrc
+source <(kubectl completion bash)
+alias k=kubectl
+complete -o default -F __start_kubectl k
+EOF
+echo "source <(kubectl completion bash)" >>~/.bashrc
 git config --global commit.template ~/.gitmessage
 cat <<EOF >~/.gitmessage
 # Title: Summary, imperative, start upper case, don't end with a period
@@ -32,59 +78,33 @@ cat <<EOF >~/.gitmessage
 # 6. Wrap the body at 72 characters
 # 7. Use the body to explain what and why vs. how
 EOF
-# TODO : Install docker into the image
-echo "Setting up repos..."
-mkdir repos
-cd repos
-git clone https://github.com/cncf/apisnoop.git
-# Setup Ticket-Writing
-git clone https://github.com/apisnoop/ticket-writing.git
-cd ~/repos/ticket-writing
-git remote add upstream git@github.com:apisnoop/ticket-writing.git
-# Setup Kubernetes src
-mkdir -p ~/go/src/k8s.io
-cd ~/go/src/k8s.io
-git clone https://github.com/kubernetes/kubernetes.git
-cd kubernetes
-git remote add ii git@github.com:ii/kubernetes.git
-# sudo apt-get install -y novnc websockify tigervnc-standalone-server icewm kitty
-# mkdir novnc && ln -s /usr/share/novnc/* novnc
-# cp novnc/vnc.html novnc/index.html
-# websockify -D --web=/home/ii/novnc 6080 localhost:5901
-# tigervncserver -useold -desktop $SESSION_NAME -SecurityTypes None#
-# export DISPLAY=:1
-# kitty -T "${lower(data.coder_workspace.ii.name)}" --detach --hold bash -c "cd minecraftforge && ./gradlew runClient"
-echo "Waiting for Kubernetes API to be readyz..."
-until kubectl get --raw='/readyz?verbose'; do sleep 5; done
-echo "Waiting for emacs to be available"
-until emacs --version; do sleep 5; done
-mkdir -p ~/.config
-(
-    git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
-    git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
-    yes | ~/.config/emacs/bin/doom install --env --fonts
-    yes | ~/.config/emacs/bin/doom sync
-) 2>&1 >~/.config/emacs-install.log &
-echo "Waiting for gnome-session to be available"
-until gnome-session --version; do sleep 10; done
+
+# sleep 30
+# tmux send-keys -t "vnc" "
+# ps ax | grep gnome
+# tigervncserver :1 -kill
+# tigervncserver :1 -desktop $SESSION_NAME -SecurityTypes None
+# "
+# sleep 30
+# tmux send-keys -t "vnc" "
+# ps ax | grep gnome
+# tigervncserver :1 -kill
+# tigervncserver :1 -desktop $SESSION_NAME -SecurityTypes None
+# "
 # We don't want this popping up... maybe we can tag to NOT install
-mkdir ~/novnc && ln -s /usr/share/novnc/* ~/novnc
-cp ~/novnc/vnc.html ~/novnc/index.html
-websockify -D --web=/home/ii/novnc 6080 localhost:5901
 # Get rid of the inital-setup-first-login
-systemctl --user --now mask gnome-initial-setup-first-login.service
+# systemctl --user --now mask gnome-initial-setup-first-login.service
 # When we start this up currently, it's defaulting to xterminal
-sleep 30 # So maybe wait a bit #TODO figure out why it's only starting x-terminal-emulator
-# We already wait, but maywe we double check /etc/X11/Xsession.d/50x11-common_determine-startup
-# If it can't find /usr/bin/x-session-manager (which /etc/alternatives to gnome-session)
-# THEN it will start x-terminal-emulator... which is what seems to be happening
-cd ~/
+# sleep 30 # So maybe wait a bit #TODO figure out why it's only starting x-terminal-emulator
+# # We already wait, but maywe we double check /etc/X11/Xsession.d/50x11-common_determine-startup
+# # If it can't find /usr/bin/x-session-manager (which /etc/alternatives to gnome-session)
+# # THEN it will start x-terminal-emulator... which is what seems to be happening
+# cd ~/
 # cat <<EOF >~/.xsession
 # while true; do
 #  gnome-session
 # done
 # EOF
-tigervncserver -desktop $SESSION_NAME -SecurityTypes None -xstartup gnome-session
 # Setup Istio
 # echo "Install istio into this cluster..."
 # helm repo add istio https://istio-release.storage.googleapis.com/charts

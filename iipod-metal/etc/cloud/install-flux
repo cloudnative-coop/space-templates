@@ -21,4 +21,5 @@ yes | flux bootstrap git \
     --branch="$(hostname -s)" \
     --path=iipod-metal/cluster \
     --url=ssh://git@$(hostname):22/home/git/space-templates
+    --silent
 "

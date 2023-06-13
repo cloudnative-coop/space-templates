@@ -74,12 +74,17 @@ websockify -D --web=/home/ii/novnc 6080 localhost:5901
 # Get rid of the inital-setup-first-login
 systemctl --user --now mask gnome-initial-setup-first-login.service
 # When we start this up currently, it's defaulting to xterminal
-sleep 15 # So maybe wait a bit #TODO figure out why it's only starting x-terminal-emulator
+sleep 30 # So maybe wait a bit #TODO figure out why it's only starting x-terminal-emulator
 # We already wait, but maywe we double check /etc/X11/Xsession.d/50x11-common_determine-startup
 # If it can't find /usr/bin/x-session-manager (which /etc/alternatives to gnome-session)
 # THEN it will start x-terminal-emulator... which is what seems to be happening
 cd ~/
-tigervncserver -useold -desktop $SESSION_NAME -SecurityTypes None -- gnome-session
+# cat <<EOF >~/.xsession
+# while true; do
+#  gnome-session
+# done
+# EOF
+tigervncserver -desktop $SESSION_NAME -SecurityTypes None -xstartup gnome-session
 # Setup Istio
 # echo "Install istio into this cluster..."
 # helm repo add istio https://istio-release.storage.googleapis.com/charts
@@ -101,12 +106,3 @@ tigervncserver -useold -desktop $SESSION_NAME -SecurityTypes None -- gnome-sessi
 # kubectl get pods -n knative-serving
 # Wait until we can clone git@$(hostname):space-templates
 # And feed it to flux
-ssh-keyscan -t rsa tue316-hh.ii.nz >>~/.ssh/known_hosts
-until git clone --branch $(hostname -s) git@$(hostname):space-templates; do sleep 5; done
-cd ~/space-templates
-git remote add upstream git@github.com:cloudnative-coop/space-templates
-yes | flux bootstrap git \
-    --private-key-file="/home/ii/.ssh/id_rsa" \
-    --branch="$(hostname -s)" \
-    --path=iipod-metal/cluster \
-    --url=ssh://git@$(hostname):22/home/git/space-templates

@@ -28,3 +28,7 @@ hubble:
     enabled: true
   ui:
     enabled: true
+ingressController:
+  enabled: true
+  # service:
+  #   type: NodePort

@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 cd /tmp
 curl -L --remote-name-all \
     https://github.com/cilium/cilium-cli/releases/latest/download/cilium-linux-amd64.tar.gz{,.sha256sum}

@@ -73,6 +73,13 @@ cp ~/novnc/vnc.html ~/novnc/index.html
 websockify -D --web=/home/ii/novnc 6080 localhost:5901
 # Get rid of the inital-setup-first-login
 systemctl --user --now mask gnome-initial-setup-first-login.service
+# When we start this up currently, it's defaulting to xterminal
+sleep 15 # So maybe wait a bit #TODO figure out why it's only starting x-terminal-emulator
+# We already wait, but maywe we double check /etc/X11/Xsession.d/50x11-common_determine-startup
+# If it can't find /usr/bin/x-session-manager (which /etc/alternatives to gnome-session)
+# THEN it will start x-terminal-emulator... which is what seems to be happening
+until gnome-session --version; do sleep 10; done
+cd ~/
 tigervncserver -useold -desktop $SESSION_NAME -SecurityTypes None
 # Setup Istio
 # echo "Install istio into this cluster..."

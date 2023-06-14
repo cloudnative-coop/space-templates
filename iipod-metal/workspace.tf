@@ -20,7 +20,7 @@ resource "coder_metadata" "device_info" {
   }
   item {
     key   = "scp kubeconfig"
-    value = "ssh root@${equinix_metal_device.machine.access_public_ipv4}:.kube/config /tmp/kubeconfig ; export KUBECONFIG=/tmp/kubeconfig"
+    value = "scp root@${equinix_metal_device.machine.access_public_ipv4}:.kube/config /tmp/kubeconfig ; export KUBECONFIG=/tmp/kubeconfig"
   }
   item {
     key   = "Gnome/VNC"

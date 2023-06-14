@@ -19,7 +19,7 @@ apiServer:
   extraArgs:
     audit-policy-file: /etc/kubernetes/pki/audit-policy.yaml
     audit-webhook-config-file: /etc/kubernetes/pki/audit-sink.yaml
-    service-node-port-range: 1-65535
+    service-node-port-range: 80-10000
 certificatesDir: /etc/kubernetes/pki
 clusterName: kubernetes
 controllerManager: {}

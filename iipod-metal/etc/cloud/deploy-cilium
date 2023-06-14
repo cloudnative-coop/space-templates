@@ -10,8 +10,9 @@ kubectl taint nodes --all node-role.kubernetes.io/control-plane:NoSchedule-
 # https://isovalent.com/blog/post/tutorial-getting-started-with-the-cilium-gateway-api/
 # Looks like there's a new version at:
 # https://gateway-api.sigs.k8s.io/guides/#install-standard-channel
-kubectl apply -f \
-    https://github.com/kubernetes-sigs/gateway-api/releases/download/v0.7.1/standard-install.yaml
+# NEEDED TO DEPLOY GATEWAY
+# kubectl apply -f \
+#     https://github.com/kubernetes-sigs/gateway-api/releases/download/v0.7.1/standard-install.yaml
 
 helm repo add cilium https://helm.cilium.io/
 helm upgrade --install cilium cilium/cilium \

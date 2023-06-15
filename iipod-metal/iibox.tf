@@ -54,7 +54,7 @@ resource "equinix_metal_device" "iibox" {
     }))
     iipod_manifest = base64encode(
       templatefile("./templates/etc/kubernetes/manifests/iipod.yaml", {
-        coder_agent_token = coder_agent.iipod.token
+        coder_agent_token = local.iipod_agent_token
         space_name        = lower(data.coder_workspace.ii.name)
         iipod_image       = data.coder_parameter.container-image.value
     }))

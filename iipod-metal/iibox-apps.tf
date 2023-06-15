@@ -1,5 +1,5 @@
 # ttyd connecting to tmux
-resource "coder_app" "tmuxt" {
+resource "coder_app" "tmux" {
   subdomain    = true
   share        = "public"
   slug         = "tmuxs"
@@ -10,7 +10,7 @@ resource "coder_app" "tmuxt" {
 }
 
 # # noVNC connecting to tigervnc:1
-resource "coder_app" "vnct" {
+resource "coder_app" "vnc" {
   subdomain    = true
   share        = "public"
   slug         = "vncs"

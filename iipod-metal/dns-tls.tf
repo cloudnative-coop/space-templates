@@ -1,8 +1,3 @@
-locals {
-  dns_zone = "${lower(data.coder_workspace.ii.name)}-${lower(data.coder_workspace.ii.owner)}.ii.nz"
-  dns_fqdn = "${local.dns_zone}." #adds a "." to the end
-}
-
 resource "powerdns_record" "a_record" {
   name    = local.dns_fqdn
   zone    = "ii.nz."

@@ -70,13 +70,13 @@ write_files:
     content: ${coder_init_service}
     permissions: "0644"
     encoding: b64
-  - path: /etc/cloud/wildcard.cert.pem
-    content: ${wildcard_cert_pem}
-    permissions: "0600"
-    encoding: b64
-  - path: /etc/cloud/wildcard.key.pem
-    content: ${wildcard_key_pem}
-    permissions: "0600"
+  # - path: /etc/cloud/wildcard.cert.pem
+  #   content: $${wildcard_cert_pem}
+  #   permissions: "0600"
+  #   encoding: b64
+  # - path: /etc/cloud/wildcard.key.pem
+  #   content: $${wildcard_key_pem}
+  #   permissions: "0600"
     encoding: b64
   - path: /etc/kubernetes/pki/audit-policy.yaml
     content: ${audit_policy}

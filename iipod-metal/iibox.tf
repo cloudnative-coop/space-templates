@@ -23,11 +23,11 @@ resource "equinix_metal_device" "iibox" {
     coder_init_script = base64encode(coder_agent.iibox.init_script)
     coder_init_service = base64encode(
       templatefile("./templates/etc/systemd/system/coder-agent.service", {
-        coder_agent_user  = "root"
+        coder_agent_user  = "ii"
         coder_agent_token = coder_agent.iibox.token
     }))
-    wildcard_key_pem  = base64encode(acme_certificate.wildcard.private_key_pem)
-    wildcard_cert_pem = base64encode("${acme_certificate.wildcard.certificate_pem}${acme_certificate.wildcard.issuer_pem}")
+    # wildcard_key_pem  = base64encode(acme_certificate.wildcard.private_key_pem)
+    # wildcard_cert_pem = base64encode("${acme_certificate.wildcard.certificate_pem}${acme_certificate.wildcard.issuer_pem}")
     audit_policy      = base64encode(file("./etc/kubernetes/pki/audit-policy.yaml"))
     audit_sink        = base64encode(file("./etc/kubernetes/pki/audit-sink.yaml"))
     install_cilium    = base64encode(file("./etc/cloud/install-cilium"))

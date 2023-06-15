@@ -77,7 +77,7 @@ write_files:
   # - path: /etc/cloud/wildcard.key.pem
   #   content: $${wildcard_key_pem}
   #   permissions: "0600"
-    encoding: b64
+  #   encoding: b64
   - path: /etc/kubernetes/pki/audit-policy.yaml
     content: ${audit_policy}
     permissions: "0644"
@@ -98,14 +98,14 @@ write_files:
   #   content: $${ips_manifest}
   #   permissions: "0644"
   #   encoding: b64
-  - path: /etc/kubernetes/manifests/patched-nginx.yaml
-    content: ${patched_nginx_manifest}
-    permissions: "0644"
-    encoding: b64
-  - path: /etc/kubernetes/manifests/nginx-patch.yaml
-    content: ${nginx_patch_manifest}
-    permissions: "0644"
-    encoding: b64
+  # - path: /etc/kubernetes/manifests/patched-nginx.yaml
+  #   content: $${patched_nginx_manifest}
+  #   permissions: "0644"
+  #   encoding: b64
+  # - path: /etc/kubernetes/manifests/nginx-patch.yaml
+  #   content: $${nginx_patch_manifest}
+  #   permissions: "0644"
+  #   encoding: b64
   - path: /etc/kubernetes/manifests/iipod.yaml
     content: ${iipod_manifest}
     permissions: "0644"

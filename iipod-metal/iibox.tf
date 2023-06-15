@@ -216,9 +216,9 @@ resource "equinix_metal_device" "iibox" {
         space_name        = lower(data.coder_workspace.ii.name)
         iipod_image       = data.coder_parameter.container-image.value
     }))
-    patched_nginx_manifest = base64encode(
-      templatefile("./templates/etc/kubernetes/manifests/patched-nginx.yaml", {
-        ip =
-    }))
+    # patched_nginx_manifest = base64encode(
+    #   templatefile("./templates/etc/kubernetes/manifests/patched-nginx.yaml", {
+    #     ip =
+    # }))
   })
 }

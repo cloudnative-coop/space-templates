@@ -8,10 +8,10 @@ metadata:
 spec:
   interval: 1m0s
   ref:
-    branch: mon423-hh
+    branch: zfri16-zachmandeville
   secretRef:
     name: flux-system
-  url: ssh://ii@mon423-hh.ii.nz/home/ii/space-templates
+  url: ssh://git@zfri16-zachmandeville.ii.nz:22/home/git/space-templates
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization

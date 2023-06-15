@@ -2,16 +2,15 @@
 set -x
 export DEBIAN_FRONTEND=noninteractive
 until kubectl version --client; do
-    sleep 5
-    apt-fast \
-        -o Dpkg::Options::="--force-confdef" \
-        -o Dpkg::Options::="--force-confold" install -y \
-        docker-ce \
-        docker-ce-cli \
-        containerd.io \
-        kubelet \
-        kubeadm \
-        helm
+        sleep 5
+        apt-fast \
+                -o Dpkg::Options::="--force-confdef" \
+                -o Dpkg::Options::="--force-confold" install -y \
+                docker-ce \
+                docker-ce-cli \
+                kubelet \
+                kubeadm \
+                helm
 done
 swapoff -a # not compatible with Kubernetes
 kubeadm config images pull

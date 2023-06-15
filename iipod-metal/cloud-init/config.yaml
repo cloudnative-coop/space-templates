@@ -1,0 +1,54 @@
+#cloud-config
+# Create docker group early
+groups:
+  - docker
+# Create ii user as part of docker group
+users:
+  - name: git
+  - name: ii
+    sudo: ["ALL=(ALL) NOPASSWD:ALL"]
+    groups: "sudo, docker"
+    shell: /bin/bash
+    ssh_redirect_user: true
+    # FIXME:
+    # ssh_import_id:
+    #   - gh:$${username}
+debconf_selections: | # Need to perserve newlines
+  debconf apt-fast/maxdownloads string 32
+  debconf apt-fast/dlflag boolean true
+  debconf apt-fast/aptmanager string apt-get
+# https://github.com/number5/cloud-init/blob/main/doc/examples/cloud-config-apt.txt
+# apt_pipelining: False
+apt:
+  preserve_sources_list: true
+  # disabled_suites: [$RELEASE-updates, backports, $RELEASE, mysuite]
+  sources:
+    # From https://docs.docker.com/engine/install/ubuntu/#install-using-the-repository
+    docker.list:
+      source: "deb https://download.docker.com/linux/ubuntu $RELEASE stable"
+      keyid: 9DC858229FC7DD38854AE2D88D81803C0EBFCD88
+    # From https://kubernetes.io/docs/setup/production-environment/tools/kubeadm/install-kubeadm/
+    kubernetes.list:
+      source: "deb https://apt.kubernetes.io/ kubernetes-xenial main"
+      # keyid: 35BAA0B33E9EB396F59CA838C0BA5CE6DC6315A3
+      keyid: B53DC80D13EDEF05
+    # From https://helm.sh/docs/intro/install/#from-apt-debianubuntu
+    helm.list:
+      source: "deb https://baltocdn.com/helm/stable/debian/ all main"
+      keyid: 81BF832E2F19CD2AA0471959294AC4827C1A168A
+    google-cloud.list:
+      source: "deb http://packages.cloud.google.com/apt cloud-sdk main"
+      keyid: 35BAA0B33E9EB396F59CA838C0BA5CE6DC6315A3
+    google-chrome.list:
+      source: "deb http://dl.google.com/linux/chrome/deb/ stable main"
+      keyid: EB4C1BFD4F042F6DDDCCEC917721F63BD38B4796
+    github.list:
+      source: "deb https://cli.github.com/packages stable main"
+      keyid: 2C6106201985B60E6C7AC87323F3D4EA75716059
+    golang.list:
+      source: "ppa:longsleep/golang-backports"
+    apt-fast.list:
+      source: "ppa:apt-fast/stable"
+    microsoft.list:
+      source: "deb https://packages.microsoft.com/repos/code stable main"
+      keyid: BC528686B50D79E339D3721CEB3E94ADBE1229CF

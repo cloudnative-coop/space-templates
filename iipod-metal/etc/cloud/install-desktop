@@ -18,6 +18,7 @@ apt-fast \
     direnv \
     whowatch \
     aptitude \
+    zsh \
     jq
 
 # Give Kubernetes a chance to install / be ready

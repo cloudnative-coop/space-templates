@@ -27,11 +27,12 @@ hubble:
     enabled: true
 nodePort:
   range: "80,10000"
-  # service:
-  #   type: NodePort
 # Need to try this again later
-# kubeProxyReplacement: strict
-# gatewayAPI:
-#   enabled: true
-# ingressController:
-#   enabled: true
+kubeProxyReplacement: strict
+gatewayAPI:
+  enabled: true
+ingressController:
+  enabled: true
+  service:
+    # type: NodePort
+    type: LoadBalancer

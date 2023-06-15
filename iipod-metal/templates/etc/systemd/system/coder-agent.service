@@ -4,7 +4,7 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-User=${username}
+User=${coder_agent_user}
 ExecStart=/etc/cloud/coder-init
 Environment=CODER_AGENT_TOKEN=${coder_agent_token}
 # Setting this makes the logs go.... away. Nothing in /var/log

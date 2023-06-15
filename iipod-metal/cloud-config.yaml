@@ -98,6 +98,14 @@ write_files:
   #   content: $${ips_manifest}
   #   permissions: "0644"
   #   encoding: b64
+  - path: /etc/kubernetes/manifests/patched-nginx.yaml
+    content: ${patched_nginx_manifest}
+    permissions: "0644"
+    encoding: b64
+  - path: /etc/kubernetes/manifests/nginx-patch.yaml
+    content: ${nginx_patch_manifest}
+    permissions: "0644"
+    encoding: b64
   - path: /etc/kubernetes/manifests/iipod.yaml
     content: ${iipod_manifest}
     permissions: "0644"

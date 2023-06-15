@@ -1,5 +1,9 @@
 #!/usr/bin/env sh
 set -e
+cat <<EOF >>~/.tmux.conf
+set -g base-index 1
+set -s escape-time 0
+EOF
 echo "Starting TMUX"
 tmux new -d -s $SPACE_NAME -n "iipod"
 echo "Starting TTYD"

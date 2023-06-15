@@ -27,15 +27,14 @@ terraform {
   }
 }
 
-# variable "GITHUB_TOKEN" {
-#   type = string
-# }
-
 provider "coder" {
   # Configuration options
   # https://registry.terraform.io/providers/coder/coder/latest/docs#schema
   feature_use_managed_variables = true
 }
+
+data "coder_workspace" "ii" {}
+
 provider "equinix" {
   # Configuration options
   # https://registry.terraform.io/providers/equinix/equinix/latest/docs#argument-reference
@@ -60,11 +59,3 @@ provider "powerdns" {
   # https://registry.terraform.io/providers/pan-net/powerdns/latest/docs/resources/record
 }
 
-# Currently only configurable within the coder instance / provisioner
-# cloudnative.coop project under CNCF Account
-# https://console.equinix.com/projects/f4a7273d-b1fc-4c50-93e8-7fed753c86ff
-variable "project" {
-  type        = string
-  description = "Project from https://deploy.equinix.com/developers/docs/metal/accounts/projects/"
-  default     = "f4a7273d-b1fc-4c50-93e8-7fed753c86ff" # pair.sharing.io
-}

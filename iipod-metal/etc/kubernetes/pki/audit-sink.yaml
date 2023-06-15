@@ -3,7 +3,7 @@ kind: Config
 current-context: auditsink-context
 clusters:
   - cluster:
-      server: http://127.0.0.1:9900/events
+      server: http://10.96.96.96:9900/events
     name: auditsink-cluster
 contexts:
   - context:

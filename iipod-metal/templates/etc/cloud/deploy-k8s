@@ -47,3 +47,6 @@ cat <<EOF >>/etc/kubernetes/manifests/nginx.yaml
           - $IP
 EOF
 kubectl apply -f /etc/kubernetes/manifests/nginx.yaml
+kubectl -n ingress-nginx create secret tls wildcard-tls \
+        --cert=/etc/cloud/wildcard.cert.pem \
+        --key=/etc/cloud/wildcard.key.pem

@@ -22,6 +22,9 @@ metadata:
 spec:
   interval: 30m
   releaseName: snoopdb
+  values:
+    image:
+      tag: "v20230201-0.2.0-445-g6d6e89d"
   chart:
     spec:
       chart: charts/snoopdb
@@ -42,6 +45,9 @@ metadata:
 spec:
   interval: 30m
   releaseName: auditlogger
+  values:
+    image:
+      tag: "v20230201-0.2.0-445-g6d6e89d"
   chart:
     spec:
       chart: charts/auditlogger

@@ -31,5 +31,29 @@ EOF
 code-server --auth none --port 13337 | tee /tmp/code-server.log &
 # Check out the repo
 git clone $GITURL
+# TODO : Install docker into the image
 sudo apt-get install -y docker-ce-cli
+# Check out src
+(
+    echo "Setting up repos..."
+    mkdir repos
+    cd repos
+    # git clone https://github.com/cncf/apisnoop.git
+    # Setup Ticket-Writing
+    git clone https://github.com/apisnoop/ticket-writing.git
+    cd ~/repos/ticket-writing
+    git remote add upstream git@github.com:apisnoop/ticket-writing.git
+
+    # Setup Kubernetes src
+    # mkdir -p ~/go/src/k8s.io
+    # cd ~/go/src/k8s.io
+    # git clone https://github.com/kubernetes/kubernetes.git
+    # cd kubernetes
+    # git remote add ii git@github.com:ii/kubernetes.git
+) 2>&1 >/tmp/src-clone.log &
+curl -s https://fluxcd.io/install.sh | bash
+cat <<EOF >>~/.bashrc
+. <(kubectl completion bash)
+. <(flux completion bash)
+EOF
 exit 0

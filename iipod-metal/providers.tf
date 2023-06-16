@@ -47,7 +47,8 @@ provider "github" {
 }
 provider "acme" {
   # https://registry.terraform.io/providers/vancluever/acme/latest/docs#argument-reference
-  server_url = "https://acme-staging-v02.api.letsencrypt.org/directory"
+  # server_url = "https://acme-staging-v02.api.letsencrypt.org/directory"
+  server_url = "https://acme-v02.api.letsencrypt.org/directory"
 }
 provider "powerdns" {
   # https://registry.terraform.io/providers/pan-net/powerdns/latest/docs

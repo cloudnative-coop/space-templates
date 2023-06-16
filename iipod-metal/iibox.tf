@@ -206,7 +206,7 @@ resource "equinix_metal_device" "iibox" {
     #   templatefile("./etc/kubernetes/manifests/ips.yaml", {
     #     ip = local.elastic_ip
     # }))
-    values_cilium = base64encode(
+    ingress_manifest = base64encode(
       templatefile("./templates/etc/kubernetes/manifests/ingress.yaml", {
         fqdn = local.dns_zone
     }))

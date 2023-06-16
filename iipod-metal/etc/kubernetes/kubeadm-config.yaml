@@ -13,7 +13,7 @@ nodeRegistration:
 ---
 apiVersion: kubeadm.k8s.io/v1beta3
 kind: ClusterConfiguration
-kubernetesVersion: 1.27.2
+kubernetesVersion: 1.27.3
 apiServer:
   timeoutForControlPlane: 4m0s
   extraArgs:

@@ -208,7 +208,7 @@ resource "equinix_metal_device" "iibox" {
     # }))
     values_cilium = base64encode(
       templatefile("./templates/etc/kubernetes/manifests/ingress.yaml", {
-        fdqn = local.dns_zone
+        fqdn = local.dns_zone
     }))
     values_cilium = base64encode(
       templatefile("./templates/etc/cloud/values-cilium.yaml", {

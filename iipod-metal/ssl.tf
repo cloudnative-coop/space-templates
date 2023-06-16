@@ -2,14 +2,14 @@ resource "coder_metadata" "key" {
   resource_id = tls_private_key.secret.id
   count       = data.coder_workspace.ii.start_count
   hide        = true
-  item {
-    key   = "algorithm"
-    value = tls_private_key.secret.algorithm
-  }
-  item {
-    key   = "rsa_bits"
-    value = tls_private_key.secret.rsa_bits
-  }
+  # item {
+  #   key   = "algorithm"
+  #   value = tls_private_key.secret.algorithm
+  # }
+  # item {
+  #   key   = "rsa_bits"
+  #   value = tls_private_key.secret.rsa_bits
+  # }
   # Maybe some logic to display ecdsa_curve based on algorithm?
   # item {
   #   key   = "ecdsa_curve"
@@ -21,33 +21,34 @@ resource "coder_metadata" "certificate" {
   resource_id = acme_certificate.wildcard.id
   count       = data.coder_workspace.ii.start_count
   icon        = "https://raw.githubusercontent.com/cert-manager/cert-manager/master/logo/logo.svg"
-  item {
-    key   = "domain"
-    value = acme_certificate.wildcard.certificate_domain
-  }
-  item {
-    key   = "cert_url"
-    value = acme_certificate.wildcard.certificate_url
-  }
-  item {
-    key   = "expires"
-    value = acme_certificate.wildcard.certificate_not_after
-  }
+  hide        = true
+  # item {
+  #   key   = "domain"
+  #   value = acme_certificate.wildcard.certificate_domain
+  # }
+  # item {
+  #   key   = "cert_url"
+  #   value = acme_certificate.wildcard.certificate_url
+  # }
+  # item {
+  #   key   = "expires"
+  #   value = acme_certificate.wildcard.certificate_not_after
+  # }
 }
 
-resource "coder_metadata" "registration" {
-  resource_id = acme_registration.email.id
-  count       = data.coder_workspace.ii.start_count
-  hide        = true
-  item {
-    key   = "email"
-    value = acme_registration.email.email_address
-  }
-  item {
-    key   = "registration_url"
-    value = acme_registration.email.registration_url
-  }
-}
+# resource "coder_metadata" "registration" {
+#   resource_id = acme_registration.email.id
+#   count       = data.coder_workspace.ii.start_count
+#   hide        = true
+#   item {
+#     key   = "email"
+#     value = acme_registration.email.email_address
+#   }
+#   item {
+#     key   = "registration_url"
+#     value = acme_registration.email.registration_url
+#   }
+# }
 
 resource "tls_private_key" "secret" {
   algorithm = "RSA"

@@ -2,29 +2,30 @@ resource "coder_metadata" "a_record" {
   resource_id = powerdns_record.a_record.id
   count       = data.coder_workspace.ii.start_count
   hide        = true
-  item {
-    key   = "domain"
-    value = "${powerdns_record.a_record.name}.${powerdns_record.a_record.zone}"
-  }
-  item {
-    key   = "A"
-    value = equinix_metal_device.iibox.access_public_ipv4
-  }
+  # item {
+  #   key   = "domain"
+  #   value = "${powerdns_record.a_record.name}.${powerdns_record.a_record.zone}"
+  # }
+  # item {
+  #   key   = "A"
+  #   value = equinix_metal_device.iibox.access_public_ipv4
+  # }
 }
 
 resource "coder_metadata" "wild_a_record" {
   resource_id = powerdns_record.wild_a_record.id
   count       = data.coder_workspace.ii.start_count
   icon        = "/icon/node.svg"
-  item {
-    key   = "wildcard"
-    value = powerdns_record.wild_a_record.name
-    # ".${powerdns_record.wild_a_record.zone}"
-  }
-  item {
-    key   = "A"
-    value = equinix_metal_device.iibox.access_public_ipv4
-  }
+  hide        = true
+  # item {
+  #   key   = "wildcard"
+  #   value = powerdns_record.wild_a_record.name
+  #   # ".${powerdns_record.wild_a_record.zone}"
+  # }
+  # item {
+  #   key   = "A"
+  #   value = equinix_metal_device.iibox.access_public_ipv4
+  # }
 }
 
 resource "powerdns_record" "a_record" {

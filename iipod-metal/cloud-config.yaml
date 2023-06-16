@@ -155,6 +155,21 @@ write_files:
     content: ${install_desktop}
     permissions: "0755"
     encoding: b64
+  - path: /etc/kubernetes/manifests/nginx.yaml
+    content: ${nginx_flux_manifest}
+    permissions: "0644"
+  - path: /etc/kubernetes/manifests/isto.yaml
+    content: ${istio_flux_manifest}
+    permissions: "0644"
+    encoding: b64
+  - path: /etc/kubernetes/manifests/apisnoop.yaml
+    content: ${apisnoop_flux_manifest}
+    permissions: "0644"
+    encoding: b64
+  - path: /etc/kubernetes/manifests/cert-manager.yaml
+    content: ${certmanager_flux_manifest}
+    permissions: "0644"
+    encoding: b64
   # - path: /etc/kubernetes/manifests/cilium.yaml
   #   content: $${cilium_manifest}
   #   permissions: "0644"

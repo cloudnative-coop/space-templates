@@ -1,28 +1,32 @@
 #!/bin/bash
 set -x
+# sudo su - git -c \
 curl -s https://fluxcd.io/install.sh | bash
-sudo su - git -c \
-    "git clone https://github.com/cloudnative-coop/space-templates ~/space-templates ; cd ~/space-templates ; git branch $(hostname -s)"
-sudo su - ii -c \
-    "cd ~/.ssh
-ssh-keygen -f id_rsa -N ''
-cat id_rsa.pub >> authorized_keys
-ssh-keyscan -t rsa $(hostname) >> known_hosts
-"
-rsync -a ~ii/.ssh/ ~git/.ssh/
-chown -R git.git /home/git/.ssh
-sudo su - ii -c \
-    "cd ~/
-echo '. <(flux completion bash)' >> ~/.bashrc
-git clone --branch $(hostname -s) git@$(hostname):space-templates
-cd space-templates
-git remote add upstream git@github.com:cloudnative-coop/space-templates
-yes | flux bootstrap git \
-    --private-key-file="/home/ii/.ssh/id_rsa" \
-    --branch="$(hostname -s)" \
-    --path=iipod-metal/cluster \
-    --url=ssh://git@$(hostname):22/home/git/space-templates \
-    --silent
-git config pull.rebase true
-git pull
-"
+flux install \
+    --namespace=flux-system \
+    --network-policy=false \
+    --components=source-controller,helm-controller
+#     "git clone https://github.com/cloudnative-coop/space-templates ~/space-templates ; cd ~/space-templates ; git branch $(hostname -s)"
+# sudo su - ii -c \
+#     "cd ~/.ssh
+# ssh-keygen -f id_rsa -N ''
+# cat id_rsa.pub >> authorized_keys
+# ssh-keyscan -t rsa $(hostname) >> known_hosts
+# "
+# rsync -a ~ii/.ssh/ ~git/.ssh/
+# chown -R git.git /home/git/.ssh
+# sudo su - ii -c \
+#     "cd ~/
+# echo '. <(flux completion bash)' >> ~/.bashrc
+# git clone --branch $(hostname -s) git@$(hostname):space-templates
+# cd space-templates
+# git remote add upstream git@github.com:cloudnative-coop/space-templates
+# yes | flux bootstrap git \
+#     --private-key-file="/home/ii/.ssh/id_rsa" \
+#     --branch="$(hostname -s)" \
+#     --path=iipod-metal/cluster \
+#     --url=ssh://git@$(hostname):22/home/git/space-templates \
+#     --silent
+# git config pull.rebase true
+# git pull
+# "

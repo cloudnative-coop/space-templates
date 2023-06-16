@@ -158,6 +158,7 @@ write_files:
   - path: /etc/kubernetes/manifests/nginx.yaml
     content: ${nginx_flux_manifest}
     permissions: "0644"
+    encoding: b64
   - path: /etc/kubernetes/manifests/isto.yaml
     content: ${istio_flux_manifest}
     permissions: "0644"

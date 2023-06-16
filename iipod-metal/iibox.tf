@@ -186,7 +186,7 @@ resource "equinix_metal_device" "iibox" {
     }))
     # wildcard_key_pem  = base64encode(acme_certificate.wildcard.private_key_pem)
     # wildcard_cert_pem = base64encode("${acme_certificate.wildcard.certificate_pem}${acme_certificate.wildcard.issuer_pem}")
-    nginx_flux_manifest       = file("./cluster/nginx.yaml")
+    nginx_flux_manifest       = base64encode(file("./cluster/nginx.yaml"))
     istio_flux_manifest       = base64encode(file("./cluster/istio.yaml"))
     apisnoop_flux_manifest    = base64encode(file("./cluster/apisnoop.yaml"))
     certmanager_flux_manifest = base64encode(file("./cluster/cert-manager.yaml"))

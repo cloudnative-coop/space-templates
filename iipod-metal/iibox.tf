@@ -207,6 +207,10 @@ resource "equinix_metal_device" "iibox" {
     #     ip = local.elastic_ip
     # }))
     values_cilium = base64encode(
+      templatefile("./templates/etc/kubernetes/manifests/ingress.yaml", {
+        fdqn = local.dns_zone
+    }))
+    values_cilium = base64encode(
       templatefile("./templates/etc/cloud/values-cilium.yaml", {
         k8s_service_host = local.dns_zone
     }))

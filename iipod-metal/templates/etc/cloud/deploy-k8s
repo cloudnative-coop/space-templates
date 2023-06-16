@@ -42,6 +42,8 @@ IP=$(cloud-init query -f "{{ds.meta_data.public_ipv4}}")
 cat <<EOF >>/etc/kubernetes/manifests/nginx.yaml
   values:
     controller:
+      extraArgs:
+        default-ssl-certificate: "ingress-nginx/wildcard-tls"
       service:
         externalIPs:
           - $IP

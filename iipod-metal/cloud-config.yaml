@@ -58,6 +58,7 @@ apt:
     # From https://launchpad.net/~hippiehacker/+archive/ubuntu/emacs-broadway
     # emacs.list:
     #   # source: "ppa:hippiehacker/emacs-broadway"
+
     #   source: "deb http://ppa.launchpad.net/hippiehacker/emacs-broadway/ubuntu kinetic main"
     #   keyid: 78F37A14C8142D21 #keyid for Hippie Hacker
     #   filename: hippiehacker-emacsbroadway-ppa.list
@@ -149,7 +150,7 @@ write_files:
     encoding: b64
   - path: /etc/cloud/install-kind
     content: ${install_kind}
-    permission: "0755"
+    permissions: "0755"
     encoding: b64
   - path: /etc/cloud/install-desktop
     content: ${install_desktop}
@@ -169,6 +170,10 @@ write_files:
     encoding: b64
   - path: /etc/kubernetes/manifests/cert-manager.yaml
     content: ${certmanager_flux_manifest}
+    permissions: "0644"
+    encoding: b64
+  - path: /etc/kubernetes/manifests/ingress.yaml
+    content: ${ingress_manifest}
     permissions: "0644"
     encoding: b64
   # - path: /etc/kubernetes/manifests/cilium.yaml

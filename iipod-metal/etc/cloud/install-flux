@@ -1,6 +1,7 @@
 #!/bin/bash
 set -x
 # sudo su - git -c \
+export KUBECONFIG=/etc/kubernetes/admin.conf
 curl -s https://fluxcd.io/install.sh | bash
 flux install \
     --namespace=flux-system \

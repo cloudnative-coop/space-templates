@@ -32,7 +32,7 @@ kubeProxyReplacement: strict
 gatewayAPI:
   enabled: true
 ingressController:
-  enabled: true
+  enabled: false
   service:
     # type: NodePort
     type: LoadBalancer

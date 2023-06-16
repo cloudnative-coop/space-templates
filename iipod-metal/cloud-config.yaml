@@ -70,14 +70,14 @@ write_files:
     content: ${coder_init_service}
     permissions: "0644"
     encoding: b64
-  # - path: /etc/cloud/wildcard.cert.pem
-  #   content: $${wildcard_cert_pem}
-  #   permissions: "0600"
-  #   encoding: b64
-  # - path: /etc/cloud/wildcard.key.pem
-  #   content: $${wildcard_key_pem}
-  #   permissions: "0600"
-  #   encoding: b64
+  - path: /etc/cloud/wildcard.cert.pem
+    content: ${wildcard_cert_pem}
+    permissions: "0600"
+    encoding: b64
+  - path: /etc/cloud/wildcard.key.pem
+    content: ${wildcard_key_pem}
+    permissions: "0600"
+    encoding: b64
   - path: /etc/kubernetes/pki/audit-policy.yaml
     content: ${audit_policy}
     permissions: "0644"
@@ -159,7 +159,7 @@ write_files:
     content: ${nginx_flux_manifest}
     permissions: "0644"
     encoding: b64
-  - path: /etc/kubernetes/manifests/isto.yaml
+  - path: /etc/kubernetes/manifests/istio.yaml
     content: ${istio_flux_manifest}
     permissions: "0644"
     encoding: b64
@@ -195,6 +195,6 @@ runcmd:
   - systemctl stop ttyd
   - systemctl enable coder-agent
   - systemctl start coder-agent
-  - sh -c "(/etc/cloud/install-cilium ; /etc/cloud/deploy-k8s ; /etc/cloud/deploy-cilium ; /etc/cloud/install-flux ; /etc/cloud/install-nginx ; /etc/cloud/install-kind ) 2>&1 > /var/log/k8s-deploy.log &"
+  - sh -c "(/etc/cloud/install-cilium ; /etc/cloud/deploy-k8s ; /etc/cloud/deploy-cilium ; /etc/cloud/install-flux ; /etc/cloud/install-kind ) 2>&1 > /var/log/k8s-deploy.log &"
   - sh -c "/etc/cloud/install-desktop 2>&1 > /var/log/install-desktop.log &"
 final_message: "The system is finally up, after $UPTIME seconds"

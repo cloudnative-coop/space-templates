@@ -38,12 +38,12 @@ kubectl apply -f /etc/kubernetes/manifests/cert-manager.yaml
 # kubectl apply -f /etc/kubernetes/manifests/auditlogger.yaml
 # We need to add the current primary public ip without metallb
 # so "LoadBalancer" type loads this as the ip
-$IP=$(cloud-init query -f "{{ds.meta_data.public_ipv4}}")
+IP=$(cloud-init query -f "{{ds.meta_data.public_ipv4}}")
 cat <<EOF >>/etc/kubernetes/manifests/nginx.yaml
-    values:
-      controller:
-        service:
-          externalIPs:
-            - $IP
+  values:
+    controller:
+      service:
+        externalIPs:
+          - $IP
 EOF
 kubectl apply -f /etc/kubernetes/manifests/nginx.yaml

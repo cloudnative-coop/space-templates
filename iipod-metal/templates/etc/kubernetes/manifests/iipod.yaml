@@ -134,3 +134,17 @@ spec:
               - path: "labels"
                 fieldRef:
                   fieldPath: metadata.labels
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: hostvnc
+  namespace: default
+spec:
+  type: ExternalName
+  externalName: ${fqdn}
+  ports:
+    - name: novnc
+      port: 80
+      protocol: TCP
+      targetPort: 6080

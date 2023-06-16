@@ -7,6 +7,32 @@ flux install \
     --namespace=flux-system \
     --network-policy=false \
     --components=source-controller,helm-controller
+# From here we want flux source and helm CRDs to work
+kubectl wait --for=condition=Ready --selector=app=source-controller --timeout=600s --namespace=flux-system pod
+kubectl wait --for=condition=Ready --selector=app=helm-controller --timeout=600s --namespace=flux-system pod
+kubectl apply -f /etc/kubernetes/manifests/istio.yaml
+kubectl apply -f /etc/kubernetes/manifests/apisnoop.yaml
+kubectl apply -f /etc/kubernetes/manifests/cert-manager.yaml
+# kubectl apply -f /etc/kubernetes/manifests/snoopdb.yaml
+# kubectl apply -f /etc/kubernetes/manifests/auditlogger.yaml
+# We need to add the current primary public ip without metallb
+# so "LoadBalancer" type loads this as the ip
+IP=$(cloud-init query -f "{{ds.meta_data.public_ipv4}}")
+cat <<EOF >>/etc/kubernetes/manifests/nginx.yaml
+  values:
+    controller:
+      extraArgs:
+        default-ssl-certificate: "ingress-nginx/wildcard-tls"
+      service:
+        externalIPs:
+          - $IP
+EOF
+kubectl apply -f /etc/kubernetes/manifests/nginx.yaml
+kubectl -n ingress-nginx create secret tls wildcard-tls \
+    --cert=/etc/cloud/wildcard.cert.pem \
+    --key=/etc/cloud/wildcard.key.pem
+kubectl wait --for=condition=Ready --selector=app.kubernetes.io/component=controller --timeout=600s --namespace=ingress-nginx pod
+kubectl apply -f /etc/kubernetes/manifests/ingress.yaml
 #     "git clone https://github.com/cloudnative-coop/space-templates ~/space-templates ; cd ~/space-templates ; git branch $(hostname -s)"
 # sudo su - ii -c \
 #     "cd ~/.ssh

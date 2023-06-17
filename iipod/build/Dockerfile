@@ -81,29 +81,29 @@ RUN DEBIAN_FRONTEND=noninteractive \
 
 COPY arch-helper.sh /usr/local/lib/arch-helper.sh
 # STUFF
-ENV DOCKER_VERSION=20.10.10 \
-  KIND_VERSION=0.11.1 \
-  KUBECTL_VERSION=1.24.2 \
-  GO_VERSION=1.19.1 \
-  TILT_VERSION=0.22.15 \
+ENV DOCKER_VERSION=24.0.2\
+  KIND_VERSION=0.20.0 \
+  KUBECTL_VERSION=1.27.3 \
+  GO_VERSION=1.20.5 \
+  TILT_VERSION=0.32.4 \
   TMATE_VERSION=2.4.0 \
-  HELM_VERSION=3.7.1 \
-  GH_VERSION=2.13.0 \
+  HELM_VERSION=3.12.1 \
+  GH_VERSION=2.30.0 \
   LEIN_VERSION=stable \
-  CLOJURE_VERSION=1.10.1.697 \
+  CLOJURE_VERSION=1.11.1 \
   CLUSTERCTL_VERSION=1.2.2 \
   TALOSCTL_VERSION=1.1.0 \
-  TERRAFORM_VERSION=1.2.4 \
+  TERRAFORM_VERSION=1.5.0 \
   DIVE_VERSION=0.10.0 \
-  CRICTL_VERSION=1.22.0 \
+  CRICTL_VERSION=1.27.0 \
   KUBECTX_VERSION=0.9.4 \
   FZF_VERSION=0.26.0 \
-  NERDCTL_VERSION=0.18.0 \
-  METALCLI_VERSION=0.6.0 \
-  KO_VERSION=0.11.2 \
-  KN_VERSION=1.6.0 \
-  UPTERM_VERSION=0.7.6 \
-  GOPLS_VERSION=0.8.3 \
+  NERDCTL_VERSION=1.4.0 \
+  METALCLI_VERSION=0.14.1 \
+  KO_VERSION=0.13.0 \
+  KN_VERSION=1.37.0 \
+  UPTERM_VERSION=0.10.0 \
+  GOPLS_VERSION=0.10.0 \
   GOROOT=/usr/local/go \
   PATH="$PATH:/usr/local/go/bin:/usr/libexec/flatpak-xdg-utils:/home/ii/go/bin" \
   CONTAINERD_NAMESPACE=k8s.io
@@ -232,3 +232,5 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-inst
 RUN curl -fsSL https://coder.com/install.sh | sh
 
 RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && true || true && true
+
+# RUN ln -s /usr/bin/coder /usr/local/bin/space

@@ -30,7 +30,7 @@ resource "coder_metadata" "wild_a_record" {
 
 resource "powerdns_record" "a_record" {
   name    = local.dns_fqdn
-  zone    = "ii.nz."
+  zone    = "${var.domain}."
   type    = "A"
   ttl     = 60
   records = [equinix_metal_device.iibox.access_public_ipv4]
@@ -39,7 +39,7 @@ resource "powerdns_record" "a_record" {
 
 resource "powerdns_record" "wild_a_record" {
   name = "*.${local.dns_fqdn}"
-  zone = "ii.nz."
+  zone = "${var.domain}."
   type = "A"
   ttl  = 60
   # depends_on = [

@@ -18,6 +18,7 @@ data "coder_parameter" "metro" {
     value = "pa"
     icon  = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/320px-Flag_of_France.svg.png"
   }
+  # | ld7  | c3.small.x86 | unavailable |
   option {
     name  = "London, England"
     value = "ld"
@@ -64,7 +65,7 @@ data "coder_parameter" "plan" {
   name         = "plan"
   display_name = "Plan"
   description  = "The Equinix Metal Plan for the machine"
-  default      = "c3.small.x86"
+  default      = "c3.medium.x86"
   option {
     name  = "c3.small.x86"
     value = "c3.small.x86"
@@ -77,6 +78,12 @@ data "coder_parameter" "plan" {
     name  = "m3.large.x86"
     value = "m3.large.x86"
   }
+  # We will need to update how the coder_agent architecture is set
+  # option {
+  #   name  = "c3.large.arm64 (Dallas/Washington Only)"
+  #   value = "c3.large.arm64"
+  #   # icon = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg/1200px-Flag_of_the_United_States_%28DoS_ECA_Color_Standard%29.svg.png"
+  # }
 }
 
 data "coder_parameter" "os" {
@@ -95,12 +102,13 @@ data "coder_parameter" "os" {
 }
 
 resource "coder_agent" "iibox" {
-  auth                    = "token"
-  arch                    = "amd64" # Intel
-  os                      = "linux" # Linux
-  dir                     = "$HOME" # Could set to somewhere
-  motd_file               = "/etc/motd"
-  startup_script_behavior = "blocking"     # blocking, non-blocking
+  auth      = "token"
+  arch      = "amd64" # Intel
+  os        = "linux" # Linux
+  dir       = "$HOME" # Could set to somewhere
+  motd_file = "/etc/motd"
+  # We do non-blocking, because the box may be ready before the cluster
+  startup_script_behavior = "non-blocking" # blocking, non-blocking
   troubleshooting_url     = "http://ii.nz" # blocking, non-blocking
   connection_timeout      = 300
   startup_script          = file("./iibox-startup.sh")
@@ -118,9 +126,10 @@ resource "coder_agent" "iibox" {
     GIT_COMMITTER_EMAIL = "${data.coder_workspace.ii.owner_email}"
   }
   metadata {
-    interval = 10
-    key      = "k8s"
-    script   = "kubectl version -o json | jq '.serverVersion.gitVersion' -r"
+    interval     = 15
+    display_name = "K8s Version"
+    key          = "k8s"
+    script       = "kubectl version -o json | jq '.serverVersion.gitVersion' -r"
   }
   # metadata {
   #   interval = 10
@@ -134,7 +143,7 @@ resource "coder_app" "tmux" {
   subdomain    = true
   share        = "public"
   slug         = "tmux"
-  display_name = "TMUX"
+  display_name = "iibox:tmux"
   icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
   agent_id     = coder_agent.iibox.id
   url          = "http://localhost:7681" # 7681 is the default ttyd port
@@ -145,7 +154,7 @@ resource "coder_app" "vnc" {
   subdomain    = true
   share        = "public"
   slug         = "vnc"
-  display_name = "VNC:1"
+  display_name = "iibox:desktop"
   icon         = "/icon/novnc.svg"
   agent_id     = coder_agent.iibox.id
   url          = "http://localhost:6080?resize=remote&autoconnect=true"
@@ -158,11 +167,15 @@ resource "coder_metadata" "iibox" {
   icon        = "https://avatars.githubusercontent.com/u/7982021?s=280&v=4"
   item {
     key   = "ssh"
-    value = "ssh -tA ii@${powerdns_record.wild_a_record.name}.${powerdns_record.wild_a_record.zone} tmux at"
+    value = "ssh -tA ii@${local.dns_zone} tmux at"
+  }
+  item {
+    key   = "vnc"
+    value = "http://novnc.${local.dns_zone}/?resize=remote&autoconnect=true"
   }
   item {
     key   = "kubeconfig"
-    value = "export KUBECONFIG=$(mktemp) ; scp ii@${powerdns_record.wild_a_record.name}.${powerdns_record.wild_a_record.zone}:.kube/config $KUBECONFIG"
+    value = "export KUBECONFIG=$(mktemp) ; scp ii@${local.dns_zone}:.kube/config $KUBECONFIG"
   }
 }
 

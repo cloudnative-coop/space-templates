@@ -53,16 +53,6 @@ resource "coder_agent" "iipod" {
   }
 }
 
-# ttyd connecting to tmux
-resource "coder_app" "podmux" {
-  subdomain    = true
-  share        = "public"
-  slug         = "podtmux"
-  display_name = "Tmux"
-  icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
-  agent_id     = coder_agent.iipod.id
-  url          = "http://localhost:7681" # 7681 is the default ttyd port
-}
 
 resource "coder_metadata" "iipod" {
   resource_id = null_resource.iipod.id
@@ -84,21 +74,31 @@ resource "coder_app" "Emacs" {
   share        = "public"
   agent_id     = coder_agent.iipod.id
   slug         = "emacs"
-  display_name = "Emacs"
+  display_name = "iipod:Emacs Broadway"
   icon         = "https://upload.wikimedia.org/wikipedia/commons/0/08/EmacsIcon.svg" # let's maybe get an emacs.svg somehow
   url          = "http://localhost:8085"                                             # port 8080 + BROADWAY_DISPLAY
 }
 
-# # noVNC connecting to tigervnc:1
-resource "coder_app" "podvnc" {
+# ttyd connecting to tmux
+resource "coder_app" "podmux" {
   subdomain    = true
   share        = "public"
-  slug         = "podvnc"
-  display_name = "VNC:1"
-  icon         = "/icon/novnc.svg"
+  slug         = "podtmux"
+  display_name = "iipod:tmux"
+  icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
   agent_id     = coder_agent.iipod.id
-  url          = "http://localhost:6080?resize=remote&autoconnect=true"
+  url          = "http://localhost:7681" # 7681 is the default ttyd port
 }
+# # # noVNC connecting to tigervnc:1
+# resource "coder_app" "podvnc" {
+#   subdomain    = true
+#   share        = "public"
+#   slug         = "podvnc"
+#   display_name = "VNC:1"
+#   icon         = "/icon/novnc.svg"
+#   agent_id     = coder_agent.iipod.id
+#   url          = "http://localhost:6080?resize=remote&autoconnect=true"
+# }
 
 # NULL RESOURCE for iipod
 # agent_token / startup in local RATHER than directly

@@ -1,7 +1,7 @@
 # Currently only configurable within the coder instance / provisioner
 # cloudnative.coop project under CNCF Account
 # https://console.equinix.com/projects/f4a7273d-b1fc-4c50-93e8-7fed753c86ff
-variable "project" {
+variable "metal_project" {
   type        = string
   description = "Project from https://deploy.equinix.com/developers/docs/metal/accounts/projects/"
   default     = "f4a7273d-b1fc-4c50-93e8-7fed753c86ff" # pair.sharing.io

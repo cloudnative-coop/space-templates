@@ -167,7 +167,7 @@ resource "coder_metadata" "iibox" {
 }
 
 resource "equinix_metal_device" "iibox" {
-  project_id       = var.project
+  project_id       = var.metal_project
   hostname         = local.dns_zone
   operating_system = data.coder_parameter.os.value
   plan             = data.coder_parameter.plan.value

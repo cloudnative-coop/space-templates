@@ -15,28 +15,12 @@ terraform {
   }
 }
 
-variable "use_kubeconfig" {
-  type        = bool
-  default     = false
-  sensitive   = true
-  description = <<-EOF
-  Use host kubeconfig? (true/false)
-
-  Set this to false if the Coder host is itself running as a Pod on the same
-  Kubernetes cluster as you are deploying workspaces to.
-
-  Set this to true if the Coder host is running outside the Kubernetes cluster
-  for workspaces.  A valid "~/.kube/config" must be present on the Coder host.
-  EOF
-}
-
-
-variable "namespace" {
-  type        = string
-  sensitive   = true
-  description = "The namespace to create workspaces in (must exist prior to creating workspaces)"
-  default     = "coder"
-}
+# variable "namespace" {
+#   type        = string
+#   sensitive   = true
+#   description = "The namespace to create workspaces in (must exist prior to creating workspaces)"
+#   default     = "spaces"
+# }
 
 locals {
   username = data.coder_workspace.ii.owner
@@ -66,7 +50,7 @@ data "coder_parameter" "container-image" {
   name         = "container-image"
   display_name = "Container Image"
   description  = "The container image to use for the workspace"
-  default      = "ghcr.io/cloudnative-coop/iipod:v0.0.12"
+  default      = "ghcr.io/cloudnative-coop/iipod:kubedaytlv"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }
 

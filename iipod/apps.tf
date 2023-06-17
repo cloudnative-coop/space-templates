@@ -31,20 +31,20 @@ resource "coder_app" "web" {
   url      = "http://localhost:8000" # 7681 is the default ttyd port
 }
 
-resource "coder_app" "code-server" {
-  agent_id     = coder_agent.ii.id
-  slug         = "code-server"
-  display_name = "code-server"
-  # url          = "http://localhost:13337/?folder=/home/${local.username}"
-  url       = "http://localhost:13337/?folder=/home/ii"
-  icon      = "/icon/code.svg"
-  subdomain = true
-  share     = "public"
-  # share     = "owner"
+# resource "coder_app" "code-server" {
+#   agent_id     = coder_agent.ii.id
+#   slug         = "code-server"
+#   display_name = "code-server"
+#   # url          = "http://localhost:13337/?folder=/home/${local.username}"
+#   url       = "http://localhost:13337/?folder=/home/ii"
+#   icon      = "/icon/code.svg"
+#   subdomain = true
+#   share     = "public"
+#   # share     = "owner"
 
-  healthcheck {
-    url       = "http://localhost:13337/healthz"
-    interval  = 5
-    threshold = 6
-  }
-}
+#   healthcheck {
+#     url       = "http://localhost:13337/healthz"
+#     interval  = 5
+#     threshold = 6
+#   }
+# }

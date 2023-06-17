@@ -1,8 +1,9 @@
 resource "kubernetes_pod" "iipod" {
   count = data.coder_workspace.ii.transition == "start" ? 1 : 0
   metadata {
-    name      = "${lower(data.coder_workspace.ii.owner)}-${lower(data.coder_workspace.ii.name)}"
-    namespace = var.namespace
+    name = "${lower(data.coder_workspace.ii.owner)}-${lower(data.coder_workspace.ii.name)}"
+    # namespace = "spaces" #var.namespace
+    namespace = "coder" #var.namespace
   }
   spec {
     security_context {

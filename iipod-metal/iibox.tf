@@ -11,8 +11,23 @@ data "coder_parameter" "metro" {
   name         = "metro"
   display_name = "Metro"
   description  = "The Equinix Metal Metro for the machine"
-  default      = "ny"
+  default      = "ld"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
+  option {
+    name  = "Paris, France"
+    value = "pa"
+    icon  = "https://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Flag_of_France.svg/320px-Flag_of_France.svg.png"
+  }
+  option {
+    name  = "London, England"
+    value = "ld"
+    icon  = "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a5/Flag_of_the_United_Kingdom_%281-2%29.svg/320px-Flag_of_the_United_Kingdom_%281-2%29.svg.png"
+  }
+  option {
+    name  = "Frankfurt, Germany"
+    value = "fr"
+    icon  = "https://upload.wikimedia.org/wikipedia/en/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png"
+  }
   option {
     name  = "New York, USA"
     value = "ny"
@@ -27,11 +42,6 @@ data "coder_parameter" "metro" {
     name  = "Tokyo, Japan"
     value = "ty"
     icon  = "https://upload.wikimedia.org/wikipedia/en/thumb/9/9e/Flag_of_Japan.svg/320px-Flag_of_Japan.svg.png"
-  }
-  option {
-    name  = "Frankfurt, Germany"
-    value = "fr"
-    icon  = "https://upload.wikimedia.org/wikipedia/en/thumb/b/ba/Flag_of_Germany.svg/2560px-Flag_of_Germany.svg.png"
   }
   option {
     name  = "Dallas, Texas, USA"

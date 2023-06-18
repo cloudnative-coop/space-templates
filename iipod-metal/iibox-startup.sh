@@ -25,6 +25,9 @@ ttyd tmux at 2>&1 | tee /tmp/ttyd.log &
     git remote add ii git@github.com:ii/kubernetes.git
 ) 2>&1 >/tmp/src-clone.log &
 
+mkdir ~/novnc && ln -s /usr/share/novnc/* ~/novnc
+cp ~/novnc/vnc.html ~/novnc/index.html
+
 echo "Waiting for emacs to be available"
 until emacs --version; do sleep 5; done
 mkdir -p ~/.config
@@ -46,8 +49,6 @@ ORGFILE=$(basename $ORGURL)
 emacs \$ORGFILE &
 "
 ) 2>&1 >~/.config/emacs-install.log &
-mkdir ~/novnc && ln -s /usr/share/novnc/* ~/novnc
-cp ~/novnc/vnc.html ~/novnc/index.html
 
 echo "Waiting for kubectl to be installed"
 until kubectl version; do sleep 5; done

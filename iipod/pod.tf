@@ -4,6 +4,10 @@ resource "kubernetes_pod" "iipod" {
     name = "${lower(data.coder_workspace.ii.owner)}-${lower(data.coder_workspace.ii.name)}"
     # namespace = "spaces" #var.namespace
     namespace = "coder" #var.namespace
+    labels = {
+      "spacename" : data.coder_workspace.me.name
+      "spaceowner" : data.coder_workspace.me.owner
+    }
   }
   spec {
     security_context {

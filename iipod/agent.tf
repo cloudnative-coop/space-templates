@@ -10,6 +10,10 @@ resource "coder_agent" "ii" {
     wget "${data.coder_parameter.org-url.value}"
     ORGFILE=$(basename "${data.coder_parameter.org-url.value}")
     GDK_BACKEND=broadway BROADWAY_DISPLAY=:5 emacs $ORGFILE 2>&1 | tee /tmp/emacs.log &
+    cat <<EOF >>~/.tmux.conf
+    set -g base-index 1
+    set -s escape-time 0
+    EOF
     # start ttyd / tmux
     tmux new -d -s "${lower(data.coder_workspace.ii.name)}" -n "ii"
     ttyd tmux at 2>&1 | tee /tmp/ttyd.log &
@@ -30,7 +34,14 @@ resource "coder_agent" "ii" {
     code-server --auth none --port 13337 | tee /tmp/code-server.log &
     echo startup_script complete | tee /tmp/startup_script.exit
     # Check out the repo
-    git clone "${data.coder_parameter.git-url.value}"
+    # git clone "${data.coder_parameter.git-url.value}"
+    sudo apt-get install -y \
+      tigervnc-standalone-server \
+      apt-file \
+      dbus-x11
+    sudo apt-file update
+    websockify -D --web=/home/ii/novnc 6080 localhost:5901
+    tigervncserver :1 -desktop $SESSION_NAME -SecurityTypes None -noxstartup
     exit 0
   EOT
 
@@ -40,6 +51,8 @@ resource "coder_agent" "ii" {
   # dotfiles. (see docs/dotfiles.md)
   env = {
     # GITHUB_TOKEN        = "$${data.coder_git_auth.github.access_token}"
+    # Just a hidden feature for now to try out
+    OPENAI_API_TOKEN    = "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"
     SESSION_NAME        = "${lower(data.coder_workspace.ii.name)}"
     GIT_AUTHOR_NAME     = "${data.coder_workspace.ii.owner}"
     GIT_COMMITTER_NAME  = "${data.coder_workspace.ii.owner}"

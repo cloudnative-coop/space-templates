@@ -5,8 +5,8 @@ resource "kubernetes_pod" "iipod" {
     # namespace = "spaces" #var.namespace
     namespace = "coder" #var.namespace
     labels = {
-      "spacename" : data.coder_workspace.me.name
-      "spaceowner" : data.coder_workspace.me.owner
+      "spacename" : data.coder_workspace.ii.name
+      "spaceowner" : data.coder_workspace.ii.owner
     }
   }
   spec {

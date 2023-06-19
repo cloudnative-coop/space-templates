@@ -24,7 +24,7 @@ spec:
   releaseName: snoopdb
   values:
     image:
-      tag: "v20230201-0.2.0-445-g6d6e89d"
+      tag: "v20230619-0.2.0-584-g6289ec1"
   chart:
     spec:
       chart: charts/snoopdb

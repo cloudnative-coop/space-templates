@@ -1,7 +1,6 @@
-resource "coder_agent" "ii" {
+resource "coder_agent" "iipod" {
   arch                   = data.coder_provisioner.ii.arch
   os                     = data.coder_provisioner.ii.os
-  login_before_ready     = true
   startup_script_timeout = 180
   startup_script         = <<-EOT
     set -x

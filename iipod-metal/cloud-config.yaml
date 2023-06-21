@@ -140,6 +140,10 @@ write_files:
     content: ${deploy_cilium}
     permissions: "0755"
     encoding: b64
+  - path: /etc/cloud/values-okteto.yaml
+    content: ${values_okteto}
+    permissions: "0644"
+    encoding: b64
   - path: /etc/cloud/values-cilium.yaml
     content: ${values_cilium}
     permissions: "0644"

@@ -1,0 +1,14 @@
+cluster:
+  endpoint: "https://${fqdn}:6443"
+ingress-nginx:
+    enabled: false
+ingress:
+  oktetoIngressClass: "nginx"
+subdomain: "${fqdn}"
+wildcardCertificate:
+  create: false
+  name: wildcard-tls
+ingress-nginx:
+  controller:
+    extraArgs:
+      default-ssl-certificate: nginx/wildcard-tls

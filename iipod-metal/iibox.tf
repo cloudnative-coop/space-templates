@@ -229,6 +229,10 @@ resource "equinix_metal_device" "iibox" {
     #   templatefile("./etc/kubernetes/manifests/ips.yaml", {
     #     ip = local.elastic_ip
     # }))
+    values_okteto = base64encode(
+      templatefile("./templates/etc/cloud/values-okteto.yaml", {
+        fqdn = local.dns_zone
+    }))
     ingress_manifest = base64encode(
       templatefile("./templates/etc/kubernetes/manifests/ingress.yaml", {
         fqdn = local.dns_zone

@@ -12,9 +12,9 @@ RUN DEBIAN_FRONTEND=noninteractive \
     && add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" -y \
     && add-apt-repository "deb https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" -y \
     && apt-add-repository "deb http://packages.cloud.google.com/apt cloud-sdk main" -y \
-    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/microsoft.gpg \
-    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/docker.gpg \
-    && curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /etc/apt/trusted.gpg.d/google.gpg \
+    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/microsoft.gpg \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/docker.gpg \
+    && curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/google.gpg \
     && curl -fsSL https://deb.nodesource.com/setup_16.x | bash -x - \
     && apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install --yes \

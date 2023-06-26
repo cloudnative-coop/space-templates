@@ -90,9 +90,9 @@ RUN DEBIAN_FRONTEND=noninteractive \
 # VSCode
 RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
     code
-
-RUN curl -s https://fluxcd.io/install.sh | bash
+RUN curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 RUN sudo su -c "helm completion bash > /etc/bash_completion.d/helm"
+RUN curl -s https://fluxcd.io/install.sh | bash
 RUN sudo su -c "flux completion bash > /etc/bash_completion.d/flux"
 RUN sudo su -c "kubectl completion bash > /etc/bash_completion.d/kubectl"
 COPY arch-helper.sh /usr/local/lib/arch-helper.sh

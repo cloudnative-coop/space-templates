@@ -266,3 +266,18 @@ RUN mkdir -p ~/.config/code-server
 COPY home/.config/code-server/config.yaml /home/ii/.config/code-server/config.yaml
 RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
     dbus-x11
+USER root
+# Another version w/o pure-gtk
+RUN cd /usr/local/src/emacs && \
+  ./autogen.sh && \
+  ./configure --prefix=/usr/local/stow/emacs-x \
+    --with-modules=yes \
+    --with-json=yes \
+    --with-native-compilation=yes \
+    --with-x=yes \
+    --with-x-toolkit=gtk3 \
+    --with-xwidgets=yes \
+    --with-pgtk=no && \
+  make -j 64 && \
+  make install
+USER ${USER}

@@ -233,10 +233,21 @@ RUN curl -fsSL https://coder.com/install.sh | sh
 
 RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && true || true && true
 
-# RUN ln -s /usr/bin/coder /usr/local/bin/space
-RUN DEBIAN_FRONTEND="noninteractive" apt-get install --yes \
+RUN sudo ln -s /usr/bin/coder /usr/local/bin/space
+
+RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
     tigervnc-standalone-server \
     icewm \
     novnc \
     docker-ce-cli \
+    kitty \
     websockify
+
+RUN sudo add-apt-repository ppa:mozillateam/ppa -y && echo '\
+Package: *\
+Pin: release o=LP-PPA-mozillateam\
+Pin-Priority: 1001\
+' | sudo tee /etc/apt/preferences.d/mozilla-firefox && \
+echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' \
+| sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
+RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades firefox

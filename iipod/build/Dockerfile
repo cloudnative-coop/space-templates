@@ -8,13 +8,15 @@ RUN DEBIAN_FRONTEND=noninteractive \
       gpg-agent \
       curl \
     && yes '\n' | add-apt-repository ppa:git-core/ppa \
-    && echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" \
-    | tee -a /etc/apt/sources.list.d/google-cloud-sdk.list \
-    && curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key --keyring /usr/share/keyrings/cloud.google.gpg  add - \
-    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key add - \
-    && apt-key fingerprint 0EBFCD88 \
+    && apt-add-repository "deb http://packages.cloud.google.com/apt cloud-sdk main"
+    && curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg > /etc/apt/trusted.gpg.d/google.gpg
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg > /etc/apt/trusted.gpg.d/docker.gpg
+    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc -O- > /etc/apt/trusted.gpg.d/microsoft.gpg
     && add-apt-repository "deb https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
     && curl -fsSL https://deb.nodesource.com/setup_16.x | bash -x - \
+    && sudo add-apt-repository ppa:mozillateam/ppa -y \
+    && echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' \
+    | sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox \
     && apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install --yes \
     tmux \
@@ -74,11 +76,28 @@ RUN DEBIAN_FRONTEND=noninteractive \
     asciinema \
     ssh-import-id \
     docker-ce-cli \
-    ubuntu-desktop \
     novnc \
+    tigervnc-standalone-server \
+    icewm \
+    kitty \
+    plasma-desktop \
+    firefox-esr \
+    websockify
 	&& ln -s /usr/bin/fdfind /usr/local/bin/fd \
 	&& rm -rf /var/lib/apt/lists/*
+    # ubuntu-desktop \
+    # && apt-key fingerprint 0EBFCD88 \
 
+# VSCode
+RUN wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+RUN sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" -y
+RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
+    code
+
+RUN curl -s https://fluxcd.io/install.sh | bash
+RUN sudo su -c "helm completion bash > /etc/bash_completion.d/helm"
+RUN sudo su -c "flux completion bash > /etc/bash_completion.d/flux"
+RUN sudo su -c "kubectl completion bash > /etc/bash_completion.d/kubectl"
 COPY arch-helper.sh /usr/local/lib/arch-helper.sh
 # STUFF
 ENV DOCKER_VERSION=24.0.2\

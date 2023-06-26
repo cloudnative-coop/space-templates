@@ -2,15 +2,17 @@ data "coder_parameter" "container-image" {
   name         = "container-image"
   display_name = "Container Image"
   description  = "The container image to use for the workspace"
-  default      = "ghcr.io/cloudnative-coop/iipod:v0.0.12"
-  icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
+  # default      = "ghcr.io/cloudnative-coop/iipod:v0.0.12"
+  # default = "ghcr.io/cloudnative-coop/iipod:kubedaytlv"
+  default = "ghcr.io/cloudnative-coop/iipod:2023.06.26-11"
+  icon    = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }
 
 data "coder_parameter" "git-url" {
   name         = "git-url"
   display_name = "Git URL"
   description  = "The Git URL to checkout for this workspace"
-  default      = "https://github.com/etcd-io/etcd"
+  default      = "https://github.com/cncf-infra/infrasnoop"
   # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }
 
@@ -18,7 +20,7 @@ data "coder_parameter" "org-url" {
   name         = "org-url"
   display_name = "Orgfile url"
   description  = "The Orgfile URL to load into emacs"
-  default      = "https://github.com/cloudnative-coop/coop-templates/raw/canon/iipod/org/ii.org"
+  default      = "https://raw.githubusercontent.com/ii/org/infrapisnoop/infra-api-snoop.org"
   # icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }
 
@@ -38,9 +40,12 @@ resource "coder_agent" "iipod" {
   env = {
     # GITHUB_TOKEN        = "$${data.coder_git_auth.github.access_token}"
     # GITHUB_TOKEN        = "$${var.GITHUB_TOKEN}"
-    ORGURL              = data.coder_parameter.org-url.value
-    GITURL              = data.coder_parameter.git-url.value
+    OPENAI_API_TOKEN    = "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"
+    ORGFILE_URL         = "${data.coder_parameter.org-url.value}"
     SESSION_NAME        = "${lower(data.coder_workspace.ii.name)}"
+    GIT_REPO            = "${data.coder_parameter.git-url.value}"
+    SESSION_NAME        = "${lower(data.coder_workspace.ii.name)}"
+    SPACE_DOMAIN        = "${local.dns_fqdn}"
     GIT_AUTHOR_NAME     = "${data.coder_workspace.ii.owner}"
     GIT_COMMITTER_NAME  = "${data.coder_workspace.ii.owner}"
     GIT_AUTHOR_EMAIL    = "${data.coder_workspace.ii.owner_email}"
@@ -88,6 +93,16 @@ resource "coder_app" "podmux" {
   icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
   agent_id     = coder_agent.iipod.id
   url          = "http://localhost:7681" # 7681 is the default ttyd port
+}
+# ttyd connecting to tmux
+resource "coder_app" "web" {
+  subdomain    = true
+  share        = "public"
+  slug         = "podweb"
+  display_name = "iipod:web"
+  icon         = "https://cdn.icon-icons.com/icons2/2148/PNG/512/tmux_icon_131831.png"
+  agent_id     = coder_agent.iipod.id
+  url          = "http://localhost:8000" # python -m http.server
 }
 # # # noVNC connecting to tigervnc:1
 # resource "coder_app" "podvnc" {

@@ -42,11 +42,11 @@ resource "coder_metadata" "certificate" {
   }
   item {
     key   = "vnc"
-    value = "http://novnc.${local.dns_zone}"
+    value = "http://vnc.${local.dns_zone}"
   }
   item {
-    key   = "ttyd"
-    value = "http://ttyd.${local.dns_zone}"
+    key   = "tmux"
+    value = "http://tmux.${local.dns_zone}"
   }
   item {
     key   = "hubble"

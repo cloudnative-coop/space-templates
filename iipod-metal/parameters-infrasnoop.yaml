@@ -1,0 +1,6 @@
+metro: pa
+plan: c3.medium.x86
+os: ubuntu_22_04
+no-container-image: ghcr.io/cloudnative-coop/iipod:2023.06.26-11
+git-url: https://github.com/cncf-infra/infrasnoop
+org-url: https://raw.githubusercontent.com/ii/org/infrapisnoop/infra-api-snoop.org

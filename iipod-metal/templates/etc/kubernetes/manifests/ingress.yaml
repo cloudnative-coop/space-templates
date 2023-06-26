@@ -24,7 +24,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: ttyd
+  name: tmux
   namespace: default
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
@@ -43,19 +43,19 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: ttyd.${fqdn}
+    - host: tmux.${fqdn}
       http:
         paths:
           - backend:
               service:
-                name: ttyd
+                name: tmux
                 port:
                   number: 80
             path: /
             pathType: ImplementationSpecific
   tls:
     - hosts:
-        - ttyd.${fqdn}
+        - tmux.${fqdn}
 ---
 apiVersion: networking.k8s.io/v1
 kind: Ingress
@@ -96,7 +96,7 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  name: novnc
+  name: vnc
   namespace: default
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
@@ -115,16 +115,16 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: novnc.${fqdn}
+    - host: vnc.${fqdn}
       http:
         paths:
           - backend:
               service:
-                name: hostvnc
+                name: novnc
                 port:
                   number: 80
             path: /
             pathType: ImplementationSpecific
   tls:
     - hosts:
-        - novnc.${fqdn}
+        - vnc.${fqdn}

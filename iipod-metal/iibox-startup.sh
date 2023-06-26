@@ -1,4 +1,5 @@
 #!/bin/bash
+set -x
 echo "Starting TMUX"
 tmux new -d -s $SESSION_NAME -n "ii"
 tmux send-keys "sudo tail -F /var/log/cloud-init-output.log /var/log/k8s-deploy.log /var/log/install-desktop.log ~/.config/emacs-install.log

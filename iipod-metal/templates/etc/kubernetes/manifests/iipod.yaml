@@ -20,16 +20,30 @@ subjects:
 apiVersion: v1
 kind: Service
 metadata:
-  name: ttyd
+  name: tmux
   namespace: default
 spec:
   selector:
     app: environment
   ports:
-    - name: ttyd
+    - name: tmux
       port: 80
       protocol: TCP
       targetPort: 7681
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: novnc
+  namespace: default
+spec:
+  selector:
+    app: environment
+  ports:
+    - name: novnc
+      port: 80
+      protocol: TCP
+      targetPort: 6080
 ---
 apiVersion: v1
 kind: Service

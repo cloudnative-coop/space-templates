@@ -234,3 +234,9 @@ RUN curl -fsSL https://coder.com/install.sh | sh
 RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && true || true && true
 
 # RUN ln -s /usr/bin/coder /usr/local/bin/space
+RUN DEBIAN_FRONTEND="noninteractive" apt-get install --yes \
+    tigervnc-standalone-server \
+    icewm \
+    novnc \
+    docker-ce-cli \
+    websockify

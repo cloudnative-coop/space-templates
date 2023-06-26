@@ -79,6 +79,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
     icewm \
     kitty \
     plasma-desktop \
+    dbus-x11 \
     firefox-esr \
     websockify \
     code \
@@ -226,6 +227,20 @@ RUN cd /usr/local/src/emacs && \
   make -j 64 && \
   make install
 
+RUN cd /usr/local/src/emacs && \
+  ./autogen.sh && \
+  ./configure --prefix=/usr/local/stow/emacs-x \
+    --with-modules=yes \
+    --with-json=yes \
+    --with-native-compilation=yes \
+    --with-x=yes \
+    --with-x-toolkit=gtk3 \
+    --with-xwidgets=yes \
+    --with-pgtk=no && \
+  make -j 64 && \
+  make install
+
+RUN ln -sf /usr/bin/firefox-esr /usr/bin/firefox
 RUN ln -s /usr/bin/coder /usr/local/bin/coop
 
 ARG USER=ii
@@ -255,18 +270,3 @@ COPY home/.config/code-server/config.yaml /home/ii/.config/code-server/config.ya
 RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
     dbus-x11
 #https://tmux.mon1818-hh.sharing.io Another version w/o pure-gtk
-USER root
-RUN cd /usr/local/src/emacs && \
-  ./autogen.sh && \
-  ./configure --prefix=/usr/local/stow/emacs-x \
-    --with-modules=yes \
-    --with-json=yes \
-    --with-native-compilation=yes \
-    --with-x=yes \
-    --with-x-toolkit=gtk3 \
-    --with-xwidgets=yes \
-    --with-pgtk=no && \
-  make -j 64 && \
-  make install
-USER ${USER}
-RUN sudo ln -sf /usr/bin/firefox-esr /usr/bin/firefox

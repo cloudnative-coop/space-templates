@@ -250,4 +250,9 @@ Pin-Priority: 1001\
 ' | sudo tee /etc/apt/preferences.d/mozilla-firefox && \
 echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' \
 | sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
-RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades firefox
+RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades firefox-esr
+RUN wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
+RUN sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" -y
+RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
+    plasma-desktop \
+    code

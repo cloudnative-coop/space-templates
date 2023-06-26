@@ -22,6 +22,14 @@ resource "coder_metadata" "iipod" {
     key   = "tmux"
     value = "http://tmux.${local.dns_zone}/"
   }
+  item {
+    key   = "vnc"
+    value = "http://vnc.${local.dns_zone}/"
+  }
+  item {
+    key   = "web"
+    value = "http://web.${local.dns_zone}/"
+  }
 }
 
 resource "kubernetes_pod" "iipod" {

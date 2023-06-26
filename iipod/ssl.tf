@@ -162,6 +162,27 @@ resource "kubernetes_service" "ttyd" {
   depends_on = [kubernetes_namespace.space]
 }
 
+resource "kubernetes_service" "novnc" {
+  count = data.coder_parameter.dns.value ? data.coder_workspace.ii.start_count : 0
+  metadata {
+    name      = "novnc"
+    namespace = local.spacename
+  }
+  spec {
+    selector = {
+      "spacename"  = data.coder_workspace.ii.name
+      "spaceowner" = data.coder_workspace.ii.owner
+      # app = local.spacename
+    }
+    port {
+      port        = 80
+      protocol    = "TCP"
+      target_port = 6080
+    }
+  }
+  depends_on = [kubernetes_namespace.space]
+}
+
 resource "kubernetes_ingress_v1" "emacs" {
   count      = data.coder_parameter.dns.value ? data.coder_workspace.ii.start_count : 0
   depends_on = [kubernetes_namespace.space]
@@ -253,6 +274,110 @@ EOF
           backend {
             service {
               name = "ttyd"
+              port {
+                # name   = "ttyd"
+                number = 80
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_ingress_v1" "vnc" {
+  count      = data.coder_parameter.dns.value ? data.coder_workspace.ii.start_count : 0
+  depends_on = [kubernetes_namespace.space]
+  metadata {
+    name      = "vnc"
+    namespace = local.spacename
+    annotations = {
+      "nginx.ingress.kubernetes.io/proxy-read-timeout" : "3600"
+      "nginx.ingress.kubernetes.io/proxy-send-timeout" : "3600"
+      "nginx.ingress.kubernetes.io/server-snippets" : <<EOF
+location / {
+proxy_set_header Upgrade $http_upgrade;
+proxy_http_version 1.1;
+proxy_set_header X-Forwarded-Host $http_host;
+proxy_set_header X-Forwarded-Proto $scheme;
+proxy_set_header X-Forwarded-For $remote_addr;
+proxy_set_header Host $host;
+proxy_set_header Connection "upgrade";
+proxy_cache_bypass $http_upgrade;
+}
+EOF
+    }
+  }
+  spec {
+    ingress_class_name = "nginx"
+    tls {
+      hosts = [
+        "vnc.${local.dns_zone}"
+      ]
+      secret_name = "wildcard-tls"
+    }
+    rule {
+      host = "vnc.${local.dns_zone}"
+      http {
+        path {
+          path      = "/"
+          path_type = "ImplementationSpecific"
+          backend {
+            service {
+              name = "novnc"
+              port {
+                # name   = "ttyd"
+                number = 80
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+resource "kubernetes_ingress_v1" "www" {
+  count      = data.coder_parameter.dns.value ? data.coder_workspace.ii.start_count : 0
+  depends_on = [kubernetes_namespace.space]
+  metadata {
+    name      = "www"
+    namespace = local.spacename
+    annotations = {
+      "nginx.ingress.kubernetes.io/proxy-read-timeout" : "3600"
+      "nginx.ingress.kubernetes.io/proxy-send-timeout" : "3600"
+      "nginx.ingress.kubernetes.io/server-snippets" : <<EOF
+location / {
+proxy_set_header Upgrade $http_upgrade;
+proxy_http_version 1.1;
+proxy_set_header X-Forwarded-Host $http_host;
+proxy_set_header X-Forwarded-Proto $scheme;
+proxy_set_header X-Forwarded-For $remote_addr;
+proxy_set_header Host $host;
+proxy_set_header Connection "upgrade";
+proxy_cache_bypass $http_upgrade;
+}
+EOF
+    }
+  }
+  spec {
+    ingress_class_name = "nginx"
+    tls {
+      hosts = [
+        "www.${local.dns_zone}"
+      ]
+      secret_name = "wildcard-tls"
+    }
+    rule {
+      host = "www.${local.dns_zone}"
+      http {
+        path {
+          path      = "/"
+          path_type = "ImplementationSpecific"
+          backend {
+            service {
+              name = "www"
               port {
                 # name   = "ttyd"
                 number = 80

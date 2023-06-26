@@ -264,3 +264,5 @@ RUN sudo su -c "kubectl completion bash > /etc/bash_completion.d/kubectl"
 COPY home/.tmux.conf /home/ii/.tmux.conf
 RUN mkdir -p ~/.config/code-server
 COPY home/.config/code-server/config.yaml /home/ii/.config/code-server/config.yaml
+RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
+    dbus-x11

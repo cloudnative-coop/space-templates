@@ -44,7 +44,6 @@ resource "coder_agent" "iipod" {
     ORGFILE_URL         = "${data.coder_parameter.org-url.value}"
     SESSION_NAME        = "${lower(data.coder_workspace.ii.name)}"
     GIT_REPO            = "${data.coder_parameter.git-url.value}"
-    SESSION_NAME        = "${lower(data.coder_workspace.ii.name)}"
     SPACE_DOMAIN        = "${local.dns_fqdn}"
     GIT_AUTHOR_NAME     = "${data.coder_workspace.ii.owner}"
     GIT_COMMITTER_NAME  = "${data.coder_workspace.ii.owner}"
@@ -52,9 +51,26 @@ resource "coder_agent" "iipod" {
     GIT_COMMITTER_EMAIL = "${data.coder_workspace.ii.owner_email}"
   }
   metadata {
-    interval = 10
-    key      = "foo"
-    script   = "echo FOO"
+    key          = "tmux-clients"
+    display_name = "tmux clients"
+    interval     = 5
+    timeout      = 5
+    script       = <<-EOT
+      #!/bin/bash
+      set -e
+      tmux list-clients -F "#{client_session}:#{client_width}x#{client_height}" | xargs echo
+    EOT
+  }
+  metadata {
+    key          = "tmux-windows"
+    display_name = "tmux windows"
+    interval     = 5
+    timeout      = 5
+    script       = <<-EOT
+      #!/bin/bash
+      set -e
+      tmux list-windows -F "#{window_index}:#{window_name}" | xargs echo
+    EOT
   }
 }
 

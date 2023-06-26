@@ -266,8 +266,7 @@ RUN mkdir -p ~/.config/code-server
 COPY home/.config/code-server/config.yaml /home/ii/.config/code-server/config.yaml
 RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
     dbus-x11
-USER root
-# Another version w/o pure-gtk
+#https://tmux.mon1818-hh.sharing.io Another version w/o pure-gtk
 RUN cd /usr/local/src/emacs && \
   ./autogen.sh && \
   ./configure --prefix=/usr/local/stow/emacs-x \
@@ -281,3 +280,4 @@ RUN cd /usr/local/src/emacs && \
   make -j 64 && \
   make install
 USER ${USER}
+RUN sudo ln -sf /usr/bin/firefox-esr /usr/bin/firefox

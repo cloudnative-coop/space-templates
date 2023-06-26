@@ -1,0 +1,167 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  namespace: default
+spec:
+  automountServiceAccountToken: true
+  containers:
+    - name: infrasnoop
+      image: ghcr.io/cncf-infra/infrasnoop:2023.06.19-1
+      env:
+        - name: POSTGRES_HOST_AUTH_METHOD
+          value: trust
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          value: infra
+        - name: PGHOST
+          value: localhost
+        - name: PGUSER
+          value: postgres
+      securityContext:
+        allowPrivilegeEscalation: true
+        privileged: false
+        readOnlyRootFilesystem: false
+        runAsNonRoot: false
+        runAsUser: 0
+      startupProbe:
+        exec:
+          command:
+            - sh
+            - -c
+            - pg_isready -U postgres -d postgres
+        failureThreshold: 5
+        initialDelaySeconds: 5
+        periodSeconds: 5
+        successThreshold: 1
+        timeoutSeconds: 1
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+    - env:
+        - name: DATABASE_URL
+          value: postgres://postgres:infra@localhost:5432/postgres
+      image: ghcr.io/cncf-infra/infrasnoop-sideloader:2023.05.31-01
+      imagePullPolicy: IfNotPresent
+      name: sideloader
+      resources: {}
+      securityContext:
+        allowPrivilegeEscalation: true
+        privileged: false
+        readOnlyRootFilesystem: false
+        runAsNonRoot: false
+        runAsUser: 0
+      terminationMessagePath: /dev/termination-log
+      terminationMessagePolicy: File
+      volumeMounts:
+        - mountPath: /var/run/secrets/kubernetes.io/serviceaccount
+          name: kube-api-access-xm9rw
+          readOnly: true
+  enableServiceLinks: true
+  preemptionPolicy: PreemptLowerPriority
+  priority: 0
+  restartPolicy: Always
+  schedulerName: default-scheduler
+  securityContext:
+    fsGroup: 1001
+    runAsNonRoot: false
+    runAsUser: 1001
+  serviceAccount: default
+  serviceAccountName: default
+  shareProcessNamespace: false
+  terminationGracePeriodSeconds: 30
+  tolerations:
+    - effect: NoExecute
+      key: node.kubernetes.io/not-ready
+      operator: Exists
+      tolerationSeconds: 300
+    - effect: NoExecute
+      key: node.kubernetes.io/unreachable
+      operator: Exists
+      tolerationSeconds: 300
+  volumes:
+    - emptyDir:
+        sizeLimit: 5000Mi
+      name: data
+    - name: kube-api-access-xm9rw
+      projected:
+        defaultMode: 420
+        sources:
+          - serviceAccountToken:
+              expirationSeconds: 3607
+              path: token
+          - configMap:
+              items:
+                - key: ca.crt
+                  path: ca.crt
+              name: kube-root-ca.crt
+          - downwardAPI:
+              items:
+                - fieldRef:
+                    apiVersion: v1
+                    fieldPath: metadata.namespace
+                  path: namespace
+status:
+  conditions:
+    - lastProbeTime: null
+      lastTransitionTime: "2023-06-19T03:55:13Z"
+      status: "True"
+      type: Initialized
+    - lastProbeTime: null
+      lastTransitionTime: "2023-06-19T03:55:36Z"
+      status: "True"
+      type: Ready
+    - lastProbeTime: null
+      lastTransitionTime: "2023-06-19T03:55:36Z"
+      status: "True"
+      type: ContainersReady
+    - lastProbeTime: null
+      lastTransitionTime: "2023-06-19T03:55:13Z"
+      status: "True"
+      type: PodScheduled
+  containerStatuses:
+    - containerID: containerd://053c45130839446b213f65d44e88e491ab475571bd0aee31097a37b69d5b104b
+      image: ghcr.io/cloudnative-coop/iipod:v0.0.13
+      imageID: ghcr.io/cloudnative-coop/iipod@sha256:8281a95549d5cc751994039db251b259dad0fa4e80c266db84a6effb6d4fc5e1
+      lastState: {}
+      name: iipod
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-06-19T03:55:15Z"
+    - containerID: containerd://40ac24caf7d3482ec9a6d6b76e339afb9acdb6b0b0ba5ecd51f0e7640c6915ac
+      image: ghcr.io/cncf-infra/infrasnoop:2023.06.19-1
+      imageID: ghcr.io/cncf-infra/infrasnoop@sha256:4c19eb6a1d22e13efece8964fbcb17353144597cd3e830fe63db436c563196d7
+      lastState: {}
+      name: infrasnoop
+      ready: true
+      restartCount: 0
+      started: true
+      state:
+        running:
+          startedAt: "2023-06-19T03:55:15Z"
+    - containerID: containerd://4616b1ea6d3f9032f83fa5a5bc75082da014c1be5d57ceb3eb9b6d5e7e8d37fe
+      image: ghcr.io/cncf-infra/infrasnoop-sideloader:2023.05.31-01
+      imageID: ghcr.io/cncf-infra/infrasnoop-sideloader@sha256:2e4afe90149c050a6fb3213a1cc7dfac546a516921e6054b775a232403ad9eb3
+      lastState:
+        terminated:
+          containerID: containerd://8eb00020b445714929038bbc4c87f86e24ffa056f859d4ec61df15aac40d60fa
+          exitCode: 1
+          finishedAt: "2023-06-19T03:55:16Z"
+          reason: Error
+          startedAt: "2023-06-19T03:55:16Z"
+      name: sideloader
+      ready: true
+      restartCount: 2
+      started: true
+      state:
+        running:
+          startedAt: "2023-06-19T03:55:35Z"
+  hostIP: 123.253.177.102
+  phase: Running
+  podIP: 10.244.0.98
+  podIPs:
+    - ip: 10.244.0.98
+  qosClass: BestEffort
+  startTime: "2023-06-19T03:55:13Z"

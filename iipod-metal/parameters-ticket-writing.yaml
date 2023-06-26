@@ -1,0 +1,6 @@
+metro: pa
+plan: c3.medium.x86
+os: ubuntu_22_04
+container-image: ghcr.io/cloudnative-coop/iipod:v0.0.12
+git-url: https://github.com/apisnoop/ticket-writing
+org-url: https://raw.githubusercontent.com/apisnoop/ticket-writing/master/StorageV1CSIDriverTest.org

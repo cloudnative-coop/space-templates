@@ -82,7 +82,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
     plasma-desktop \
     firefox-esr \
     websockify \
-    code
+    code \
 	&& ln -s /usr/bin/fdfind /usr/local/bin/fd \
 	&& rm -rf /var/lib/apt/lists/*
     # ubuntu-desktop \

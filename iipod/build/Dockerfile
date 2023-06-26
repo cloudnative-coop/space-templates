@@ -256,3 +256,11 @@ RUN sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/rep
 RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
     plasma-desktop \
     code
+
+RUN curl -s https://fluxcd.io/install.sh | bash
+RUN sudo su -c "helm completion bash > /etc/bash_completion.d/helm"
+RUN sudo su -c "flux completion bash > /etc/bash_completion.d/flux"
+RUN sudo su -c "kubectl completion bash > /etc/bash_completion.d/kubectl"
+COPY home/.tmux.conf /home/ii/.tmux.conf
+RUN mkdir -p ~/.config/code-server
+COPY home/.config/code-server/config.yaml /home/ii/.config/code-server/config.yaml

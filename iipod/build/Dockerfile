@@ -1,4 +1,4 @@
-FROM ubuntu:lunar-20230415
+FROM ubuntu:lunar-20230615
 
 RUN DEBIAN_FRONTEND=noninteractive \
     apt update \
@@ -33,7 +33,6 @@ RUN DEBIAN_FRONTEND=noninteractive \
     devscripts \
     libgccjit-12-dev \
     libgtk-3-bin \
-    kitty-terminfo \
     openssh-client \
     postgresql-client \
     jq \

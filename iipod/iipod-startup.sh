@@ -79,6 +79,11 @@ tmux send-keys -t "vnc" "websockify -D --web=/home/ii/novnc 6080 localhost:5901
 unset GDK_BACKEND # must not be set when using X
 export PATH=/usr/local/stow/emacs-x/bin:$PATH
 tigervncserver :1 -desktop $SESSION_NAME -SecurityTypes None -xstartup startplasma-x11
+export DISPLAY=:1
+setterm blank 0
+setterm powerdown 0
+kwriteconfig5 --file ~/.config/kscreenlockerrc --group Daemon --key Autolock false
+xset s 0 0
 # sleep 5
 # kitty -T KITTY --detach --hold bash -c 'tmux at'
 "

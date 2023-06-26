@@ -12,9 +12,9 @@ RUN DEBIAN_FRONTEND=noninteractive \
     && add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" -y \
     && add-apt-repository "deb https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
     && apt-add-repository "deb http://packages.cloud.google.com/apt cloud-sdk main" \
-    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg > /etc/apt/trusted.gpg.d/docker.gpg \
-    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc > /etc/apt/trusted.gpg.d/microsoft.gpg \
-    && curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg > /etc/apt/trusted.gpg.d/google.gpg \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | apt-key -f - \
+    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | apt-key -f - \
+    && curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg > apt-key -f - \
     && curl -fsSL https://deb.nodesource.com/setup_16.x | bash -x - \
     && apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install --yes \

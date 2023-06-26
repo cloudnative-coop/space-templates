@@ -89,95 +89,92 @@ RUN DEBIAN_FRONTEND=noninteractive \
     # && apt-key fingerprint 0EBFCD88 \
 
 COPY arch-helper.sh /usr/local/lib/arch-helper.sh
-# STUFF
-ENV DOCKER_VERSION=24.0.2\
-  KIND_VERSION=0.20.0 \
-  KUBECTL_VERSION=1.27.3 \
+# Settings for GO and crictl
+ENV GOROOT=/usr/local/go \
   GO_VERSION=1.20.5 \
-  TILT_VERSION=0.32.4 \
-  TMATE_VERSION=2.4.0 \
-  HELM_VERSION=3.12.1 \
-  GH_VERSION=2.30.0 \
-  LEIN_VERSION=stable \
-  CLOJURE_VERSION=1.11.1 \
-  CLUSTERCTL_VERSION=1.2.2 \
-  TALOSCTL_VERSION=1.1.0 \
-  TERRAFORM_VERSION=1.5.0 \
-  DIVE_VERSION=0.10.0 \
-  CRICTL_VERSION=1.27.0 \
-  KUBECTX_VERSION=0.9.4 \
-  FZF_VERSION=0.26.0 \
-  NERDCTL_VERSION=1.4.0 \
-  METALCLI_VERSION=0.14.1 \
-  KO_VERSION=0.13.0 \
-  KN_VERSION=1.37.0 \
-  UPTERM_VERSION=0.10.0 \
-  GOPLS_VERSION=0.10.0 \
-  GOROOT=/usr/local/go \
   PATH="$PATH:/usr/local/go/bin:/usr/libexec/flatpak-xdg-utils:/home/ii/go/bin" \
   CONTAINERD_NAMESPACE=k8s.io
-
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://dl.google.com/go/go${GO_VERSION}.linux-${ARCH_TYPE_2}.tar.gz \
     | tar --directory /usr/local --extract --ungzip
 # kind binary
+ENV KIND_VERSION=0.20.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -Lo /usr/local/bin/kind \
     https://github.com/kubernetes-sigs/kind/releases/download/v${KIND_VERSION}/kind-linux-${ARCH_TYPE_2} \
     && chmod +x /usr/local/bin/kind
 # kubectl binary
+ENV KUBECTL_VERSION=1.27.3
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/${ARCH_TYPE_2}/kubectl -o /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl
 # tilt binary
+ENV TILT_VERSION=0.32.4
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -fsSL \
     https://github.com/tilt-dev/tilt/releases/download/v${TILT_VERSION}/tilt.${TILT_VERSION}.linux.${ARCH_TYPE_1}.tar.gz \
     | tar --directory /usr/local/bin --extract --ungzip tilt
 # gh cli
+ENV GH_VERSION=2.30.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -sSL https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_TYPE_2}.tar.gz \
     | tar --directory /usr/local --extract --ungzip \
      --strip-components 1 gh_${GH_VERSION}_linux_${ARCH_TYPE_2}/bin/gh \
     && chmod +x /usr/local/bin/gh
+# tmate
+ENV TMATE_VERSION=2.4.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L \
     https://github.com/tmate-io/tmate/releases/download/${TMATE_VERSION}/tmate-${TMATE_VERSION}-static-linux-${ARCH_TYPE_3}.tar.xz \
     | tar --directory /usr/local/bin --extract --xz \
   --strip-components 1 tmate-${TMATE_VERSION}-static-linux-${ARCH_TYPE_3}/tmate
 # helm binary
+ENV HELM_VERSION=3.12.1
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-${ARCH_TYPE_2}.tar.gz | tar --directory /usr/local/bin --extract -xz --strip-components 1 linux-${ARCH_TYPE_2}/helm
 # talosctl
+ENV TALOSCTL_VERSION=1.1.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L -o /usr/local/bin/talosctl https://github.com/talos-systems/talos/releases/download/v${TALOSCTL_VERSION}/talosctl-linux-${ARCH_TYPE_2} && \
   chmod +x /usr/local/bin/talosctl
 # terraform
+ENV TERRAFORM_VERSION=1.5.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${ARCH_TYPE_2}.zip \
   | gunzip -c - > /usr/local/bin/terraform && \
   chmod +x /usr/local/bin/terraform
+ENV CRICTL_VERSION=1.27.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRICTL_VERSION}/crictl-v${CRICTL_VERSION}-linux-${ARCH_TYPE_2}.tar.gz \
   | tar --directory /usr/local/bin --extract --gunzip crictl
+ENV KUBECTX_VERSION=0.9.4
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://github.com/ahmetb/kubectx/releases/download/v${KUBECTX_VERSION}/kubectx_v${KUBECTX_VERSION}_linux_x86_64.tar.gz | tar --directory /usr/local/bin --extract --ungzip kubectx
+ENV FZF_VERSION=0.26.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://github.com/junegunn/fzf/releases/download/${FZF_VERSION}/fzf-${FZF_VERSION}-linux_${ARCH_TYPE_2}.tar.gz | tar --directory /usr/local/bin --extract --ungzip fzf
+ENV NERDCTL_VERSION=1.4.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://github.com/containerd/nerdctl/releases/download/v${NERDCTL_VERSION}/nerdctl-${NERDCTL_VERSION}-linux-${ARCH_TYPE_2}.tar.gz | tar --directory /usr/local/bin --extract --ungzip nerdctl
 # Leiningen for clojure
+ENV CLOJURE_VERSION=1.11.1 LEIN_VERSION=stable
 RUN curl -fsSL https://raw.githubusercontent.com/technomancy/leiningen/${LEIN_VERSION}/bin/lein \
     -o /usr/local/bin/lein \
     && chmod +x /usr/local/bin/lein \
     && lein version
+ENV KN_VERSION=1.37.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://github.com/knative/client/releases/download/knative-v${KN_VERSION}/kn-linux-${ARCH_TYPE_2} -o /usr/local/bin/kn \
   && chmod +x /usr/local/bin/kn
+ENV DIVE_VERSION=0.10.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://github.com/wagoodman/dive/releases/download/v${DIVE_VERSION}/dive_${DIVE_VERSION}_linux_${ARCH_TYPE_2}.tar.gz | tar --directory /usr/local/bin --extract --ungzip dive
+ENV UPTERM_VERSION=0.10.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://github.com/owenthereal/upterm/releases/download/v${UPTERM_VERSION}/upterm_linux_${ARCH_TYPE_2}.tar.gz | tar --directory /usr/local/bin --extract --ungzip upterm
+ENV METALCLI_VERSION=0.14.1 \
+  KO_VERSION=0.13.0 \
+  GOPLS_VERSION=0.10.0
 RUN set -x \
   && /bin/env GO111MODULE=on GOPATH=/usr/local/go /usr/local/go/bin/go install golang.org/x/tools/gopls@v$GOPLS_VERSION \
   && /bin/env GO111MODULE=on GOPATH=/usr/local/go /usr/local/go/bin/go install github.com/mikefarah/yq/v4@latest \

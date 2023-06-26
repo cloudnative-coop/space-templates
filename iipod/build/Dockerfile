@@ -87,14 +87,6 @@ RUN DEBIAN_FRONTEND=noninteractive \
     # ubuntu-desktop \
     # && apt-key fingerprint 0EBFCD88 \
 
-# VSCode
-RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
-    code
-RUN curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
-RUN sudo su -c "helm completion bash > /etc/bash_completion.d/helm"
-RUN curl -s https://fluxcd.io/install.sh | bash
-RUN sudo su -c "flux completion bash > /etc/bash_completion.d/flux"
-RUN sudo su -c "kubectl completion bash > /etc/bash_completion.d/kubectl"
 COPY arch-helper.sh /usr/local/lib/arch-helper.sh
 # STUFF
 ENV DOCKER_VERSION=24.0.2\
@@ -202,6 +194,12 @@ RUN set -x \
   && /bin/env GO111MODULE=on GOPATH=/usr/local/go /usr/local/go/bin/go install github.com/equinix/metal-cli/cmd/metal@v$METALCLI_VERSION \
   && /bin/env GO111MODULE=on GOPATH=/usr/local/go /usr/local/go/bin/go install github.com/google/ko@v$KO_VERSION
 
+
+RUN curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
+RUN sudo su -c "helm completion bash > /etc/bash_completion.d/helm"
+RUN curl -s https://fluxcd.io/install.sh | bash
+RUN sudo su -c "flux completion bash > /etc/bash_completion.d/flux"
+RUN sudo su -c "kubectl completion bash > /etc/bash_completion.d/kubectl"
 
 # Ensure we have the depes for building emacs from HEAD
 RUN add-apt-repository ppa:ubuntu-elisp/ppa --yes && \

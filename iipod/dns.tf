@@ -1,10 +1,10 @@
 resource "coder_metadata" "a_record" {
-  resource_id = powerdns_record.a_record.id
-  count       = data.coder_workspace.ii.start_count
+  count       = data.coder_parameter.dns.value ? data.coder_workspace.ii.start_count : 0
+  resource_id = powerdns_record.a_record[0].id
   hide        = true
   item {
     key   = "domain"
-    value = "${powerdns_record.a_record.name}.${powerdns_record.a_record.zone}"
+    value = "${powerdns_record.a_record[0].name}.${powerdns_record.a_record[0].zone}"
   }
   item {
     key   = "A"

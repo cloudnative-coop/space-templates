@@ -210,7 +210,7 @@ RUN add-apt-repository ppa:ubuntu-elisp/ppa --yes && \
 # Get emacs src
 RUN mkdir -p /usr/local/src && \
   cd /usr/local/src && \
-  git clone https://git.savannah.gnu.org/git/emacs.git
+  git clone --depth 1 https://git.savannah.gnu.org/git/emacs.git
 
 # Get emacs src
 RUN cd /usr/local/src/emacs && \

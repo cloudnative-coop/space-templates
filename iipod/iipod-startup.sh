@@ -68,9 +68,9 @@ cat <<EOF >~/novnc/index.html
   <head>
 <meta
   http-equiv="Refresh"
-  content="0; url='http://vnc.$SPACE_DOMAIN/vnc.html?autoconnect=true&resize=remote'" />
+  content="0; url='https://vnc.$SPACE_DOMAIN/vnc.html?autoconnect=true&resize=remote'" />
   <body>
-    <p>You will be redirected to <a href="http://vnc.$SPACE_DOMAIN/vnc.html?autoconnect=true&resize=remote">VNC</a> soon!</p>
+    <p>You will be redirected to <a href="https://vnc.$SPACE_DOMAIN/vnc.html?autoconnect=true&resize=remote">VNC</a> soon!</p>
   </body>
 </html>
 EOF

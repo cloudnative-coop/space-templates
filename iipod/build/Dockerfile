@@ -7,16 +7,15 @@ RUN DEBIAN_FRONTEND=noninteractive \
       software-properties-common \
       gpg-agent \
       curl \
-    && yes '\n' | add-apt-repository ppa:git-core/ppa \
-    && apt-add-repository "deb http://packages.cloud.google.com/apt cloud-sdk main"
-    && curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg > /etc/apt/trusted.gpg.d/google.gpg
-    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg > /etc/apt/trusted.gpg.d/docker.gpg
-    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc -O- > /etc/apt/trusted.gpg.d/microsoft.gpg
+    && add-apt-repository ppa:git-core/ppa -y \
+    && add-apt-repository ppa:mozillateam/ppa -y \
+    && add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" -y \
     && add-apt-repository "deb https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+    && apt-add-repository "deb http://packages.cloud.google.com/apt cloud-sdk main" \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg > /etc/apt/trusted.gpg.d/docker.gpg \
+    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc -O- > /etc/apt/trusted.gpg.d/microsoft.gpg \
+    && curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg > /etc/apt/trusted.gpg.d/google.gpg \
     && curl -fsSL https://deb.nodesource.com/setup_16.x | bash -x - \
-    && sudo add-apt-repository ppa:mozillateam/ppa -y \
-    && echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' \
-    | sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox \
     && apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install --yes \
     tmux \
@@ -82,15 +81,14 @@ RUN DEBIAN_FRONTEND=noninteractive \
     kitty \
     plasma-desktop \
     firefox-esr \
-    websockify
+    websockify \
+    code
 	&& ln -s /usr/bin/fdfind /usr/local/bin/fd \
 	&& rm -rf /var/lib/apt/lists/*
     # ubuntu-desktop \
     # && apt-key fingerprint 0EBFCD88 \
 
 # VSCode
-RUN wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
-RUN sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" -y
 RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
     code
 

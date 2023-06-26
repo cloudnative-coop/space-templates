@@ -235,32 +235,6 @@ RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && tr
 
 RUN sudo ln -s /usr/bin/coder /usr/local/bin/space
 
-RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
-    tigervnc-standalone-server \
-    icewm \
-    novnc \
-    docker-ce-cli \
-    kitty \
-    websockify
-
-RUN sudo add-apt-repository ppa:mozillateam/ppa -y && echo '\
-Package: *\
-Pin: release o=LP-PPA-mozillateam\
-Pin-Priority: 1001\
-' | sudo tee /etc/apt/preferences.d/mozilla-firefox && \
-echo 'Unattended-Upgrade::Allowed-Origins:: "LP-PPA-mozillateam:${distro_codename}";' \
-| sudo tee /etc/apt/apt.conf.d/51unattended-upgrades-firefox
-RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades firefox-esr
-RUN wget -q https://packages.microsoft.com/keys/microsoft.asc -O- | sudo apt-key add -
-RUN sudo add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" -y
-RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
-    plasma-desktop \
-    code
-
-RUN curl -s https://fluxcd.io/install.sh | bash
-RUN sudo su -c "helm completion bash > /etc/bash_completion.d/helm"
-RUN sudo su -c "flux completion bash > /etc/bash_completion.d/flux"
-RUN sudo su -c "kubectl completion bash > /etc/bash_completion.d/kubectl"
 COPY home/.tmux.conf /home/ii/.tmux.conf
 RUN mkdir -p ~/.config/code-server
 COPY home/.config/code-server/config.yaml /home/ii/.config/code-server/config.yaml

@@ -1,5 +1,5 @@
 resource "coder_metadata" "iipod" {
-  resource_id = null_resource.iipod.id
+  resource_id = kubernetes_pod.iipod[0].id
   count       = data.coder_workspace.ii.start_count
   icon        = "/icon/k8s.png"
   # item {

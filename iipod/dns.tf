@@ -13,14 +13,14 @@ resource "coder_metadata" "a_record" {
 }
 
 resource "coder_metadata" "wild_a_record" {
-  resource_id = powerdns_record.wild_a_record.id
-  count       = data.coder_workspace.ii.start_count
+  resource_id = powerdns_record.wild_a_record[0].id
+  count       = data.coder_parameter.dns.value ? data.coder_workspace.ii.start_count : 0
   icon        = "/icon/node.svg"
   hide        = true
   # Our ingress
   item {
     key   = "wildcard"
-    value = powerdns_record.wild_a_record.name
+    value = powerdns_record.wild_a_record[0].name
     # ".${powerdns_record.wild_a_record.zone}"
   }
   item {
@@ -30,6 +30,7 @@ resource "coder_metadata" "wild_a_record" {
 }
 
 resource "powerdns_record" "a_record" {
+  count   = data.coder_parameter.dns.value ? data.coder_workspace.ii.start_count : 0
   name    = local.dns_fqdn
   zone    = "${var.domain}."
   type    = "A"
@@ -39,14 +40,14 @@ resource "powerdns_record" "a_record" {
 }
 
 resource "powerdns_record" "wild_a_record" {
-  name = "*.${local.dns_fqdn}"
-  zone = "${var.domain}."
-  type = "A"
-  ttl  = 60
+  count = data.coder_parameter.dns.value ? data.coder_workspace.ii.start_count : 0
+  name  = "*.${local.dns_fqdn}"
+  zone  = "${var.domain}."
+  type  = "A"
+  ttl   = 60
   # depends_on = [
   #   powerdns_record.a_record
   # ]
   records = [local.public_ip]
   # records = [local.elastic_ip]
 }
-

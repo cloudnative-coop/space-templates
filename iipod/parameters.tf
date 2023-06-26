@@ -1,8 +1,27 @@
+# I'd like to be able to turn off/on DNS+TLS
+# as necessary to speed deployment when iterating
+data "coder_parameter" "dns" {
+  name         = "dns"
+  display_name = "dns"
+  description  = "Create a DNS wildcard + TLS Certificate (adds 30-40 seconds)"
+  default      = false
+  type         = "bool"
+  icon         = "https://github.com/cncf/artwork/blob/master/projects/coredns/icon/solid-color/coredns-icon-solid-color.png?raw=true"
+  # option {
+  #   name  = "True"
+  #   value = true
+  # }
+  # option {
+  #   name  = "False"
+  #   value = false
+  # }
+}
+
 data "coder_parameter" "container-image" {
   name         = "container-image"
   display_name = "Container Image"
   description  = "The container image to use for the workspace"
-  default      = "ghcr.io/cloudnative-coop/iipod:kubedaytlv"
+  default      = "ghcr.io/cloudnative-coop/iipod:2023.06.26-12"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }
 

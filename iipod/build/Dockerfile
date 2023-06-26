@@ -267,6 +267,7 @@ COPY home/.config/code-server/config.yaml /home/ii/.config/code-server/config.ya
 RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
     dbus-x11
 #https://tmux.mon1818-hh.sharing.io Another version w/o pure-gtk
+USER root
 RUN cd /usr/local/src/emacs && \
   ./autogen.sh && \
   ./configure --prefix=/usr/local/stow/emacs-x \

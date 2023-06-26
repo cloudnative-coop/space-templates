@@ -237,14 +237,19 @@ RUN cd /usr/local/src/emacs && \
   make -j 64 && \
   make install
 
+# Code Server
+RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-install.log
+RUN curl -fsSL https://coder.com/install.sh | sh
+# Links
 RUN ln -sf /usr/bin/firefox-esr /usr/bin/firefox
 RUN ln -s /usr/bin/coder /usr/local/bin/coop
+RUN ln -s /usr/bin/coder /usr/local/bin/space
 
 ARG USER=ii
 RUN useradd --groups sudo --no-create-home --shell /bin/bash ${USER} \
 	&& echo "${USER} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/${USER} \
 	&& chmod 0440 /etc/sudoers.d/${USER}
-USER ${USER}
+
 WORKDIR /home/${USER}
 RUN mkdir -p ~/.config
 
@@ -252,18 +257,8 @@ RUN mkdir -p ~/.config
 RUN git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
 RUN git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
 RUN yes | ~/.config/emacs/bin/doom install --env --fonts
-
-# Code Server
-RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-install.log
-RUN curl -fsSL https://coder.com/install.sh | sh
-
 RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && true || true && true
-
-RUN sudo ln -s /usr/bin/coder /usr/local/bin/space
 
 COPY home/.tmux.conf /home/ii/.tmux.conf
 RUN mkdir -p ~/.config/code-server
 COPY home/.config/code-server/config.yaml /home/ii/.config/code-server/config.yaml
-RUN DEBIAN_FRONTEND="noninteractive" sudo apt-get install --yes --allow-downgrades \
-    dbus-x11
-#https://tmux.mon1818-hh.sharing.io Another version w/o pure-gtk

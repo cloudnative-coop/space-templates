@@ -4,7 +4,7 @@ data "coder_parameter" "container-image" {
   description  = "The container image to use for the workspace"
   # default      = "ghcr.io/cloudnative-coop/iipod:v0.0.12"
   # default = "ghcr.io/cloudnative-coop/iipod:kubedaytlv"
-  default = "ghcr.io/cloudnative-coop/iipod:2023.06.26-11"
+  default = "ghcr.io/cloudnative-coop/iipod:2023.06.26-12"
   icon    = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
 }
 

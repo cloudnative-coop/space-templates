@@ -1,0 +1,88 @@
+#+title: ii
+#+begin_export html
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" type="text/css" href="asciinema-player.css" /> -->
+    <!-- <link rel="stylesheet" type="text/css" href="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css" /> -->
+    <!-- Place favicon.ico in the root directory -->
+  </head>
+   <script src="asciinema-player.min.js"></script>
+  <script src="ox-reveal-keys.js"></script>
+  <!-- <script src="https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js"></script>
+  <script src="https://raw.githubusercontent.com/cloudnative-coop/coop-templates/main/iipod/org/ox-reveal-keys.js"></script> -->
+#+end_export
+
+* record command1.cast :noexport:
+#+name: command1
+#+begin_src tmux :session ":command1" :prologue "asciinema rec command1.cast --stdin --overwrite -c '" :epilogue "'" :exports none
+bash
+#+end_src
+* Recording 1
+#+name: command1.cast
+#+begin_export html
+  <div id="keys1"></div>
+  <div id="command1"></div>
+  <script>DisplayKeys('command1.cast','command1','keys1')</script>
+#+end_export
+
+* record command2.cast :noexport:
+#+name: command2
+#+begin_src tmux :session ":command2" :prologue "asciinema rec command2.cast --stdin --overwrite -c '" :epilogue "'" :exports none
+vi /etc/passwd
+#+end_src
+* Recording 2
+#+name: command2.cast
+#+begin_export html
+  <div id="keys2"></div>
+  <div id="command2"></div>
+  <script>DisplayKeys('command2.cast','command2','keys2')</script>
+#+end_export
+
+* record command3.cast :noexport:
+#+name: command3
+#+begin_src tmux :session ":command3" :prologue "asciinema rec command3.cast --stdin --overwrite -c '" :epilogue "'" :exports none
+coder login https://coder.ii.nz
+#+end_src
+* Recording 3
+#+name: command3.cast
+#+begin_export html
+  <div id="keys3"></div>
+  <div id="command3"></div>
+  <script>DisplayKeys('command3.cast','command3','keys3')</script>
+#+end_export
+
+* record command4.cast :noexport:
+#+name: command4
+#+begin_src tmux :session ":command4" :prologue "asciinema rec command4.cast --stdin --overwrite -c '" :epilogue "'" :exports none
+emacs -nw .
+#+end_src
+* Recording 4
+#+name: command4.cast
+#+begin_export html
+  <div id="keys4"></div>
+  <div id="command4"></div>
+  <script>DisplayKeys('command4.cast','command4','keys4')</script>
+#+end_export
+
+* Footnotes
+#+REVEAL_ROOT: https://multiplex.ii.nz
+#+REVEAL_MULTIPLEX_SECRET: 16830253579594699605
+#+REVEAL_MULTIPLEX_ID: f0343d4424c81b11
+#+OPTIONS: toc:nil
+** generating commandsX
+** setup index.html as default
+#+begin_src shell :results silent
+ln -sf ii_client.html index.html
+#+end_src
+** get files
+#+begin_src shell :results silent
+wget https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.css
+wget https://github.com/asciinema/asciinema-player/releases/download/v3.3.0/asciinema-player.min.js
+wget https://raw.githubusercontent.com/cloudnative-coop/coop-templates/canon/iipod/org/ox-reveal-keys.js
+#+end_src
+
+** start up a webserver
+#+name: http.server
+#+begin_src tmux :session ":http"
+python3 -m http.server
+#+end_src

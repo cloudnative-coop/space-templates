@@ -1,0 +1,4 @@
+dns: true
+container-image: ghcr.io/cloudnative-coop/iipod:2023.06.26-12
+git-url: https://github.com/cncf-infra/infrasnoop
+org-url: https://raw.githubusercontent.com/cncf-infra/infrasnoop/canon/org/demo.org

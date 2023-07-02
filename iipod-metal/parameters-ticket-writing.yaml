@@ -1,4 +1,4 @@
-metro: pa
+metro: fr
 plan: c3.medium.x86
 os: ubuntu_22_04
 container-image: ghcr.io/cloudnative-coop/iipod:v0.0.12

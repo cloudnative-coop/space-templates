@@ -1,5 +1,5 @@
-metro: pa
-plan: c3.medium.x86
+metro: fr
+plan: c3.small.x86
 os: ubuntu_22_04
 container-image: ghcr.io/cloudnative-coop/iipod:2023.06.26-12
 git-url: https://github.com/cncf-infra/infrasnoop

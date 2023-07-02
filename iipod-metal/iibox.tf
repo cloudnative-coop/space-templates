@@ -11,7 +11,7 @@ data "coder_parameter" "metro" {
   name         = "metro"
   display_name = "Metro"
   description  = "The Equinix Metal Metro for the machine"
-  default      = "ld"
+  default      = "pa"
   icon         = "https://raw.githubusercontent.com/matifali/logos/main/docker.svg"
   option {
     name  = "Paris, France"

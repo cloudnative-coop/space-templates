@@ -4,12 +4,12 @@
 variable "metal_project" {
   type        = string
   description = "Project from https://deploy.equinix.com/developers/docs/metal/accounts/projects/"
-  default     = "f4a7273d-b1fc-4c50-93e8-7fed753c86ff" # pair.sharing.io
+  default     = "0c218738-18c0-47b5-a404-beb59d9c6585"
 }
 variable "domain" {
   type        = string
   description = "Power DNS Domain to create iiboxes in"
-  default     = "sharing.io" # pair.sharing.io
+  default     = "cloudnative.nz"
 }
 
 locals {

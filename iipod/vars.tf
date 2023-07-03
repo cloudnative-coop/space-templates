@@ -1,7 +1,8 @@
+# Needs to be over-wridden in the coder env
 variable "domain" {
   type        = string
   description = "Power DNS Domain to create iiboxes in"
-  default     = "sharing.io" # pair.sharing.io
+  default     = "cloudnative.nz" # pair.sharing.io
 }
 
 variable "lb_ip" {

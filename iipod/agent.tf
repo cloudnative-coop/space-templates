@@ -3,7 +3,7 @@ resource "coder_agent" "iipod" {
   os                      = data.coder_provisioner.ii.os
   dir                     = "$HOME" # Could set to somewhere
   motd_file               = "/etc/motd"
-  startup_script_behavior = "blocking"     # blocking, non-blocking
+  startup_script_behavior = "non-blocking" # blocking, non-blocking
   troubleshooting_url     = "http://ii.nz" # blocking, non-blocking
   connection_timeout      = 300
   startup_script          = file("./iipod-startup.sh")

@@ -1,4 +1,4 @@
-dns: true
-container-image: ghcr.io/cloudnative-coop/iipod:2023.06.26-12
+dns: false
+container-image: ghcr.io/cloudnative-coop/iipod:2023.07.03-04
 git-url: https://github.com/sharingio/sharing.io
 org-url: https://github.com/sharingio/sharing.io/raw/canon/demo.org

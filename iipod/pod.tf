@@ -16,19 +16,19 @@ resource "coder_metadata" "iipod" {
   # }
   item {
     key   = "emacs"
-    value = "http://emacs.${local.dns_zone}/"
+    value = "https://emacs.${local.dns_zone}/"
   }
   item {
     key   = "tmux"
-    value = "http://tmux.${local.dns_zone}/"
+    value = "https://tmux.${local.dns_zone}/"
   }
   item {
     key   = "vnc"
-    value = "http://vnc.${local.dns_zone}/"
+    value = "https://vnc.${local.dns_zone}/"
   }
   item {
     key   = "web"
-    value = "http://web.${local.dns_zone}/"
+    value = "https://web.${local.dns_zone}/"
   }
 }
 

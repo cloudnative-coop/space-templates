@@ -20,5 +20,6 @@ RUN mkdir minecraftforge \
   && cd minecraftforge \
   && wget "https://maven.minecraftforge.net/net/minecraftforge/forge/1.18.2-40.2.0/forge-1.18.2-40.2.0-mdk.zip" -O temp.zip \
   && unzip temp.zip \
-  && rm temp.zip
+  && rm temp.zip \
+  && ./gradlew genEclipseRun
 COPY --chmod=755 minecraft.desktop /usr/share/applications/minecraft.desktop

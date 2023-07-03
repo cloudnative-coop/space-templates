@@ -2,8 +2,8 @@ FROM ghcr.io/cloudnative-coop/iipod:2023.07.03-05
 
 RUN sudo apt-get install -y \
   jp2a \
-  python3-pynput \
-  python3-time
+  python3-pynput
+#   python3-time
 
 RUN git clone https://github.com/abdabTheCreator/image_watcher.git
 RUN git clone https://github.com/abdabTheCreator/mouse-controls.git

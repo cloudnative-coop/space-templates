@@ -23,12 +23,12 @@ RUN DEBIAN_FRONTEND=noninteractive \
     tmate \
     bash-completion \
     less \
-	git \
-	golang \
-	xz-utils \
-	sudo \
-	vim \
-	wget \
+    git \
+    golang \
+    xz-utils \
+    sudo \
+    vim \
+    wget \
     dpkg-dev \
     devscripts \
     libgccjit-12-dev \

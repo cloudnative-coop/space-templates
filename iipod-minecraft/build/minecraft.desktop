@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=1.18.2
+Name=Minecraft
+Comment=Minecraft Java Edition
+Exec=bash -c "cd ~/minecraftforge/gradlew && ./runClient"
+Icon=image
+Terminal=false
+Type=Application
+Categories=Game

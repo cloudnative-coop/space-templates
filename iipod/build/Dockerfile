@@ -31,6 +31,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
 	wget \
     dpkg-dev \
     devscripts \
+    language-pack-en \
     libgccjit-12-dev \
     libgtk-3-bin \
     openssh-client \
@@ -245,7 +246,11 @@ RUN ln -sf /usr/bin/firefox-esr /usr/bin/firefox
 RUN ln -s /usr/bin/coder /usr/local/bin/coop
 RUN ln -s /usr/bin/coder /usr/local/bin/space
 
+RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
+  && touch /etc/localtime
+
 ARG USER=ii
+ENV LANG=en_US.utf8
 RUN useradd --groups sudo --no-create-home --shell /bin/bash ${USER} \
 	&& echo "${USER} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/${USER} \
 	&& chmod 0440 /etc/sudoers.d/${USER}

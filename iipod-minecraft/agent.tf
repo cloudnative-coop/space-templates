@@ -13,10 +13,10 @@ resource "coder_agent" "iipod" {
   env = {
     # GITHUB_TOKEN        = "$${data.coder_git_auth.github.access_token}"
     # Just a hidden feature for now to try out
-    OPENAI_API_TOKEN    = "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"
-    ORGFILE_URL         = "${data.coder_parameter.org-url.value}"
-    SESSION_NAME        = "${lower(data.coder_workspace.ii.name)}"
-    GIT_REPO            = "${data.coder_parameter.git-url.value}"
+    OPENAI_API_TOKEN = "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"
+    # ORGFILE_URL         = "${data.coder_parameter.org-url.value}"
+    SESSION_NAME = "${lower(data.coder_workspace.ii.name)}"
+    # GIT_REPO            = "${data.coder_parameter.git-url.value}"
     SPACE_DOMAIN        = "${local.dns_zone}"
     GIT_AUTHOR_NAME     = "${data.coder_workspace.ii.owner}"
     GIT_COMMITTER_NAME  = "${data.coder_workspace.ii.owner}"

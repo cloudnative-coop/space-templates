@@ -6,7 +6,7 @@ echo "Starting TTYD"
 ttyd tmux at 2>&1 | tee /tmp/ttyd.log &
 
 cp -a /usr/share/novnc ~/novnc
-cp ~/novnc/vnc.html ~/index.html
+cp ~/novnc/vnc.html ~/novnc/index.html
 
 tmux new -d -s "vnc" -n "novnc"
 tmux send-keys -t "vnc" "websockify -D --web=/home/ii/novnc 6080 localhost:5901

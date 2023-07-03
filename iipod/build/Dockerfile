@@ -258,8 +258,12 @@ RUN mkdir -p ~/.config
 RUN git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
 RUN git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
 RUN yes | ~/.config/emacs/bin/doom install --env --fonts
-RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && true || true && true
+RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && true || true
 
 COPY home/.tmux.conf /home/ii/.tmux.conf
+RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm && \
+  git clone https://git::@github.com/dracula/tmux ~/.tmux/plugins/tmux && \
+  ~/.tmux/plugins/tpm/bin/install_plugins
+
 RUN mkdir -p ~/.config/code-server
 COPY home/.config/code-server/config.yaml /home/ii/.config/code-server/config.yaml

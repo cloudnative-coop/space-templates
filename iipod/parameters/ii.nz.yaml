@@ -1,0 +1,4 @@
+dns: false
+container-image: ghcr.io/cloudnative-coop/iipod:2023.07.04-05
+git-url: https://github.com/ii/ii-nz-nix
+org-url: https://raw.githubusercontent.com/ii/ii-nz-nix/canon/org/diary.org

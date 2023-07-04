@@ -272,3 +272,11 @@ RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm && \
 
 RUN mkdir -p ~/.config/code-server
 COPY home/.config/code-server/config.yaml /home/ii/.config/code-server/config.yaml
+
+# Nix
+RUN sudo install -d -m755 -o $(id -u) -g $(id -g) /nix
+RUN curl -L https://nixos.org/nix/install | sh
+RUN echo "source /home/ii/.nix-profile/etc/profile.d/nix.sh" | sudo tee -a /etc/bash.bashrc
+# Hook direnv to shell
+RUN echo 'eval "$(direnv hook bash)"' | sudo tee -a /etc/bash.bashrc
+RUN mkdir -p /home/ii/.config/nix && echo "experimental-features = nix-command flakes" >> /home/ii/.config/nix/nix.conf

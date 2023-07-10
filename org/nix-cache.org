@@ -1,0 +1,128 @@
+#+title: Building a Nix Cache
+
+* Introduction
+This is a diary file related to the ticket [[https://github.com/cloudnative-coop/space-templates/issues/36#issuecomment-1627813574][Create k8s deployment of nix cache for space.cloudnative.nz]]
+
+The goal is to have our own nix binary cache server that can be used across our workspaces.
+
+* What is a binary cache?
+When you build a nix derivation, it results in a binary file stored in your
+nix/store with a specific, deterministic hash. This is a local cache of your
+binary files. If another nix file needs the same package, it will have the same
+ahsh, and can be pulled from your local cache to make the build time faster. A
+binary cache simply holds these binaries on a remote server. Nix uses it to
+speed up the build time of its nixpkgs, using cache.nixos.org
+
+They have a wiki explaining how to set up a binary cache server here:
+https://nixos.wiki/wiki/Binary_Cache
+
+However, this explains how to set it up on a nixOS machine. The basic setup they
+outline here is to use the nix-serve command running as a daemon and behind a
+nginx proxy. They also run some commands to generate keys for trusting the packages.  This will be used
+by some other nix file that has the cahe set up as a trusted soruce, using the keys to attest the cache.
+
+* Running nix-serve as a docker image
+
+We ultimately want a docker image that we can use as part of a k8s deployment.
+So the basic tutorial above would not work for us. Instead, we would want some
+image that is running both nginx and that nix-serve command.
+
+I checked out the repo for nix-serve, and there is an open issue about publishing it as a docker image:
+https://github.com/edolstra/nix-serve/issues/15
+
+
+ They answers advise against this, saying that it'd be simpler to just deploy an
+ nginx server that is hosting the binary files. The cache is extremely simple, a
+ directory hosting binary files that have .nar info files that give their full
+ hash. nix-serve isn't doing anything special with it. The magic is in how you
+ configure the server with the keys and how you configure your other nix files
+ to use this alternate cache server.
+
+
+ I experimented a bit with creating the nginx image and pushing the binary files
+ to it. Pushing them is simple, it is just `nix copy --to path` However, I could
+ not figure out an easy way to actually use this cache with other files.
+* nix cache binary using s3 minio
+There is an interesting article about building your own s3 cache server. It is
+basically doing what I outlined above, but using minio as the s3 server instead
+of nginx and static files. It is interesting, but it just bypasses the trusted
+key issue, which I don't really wanna do. I also don't wnana bring in a new
+dependency to learn if we don't have to.
+https://medium.com/earlybyte/the-s3-nix-cache-manual-e320da6b1a9b
+
+* cachix and nginx
+A more interesting setup to me is in this blog:
+https://www.channable.com/tech/setting-up-a-private-nix-cache-for-fun-and-profit
+
+This is real simple, at its heart. They set up some cache servers using cachix,
+but then put a caching nginx proxy in front of them. So you'd push to your
+cachix server, but then have this shared nginx proxy that everyone else is
+hitting. It is caching all its request so all subsequent requests will get that
+cached response. Since the uri's to the nix stores contain their deterministic
+hash, the uri's are really easy to use for this purpose.
+
+I think this could be useful for our own work. Cachix handles the key creation
+and the public serving of content (see [[https://docs.cachix.org/faq#what-happens-when-i-run-cachix-use-both-immediately-and-any-stateful-effects-for-the-future][what happens when i invoke cachix use?]]),
+but we can have a nginx proxy that is locally caching stuff, and even have that
+local proxy living on someone's own computer, pulling from as low-latency of a
+place as possible.
+
+* Current plan
+At this point, I outlined a basic plan..which was to write a simple package,
+publish it to the cache, and then use it in another nix file. I wanted to have
+it be a custom package to both verify that it's work and because I imagine it'll
+be closer to the setup we use in our workspaces. At some point, we'll have the
+infrasnoop package or some core component of it, that we want to cache and pull
+down whenever someone starts up an infra space.
+
+I made a simple package called zhello, documented in this repo [[https://github.com/ii/nix-flake-example][ii/nix-flake-example]]
+I pushed it up to the iinz cache, with a pin, so it is available here:
+https://app.cachix.org/cache/iinz#pins
+
+I should be able to use this package on my local machine, even if it doesn't exist yet,
+and see that the package came from this cache repository.   For example, this flake /should/
+work
+
+#+begin_src
+{
+  nixConfig = {
+    extra-substituters = "https://cache.nixos.org https://iinz.cachix.org";
+    extra-trusted-public-keys = "iinz.cachix.org-1:M0R4Y2K6I4/u6ag2WvKHipTFiUq/OgK38LAdiDT9Xhk=";
+    extra-experimental-features = "nix-command flakes";
+  };
+
+  inputs = { nixpkgs.url = "github:nixos/nixpkgs"; };
+  outputs = { self, nixpkgs }:
+    let pkgs = nixpkgs.legacyPackages.x86_64-linux;
+    in {
+      packages.x86_64-linux.hello = pkgs.hello;
+
+      devShell.x86_64-linux =
+        pkgs.mkShell { buildInputs = [ self.packages.x86_64-linux.hello pkgs.cowsay nixpkgs.zhello ]; };
+   };
+}
+
+#+end_src
+
+Notice the extra nix config. This uses a substituter that says to look at our
+iinz cache along with the standard cache.nixos.org, then passes in the trusted
+key that cachix generates.
+
+
+However, this does not work. There is no attribute in nixpkgs called zhello.
+
+At this point, I realized that I didn't fully understand how the publishing of
+packages to a repository worked. I think i am missing a step, and started
+looking into it more.
+
+this link is a nice guide, tho not exactly what we're trying to do:
+https://discourse.nixos.org/t/how-does-nix-know-which-substitute-to-use-when-installing-packages/14214/4
+
+We coudl try to test it instead with something like the hello package, something
+that we know exist, but then delete it from the local store and see where it
+pulls it from.
+
+I want to have custom packages in binary cache server that can have multiple cache servers running in front of it.
+Wtih all things nix though, everything connects to each other in a consistent, but esoteric way, and i feel i need
+to understand nix a bit better to figure out how to best get the cache working.  At this point, I feel like I can
+put attributes in the right place, but I cannot confidently show that it's all working.  i want that confidence.

@@ -13,9 +13,6 @@ locals {
 data "coder_provisioner" "ii" {
 }
 
-provider "docker" {
-}
-
 data "coder_workspace" "ii" {
 }
 

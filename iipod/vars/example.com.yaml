@@ -1,0 +1,16 @@
+# TSIG / RFC2136 settings
+dns_update_server: "123.253.176.253"
+dns_update_keyname: "example.io."
+dns_update_keyalgorithm: "hmac-sha256"
+# Needs to be base64 encoded
+dns_update_keysecret: "IAMBASE64-ENCODED-BUT-A-BINARY"
+# coder deployment
+coder_url: "https://space.example.io"
+coder_domain: "example.io"
+# cluster specific
+local_ip: "192.168.1.145"
+public_ip: "1.2.3.4"
+# used within iipod
+default_git_url: "https://github.com/cncf-infra/infrasnoop"
+default_org_url: "https://raw.githubusercontent.com/cncf-infra/infrasnoop/canon/org/demo.org"
+default_container_image: "ghcr.io/cloudnative-coop/iipod:2023.07.03-hh"

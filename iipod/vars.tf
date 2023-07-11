@@ -7,11 +7,10 @@ locals {
   spacename         = lower(data.coder_workspace.ii.name)
   user_domain       = "${local.namespace}.${var.coder_domain}"
   space_domain      = "${local.spacename}.${local.user_domain}"
-  local_ip          = var.local_ip
-  public_ip         = var.public_ip
-  coder_url         = var.coder_url
   iipod_agent_init  = coder_agent.iipod.init_script
   iipod_agent_token = coder_agent.iipod.token
+  # public_ip         = var.public_ip
+  # coder_url         = var.coder_url
   # metal_ip          = equinix_metal_device.iibox.access_public_ipv4
   # iibox_agent_init  = coder_agent.iibox.init_script
   # iibox_agent_token = coder_agent.iibox.token

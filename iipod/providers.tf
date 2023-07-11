@@ -11,7 +11,12 @@ terraform {
     dns = {
       source  = "hashicorp/dns"
       version = "3.3.2"
-    } # github = {
+    }
+    helm = {
+      source  = "hashicorp/helm"
+      version = "2.10.1"
+    }
+    # github = {
     #   source  = "integrations/github"
     #   version = "5.29.0" # Current as of July 10th 2023
     # }
@@ -57,6 +62,10 @@ provider "dns" {
     # DNS_UPDATE_KEYSECRET
     key_secret = var.dns_update_keysecret
   }
+}
+provider "helm" {
+  # Configuration options
+  # https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release
 }
 # provider "docker" {
 # }

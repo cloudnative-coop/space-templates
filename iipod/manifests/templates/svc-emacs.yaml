@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: emacs-${spacename}
+  labels:
+    spacename: ${spacename}
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 8085
+  selector:
+    spacename: ${spacename}
+    spaceapp: iipod

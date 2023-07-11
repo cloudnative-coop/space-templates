@@ -16,19 +16,19 @@ resource "coder_metadata" "iipod" {
   # }
   item {
     key   = "emacs"
-    value = "https://emacs.${local.space_domain}/"
+    value = "https://emacs-${local.space_domain}/"
   }
   item {
     key   = "tmux"
-    value = "https://tmux.${local.space_domain}/"
+    value = "https://tmux-${local.space_domain}/"
   }
   item {
     key   = "vnc"
-    value = "https://vnc.${local.space_domain}/"
+    value = "https://vnc-${local.space_domain}/"
   }
   item {
-    key   = "web"
-    value = "https://web.${local.space_domain}/"
+    key   = "www"
+    value = "https://www-${local.space_domain}/"
   }
 }
 
@@ -44,6 +44,7 @@ resource "kubernetes_deployment" "iipod" {
     # namespace = "coder" #var.namespace
     labels = {
       "spacename" : local.spacename
+      "spaceapp" : "iipod"
     }
   }
   spec {
@@ -57,6 +58,7 @@ resource "kubernetes_deployment" "iipod" {
       metadata {
         labels = {
           "spacename" : local.spacename
+          "spaceapp" : "iipod"
         }
       }
       spec {
@@ -77,6 +79,10 @@ resource "kubernetes_deployment" "iipod" {
           env {
             name  = "CODER_AGENT_TOKEN"
             value = coder_agent.iipod.token
+          }
+          env {
+            name  = "SPACENAME"
+            value = local.spacename
           }
         }
       }

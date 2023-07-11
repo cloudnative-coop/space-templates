@@ -17,7 +17,7 @@ resource "coder_agent" "iipod" {
     ORGFILE_URL         = "${data.coder_parameter.org-url.value}"
     SESSION_NAME        = "${lower(data.coder_workspace.ii.name)}"
     GIT_REPO            = "${data.coder_parameter.git-url.value}"
-    SPACE_DOMAIN        = "${local.dns_zone}"
+    SPACE_DOMAIN        = "${local.space_domain}"
     GIT_AUTHOR_NAME     = "${data.coder_workspace.ii.owner}"
     GIT_COMMITTER_NAME  = "${data.coder_workspace.ii.owner}"
     GIT_AUTHOR_EMAIL    = "${data.coder_workspace.ii.owner_email}"

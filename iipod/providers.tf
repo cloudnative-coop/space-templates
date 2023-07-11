@@ -8,7 +8,10 @@ terraform {
       source  = "equinix/equinix"
       version = "1.14.3" # Current as of June 11th 2023
     }
-    # github = {
+    dns = {
+      source  = "hashicorp/dns"
+      version = "3.3.2"
+    } # github = {
     #   source  = "integrations/github"
     #   version = "5.29.0" # Current as of July 10th 2023
     # }
@@ -40,6 +43,20 @@ provider "coder" {
 provider "equinix" {
   # Configuration options
   # https://registry.terraform.io/providers/equinix/equinix/latest/docs#argument-reference
+}
+provider "dns" {
+  # Configuration options
+  # https://registry.terraform.io/providers/hashicorp/dns/latest/docs#schema
+  update {
+    # DNS_UPDATE_SERVER
+    server = var.dns_update_server
+    # DNS_UPDATE_KEYNAME
+    key_name = var.dns_update_keyname
+    # DNS_UPDATE_KEYALGORITHM
+    key_algorithm = var.dns_update_keyalgorithm
+    # DNS_UPDATE_KEYSECRET
+    key_secret = var.dns_update_keysecret
+  }
 }
 # provider "docker" {
 # }

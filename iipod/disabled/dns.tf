@@ -31,7 +31,7 @@ resource "coder_metadata" "wild_a_record" {
 
 resource "powerdns_record" "a_record" {
   count   = data.coder_parameter.dns.value ? data.coder_workspace.ii.start_count : 0
-  name    = local.dns_fqdn
+  name    = "${local.coder_domain}."
   zone    = "${data.coder_parameter.domain.value}."
   type    = "A"
   ttl     = 60
@@ -41,7 +41,7 @@ resource "powerdns_record" "a_record" {
 
 resource "powerdns_record" "wild_a_record" {
   count = data.coder_parameter.dns.value ? data.coder_workspace.ii.start_count : 0
-  name  = "*.${local.dns_fqdn}"
+  name  = "*.${local.coder_domain}."
   zone  = "${data.coder_parameter.domain.value}."
   type  = "A"
   ttl   = 60

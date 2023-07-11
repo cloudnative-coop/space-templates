@@ -4,7 +4,7 @@ data "coder_parameter" "dns" {
   name         = "dns"
   display_name = "dns"
   description  = "Create a DNS wildcard + TLS Certificate (adds 30-40 seconds)"
-  default      = false
+  default      = true
   type         = "bool"
   icon         = "https://github.com/cncf/artwork/blob/master/projects/coredns/icon/solid-color/coredns-icon-solid-color.png?raw=true"
   # option {

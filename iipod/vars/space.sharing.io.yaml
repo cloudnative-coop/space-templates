@@ -1,0 +1,18 @@
+# TSIG / RFC2136 settings
+dns_update_server: "123.253.176.253"
+dns_update_keyname: "sharing.io."
+dns_update_keyalgorithm: "hmac-sha256"
+# Needs to be base64 encoded
+dns_update_keysecret: "8CKFw/UigtAeHDiN5XKZtLuNriWVQxuHsEWxe3RVuVwR61QcnU6DkuMmgpQ7ZmL2+NwPyY9v1eiOsH5yfYV03w=="
+# dns_update_keysecret: "OENLRncvVWlndEFlSERpTjVYS1p0THVOcmlXVlF4dUhzRVd4ZTNSVnVWd1I2MVFjblU2RGt1TW1ncFE3Wm1MMitOd1B5WTl2MWVpT3NINXlmWVYwM3c9PQo="
+# dns_update_keysecret: "OENLRncvVWlndEFlSERpTjVYS1p0THVOcmlXVlF4dUhzRVd4ZTNSVnVWd1I2MVFjblU2RGt1TW1ncFE3Wm1MMitOd1B5WTl2MWVpT3NINXlmWVYwM3c9PQ=="
+# coder deployment
+coder_url: "https://space.sharing.io"
+coder_domain: "sharing.io"
+# cluster specific
+local_ip: "192.168.1.145"
+public_ip: "90.92.60.248"
+# used within iipod
+default_git_url: "https://github.com/cncf-infra/infrasnoop"
+default_org_url: "https://raw.githubusercontent.com/cncf-infra/infrasnoop/canon/org/demo.org"
+default_container_image: "ghcr.io/cloudnative-coop/iipod:2023.07.03-hh"

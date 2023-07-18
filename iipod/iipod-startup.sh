@@ -39,11 +39,14 @@ code-server --auth none --port 13337 | tee /tmp/code-server.log &
   echo "Setting up repos..."
   mkdir ~/repos
   cd ~repos
+  git clone https://github.com/cloudnative-coop/space-templates
+  cd ~/repos/space-templates
+  git remote add upstream git@github.com:cloudnative-coop/space-templates
   # git clone https://github.com/cncf/apisnoop.git
   # Setup Ticket-Writing
-  git clone https://github.com/apisnoop/ticket-writing.git
-  cd ~/repos/ticket-writing
-  git remote add upstream git@github.com:apisnoop/ticket-writing.git
+  # git clone https://github.com/apisnoop/ticket-writing.git
+  # cd ~/repos/ticket-writing
+  # git remote add upstream git@github.com:apisnoop/ticket-writing.git
 
   # Setup Kubernetes src
   # mkdir -p ~/go/src/k8s.io

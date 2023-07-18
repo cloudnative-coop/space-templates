@@ -7,9 +7,9 @@ metadata:
 spec:
   secretName: wildcard-tls
   dnsNames:
-    - "${user_domain}"
-    - "*.${user_domain}"
+    - "${username}.${coder_domain}"
+    - "*.${username}.${coder_domain}"
   issuerRef:
-    name: letsencrypt
+    name: letsencrypt-staging
     kind: ClusterIssuer
     group: cert-manager.io

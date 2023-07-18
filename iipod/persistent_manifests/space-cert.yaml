@@ -8,8 +8,8 @@ metadata:
 spec:
   secretName: ${spacename}-wildcard-tls
   dnsNames:
-    - "${space_domain}"
-    - "*.${space_domain}"
+    - "${spacename}.${username}.${coder_domain}"
+    - "*.${spacename}.${username}.${coder_domain}"
   issuerRef:
     name: letsencrypt-staging
     # name: letsencrypt

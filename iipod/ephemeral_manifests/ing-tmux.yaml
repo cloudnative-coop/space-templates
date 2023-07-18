@@ -22,7 +22,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: tmux-$space_domain}
+    - host: tmux-${space_domain}
       http:
         paths:
           - backend:

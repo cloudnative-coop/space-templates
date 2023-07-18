@@ -22,7 +22,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: vnc-$space_domain}
+    - host: vnc-${space_domain}
       http:
         paths:
           - backend:

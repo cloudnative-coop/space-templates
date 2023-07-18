@@ -1,15 +1,15 @@
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:
-  name: ${local.spacename}-wildcard-tls
+  name: ${spacename}-wildcard-tls
   namespace: ${namespace}
   labels:
-    spacename: ${local.spacename}
+    spacename: ${spacename}
 spec:
-  secretName: ${local.spacename}-wildcard-tls
+  secretName: ${spacename}-wildcard-tls
   dnsNames:
-    - "${local.space_domain}"
-    - "*.${local.space_domain}"
+    - "${space_domain}"
+    - "*.${space_domain}"
   issuerRef:
     name: letsencrypt
     kind: ClusterIssuer

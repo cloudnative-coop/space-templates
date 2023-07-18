@@ -22,7 +22,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: emacs-$space_domain}
+    - host: emacs-${space_domain}
       http:
         paths:
           - backend:

@@ -22,7 +22,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: www-$space_domain}
+    - host: www-${space_domain}
       http:
         paths:
           - backend:

@@ -4,6 +4,7 @@ metadata:
   name: tmux-${spacename}
   namespace: ${namespace}
   labels:
+    spaceapp: tmux
     spacename: ${spacename}
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
@@ -22,7 +23,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: tmux-${space_domain}
+    - host: tmux-${spacename}-${username}.${coder_domain}
       http:
         paths:
           - backend:
@@ -32,7 +33,17 @@ spec:
                   number: 80
             path: /
             pathType: ImplementationSpecific
-    - host: tmux.${space_domain}
+    - host: tmux-${spacename}.${username}.${coder_domain}
+      http:
+        paths:
+          - backend:
+              service:
+                name: ttyd-${spacename}
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
+    - host: tmux.${spacename}.${username}.${coder_domain}
       http:
         paths:
           - backend:
@@ -44,8 +55,11 @@ spec:
             pathType: ImplementationSpecific
   tls:
     - hosts:
-        - tmux-${space_domain}
+        - tmux-${spacename}-${username}.${coder_domain}
+      # This one uses the default cert
+    - hosts:
+        - tmux-${spacename}.${username}.${coder_domain}
       secretName: wildcard-tls
     - hosts:
-        - tmux.${space_domain}
+        - tmux.${spacename}.${username}.${coder_domain}
       secretName: ${spacename}-wildcard-tls

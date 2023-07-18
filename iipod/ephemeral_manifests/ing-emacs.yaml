@@ -1,10 +1,11 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
-  labels:
-    spacename: ${spacename}
   name: emacs-${spacename}
   namespace: ${namespace}
+  labels:
+    spaceapp: emacs
+    spacename: ${spacename}
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
@@ -22,7 +23,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: emacs-${space_domain}
+    - host: emacs-${spacename}-${username}.${coder_domain}
       http:
         paths:
           - backend:
@@ -32,7 +33,17 @@ spec:
                   number: 80
             path: /
             pathType: ImplementationSpecific
-    - host: emacs.${space_domain}
+    - host: emacs-${spacename}.${username}.${coder_domain}
+      http:
+        paths:
+          - backend:
+              service:
+                name: emacs-${spacename}
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
+    - host: emacs.${spacename}.${username}.${coder_domain}
       http:
         paths:
           - backend:
@@ -44,8 +55,11 @@ spec:
             pathType: ImplementationSpecific
   tls:
     - hosts:
-        - emacs-${space_domain}
+        - emacs-${spacename}-${username}.${coder_domain}
+      # This one uses the default cert
+    - hosts:
+        - emacs-${spacename}.${username}.${coder_domain}
       secretName: wildcard-tls
     - hosts:
-        - emacs.${space_domain}
+        - emacs.${spacename}.${username}.${coder_domain}
       secretName: ${spacename}-wildcard-tls

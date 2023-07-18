@@ -22,7 +22,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: vnc-${space_domain}
+    - host: vnc-${spacename}-${username}.${coder_domain}
       http:
         paths:
           - backend:
@@ -32,7 +32,17 @@ spec:
                   number: 80
             path: /
             pathType: ImplementationSpecific
-    - host: vnc.${space_domain}
+    - host: vnc-${spacename}.${username}.${coder_domain}
+      http:
+        paths:
+          - backend:
+              service:
+                name: novnc-${spacename}
+                port:
+                  number: 80
+            path: /
+            pathType: ImplementationSpecific
+    - host: vnc.${spacename}.${username}.${coder_domain}
       http:
         paths:
           - backend:
@@ -44,8 +54,11 @@ spec:
             pathType: ImplementationSpecific
   tls:
     - hosts:
-        - vnc-${space_domain}
+        - vnc-${spacename}-${username}.${coder_domain}
+      # This one uses the default cert
+    - hosts:
+        - vnc-${spacename}.${username}.${coder_domain}
       secretName: wildcard-tls
     - hosts:
-        - vnc.${space_domain}
+        - vnc.${spacename}.${username}.${coder_domain}
       secretName: ${spacename}-wildcard-tls

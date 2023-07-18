@@ -4,6 +4,7 @@ metadata:
   name: www-${spacename}
   namespace: ${namespace}
   labels:
+    spaceapp: www
     spacename: ${spacename}
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
@@ -22,7 +23,7 @@ metadata:
 spec:
   ingressClassName: nginx
   rules:
-    - host: www-${space_domain}
+    - host: www-${spacename}-${username}.${coder_domain}
       http:
         paths:
           - backend:
@@ -32,7 +33,7 @@ spec:
                   number: 80
             path: /
             pathType: ImplementationSpecific
-    - host: www.${space_domain}
+    - host: www.${spacename}.${username}.${coder_domain}
       http:
         paths:
           - backend:
@@ -44,8 +45,11 @@ spec:
             pathType: ImplementationSpecific
   tls:
     - hosts:
-        - www-${space_domain}
+        - www-${spacename}-${username}.${coder_domain}
+      # This one uses the default cert
+    - hosts:
+        - www-${spacename}.${username}.${coder_domain}
       secretName: wildcard-tls
     - hosts:
-        - www.${space_domain}
+        - www.${spacename}.${username}.${coder_domain}
       secretName: ${spacename}-wildcard-tls

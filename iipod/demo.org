@@ -1,0 +1,6 @@
+#+title: Demo
+
+* kubectl
+#+begin_src shell
+kubectl get secrets,ingress
+#+end_src

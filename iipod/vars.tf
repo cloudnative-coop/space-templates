@@ -48,6 +48,26 @@ variable "coder_domain" {
   }
 }
 
+variable "pdns_api_key" {
+  type        = string
+  description = "PowerDNS API Key for Powerdns Domain Creation"
+  default     = "example.com"
+  nullable    = false
+}
+
+variable "pdns_api_url" {
+  type        = string
+  description = "PowerDNS API URL for Powerdns Domain Creation"
+  default     = "https://pdns.ii.nz/"
+  nullable    = false
+}
+
+variable "pdns_account" {
+  type        = string
+  description = "PowerDNS Account to associate user domain to"
+  nullable    = false
+}
+
 variable "dns_update_server" {
   type        = string
   description = "Nameserver for RFC2136 Updates"

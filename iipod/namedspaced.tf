@@ -58,6 +58,11 @@ provisioner "local-exec" {
 provisioner "local-exec" {
   command = "./kubectl apply -f ephemeral"
 }
+# We have manifests to create the namespace
+provisioner "local-exec" {
+  when    = destroy
+  command = "./kubectl delete -f ephemeral"
+}
 # We could also deloy logstream-kube to show the pod coming up...
 #   provisioner "local-exec" {
 #     command = <<COMMAND

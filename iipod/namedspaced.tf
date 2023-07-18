@@ -2,8 +2,10 @@ resource "template_dir" "persistent" {
   source_dir      = "${path.module}/persistent_manifests"
   destination_dir = "${path.cwd}/persistent"
   vars = {
-    namespace   = local.namespace
-    user_domain = local.user_domain
+    namespace    = local.namespace
+    coder_domain = var.coder_domain
+    username     = local.username
+    spacename    = local.spacename
   }
 }
 
@@ -12,9 +14,9 @@ resource "template_dir" "ephemeral" {
   destination_dir = "${path.cwd}/ephemeral"
   vars = {
     namespace    = local.namespace
-    user_domain  = local.user_domain
+    coder_domain = var.coder_domain
+    username     = local.username
     spacename    = local.spacename
-    space_domain = local.space_domain
   }
 }
 
@@ -24,9 +26,11 @@ resource "null_resource" "namespace" {
     template_dir.persistent,
     template_dir.ephemeral
   ]
-  # I want to apply a bunch of manifests at once
-  # I encouge you to find a faster way
+  # We want a per user domain USERNAME.DOMAIN.COM
+  # We provision wildcard DNS01 certs for *.USERNAME.DOMAIN.COM
+  #                         and *.WORKSPACE.USERNAME.DOMAIN.COM
   provisioner "local-exec" {
+    quiet = true
     command = <<COMMAND
 curl -L -s \
   -H 'X-API-Key: ${var.pdns_api_key}' -H 'Content-Type: application/json' \
@@ -42,31 +46,43 @@ curl -L -s \
 COMMAND
 }
 provisioner "local-exec" {
+  quiet   = true
   command = <<COMMAND
-./kubectl version --client || (
+curl -L -s \
+  -H 'X-API-Key: ${var.pdns_api_key}' -H 'Content-Type: application/json' \
+  -D - \
+  -d '{"kind": "TSIG-ALLOW-DNSUPDATE", "metadata": ["${var.dns_update_keyname}"]}' \
+  ${var.pdns_api_url}/api/v1/servers/localhost/zones/${local.user_domain}/metadata
+COMMAND
+}
+# I want to apply a bunch of manifests at once
+# HELP WANTED to find a better way
+provisioner "local-exec" {
+  command = <<COMMAND
+../../kubectl version --client || (
   echo installing kubectl:
-  curl -s -L https://dl.k8s.io/release/v1.27.3/bin/linux/amd64/kubectl -o ./kubectl \
-  && chmod +x ./kubectl
+  curl -s -L https://dl.k8s.io/release/v1.27.3/bin/linux/amd64/kubectl -o ../../kubectl \
+  && chmod +x ../../kubectl
 )
 COMMAND
 }
 # We have manifests to create the namespace and persist a few things
 provisioner "local-exec" {
   # - the main *.user.DOMAIN cert
-  command = "./kubectl apply -f persistent"
+  command = "../../kubectl apply -f persistent"
 }
 # We have manifests to create the namespace
 provisioner "local-exec" {
-  command = "./kubectl apply -f ephemeral"
+  command = "../../kubectl apply -f ephemeral"
 }
 # On the way down, just want to use kubectl to remove the epherical k8s objects
 provisioner "local-exec" {
   when    = destroy
   command = <<COMMAND
-./kubectl version --client || (
+../../kubectl version --client || (
   echo installing kubectl:
-  curl -s -L https://dl.k8s.io/release/v1.27.3/bin/linux/amd64/kubectl -o ./kubectl \
-  && chmod +x ./kubectl
+  curl -s -L https://dl.k8s.io/release/v1.27.3/bin/linux/amd64/kubectl -o ../../kubectl \
+  && chmod +x ../../kubectl
 )
 COMMAND
 }

@@ -7,8 +7,8 @@ metadata:
 spec:
   secretName: wildcard-tls
   dnsNames:
-    - "${local.user_domain}"
-    - "*.${local.user_domain}"
+    - "${user_domain}"
+    - "*.${user_domain}"
   issuerRef:
     name: letsencrypt
     kind: ClusterIssuer

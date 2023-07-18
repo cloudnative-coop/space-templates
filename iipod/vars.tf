@@ -1,8 +1,20 @@
+data "coder_provisioner" "ii" {
+}
+
+data "coder_workspace" "ii" {
+}
+
+# data "coder_git_auth" "github" {
+#   # Matches the ID of the git auth provider in Coder.
+#   id = "primary-github"
+# }
+
 # Can be set via TF_VAR_variable_name in the coder process ENV
 # But can also be set via a file similar var/space.sharing.io.yaml
 # And deployed with coder template push --variables-file ./vars/space.sharing.io.yaml or similar
 
 locals {
+  username          = data.coder_workspace.ii.owner
   namespace         = lower(data.coder_workspace.ii.owner)
   spacename         = lower(data.coder_workspace.ii.name)
   user_domain       = "${local.namespace}.${var.coder_domain}"

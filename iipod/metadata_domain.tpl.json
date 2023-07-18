@@ -1,0 +1,4 @@
+{
+  "kind": "TSIG-ALLOW-DNSUPDATE",
+  "metadata": ["${KEYNAME}"]
+}

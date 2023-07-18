@@ -1,0 +1,21 @@
+{
+  "name": "${DOMAIN}",
+  "kind": "Native",
+  "nameservers": ["${NS1}.", "${NS2}."],
+  "account": "${ACCOUNTNAME}",
+  "master_tsig_key_ids": ["${KEYNAME}"],
+  "rrsets": [
+    {
+      "name": "*.${DOMAIN}",
+      "type": "A",
+      "ttl": 60,
+      "records": [{ "content": "${IP}" }]
+    }
+  ],
+  "comments": [
+    {
+      "content": "Created ${DOMAIN} Wildcard",
+      "account": "${ACCOUNTNAME}"
+    }
+  ]
+}

@@ -59,6 +59,17 @@ provisioner "local-exec" {
 provisioner "local-exec" {
   command = "./kubectl apply -f ephemeral"
 }
+# On the way down, just want to use kubectl to remove the epherical k8s objects
+provisioner "local-exec" {
+  when    = destroy
+  command = <<COMMAND
+./kubectl version --client || (
+  echo installing kubectl:
+  curl -s -L https://dl.k8s.io/release/v1.27.3/bin/linux/amd64/kubectl -o ./kubectl \
+  && chmod +x ./kubectl
+)
+COMMAND
+}
 # We have manifests to create the namespace
 provisioner "local-exec" {
   when    = destroy

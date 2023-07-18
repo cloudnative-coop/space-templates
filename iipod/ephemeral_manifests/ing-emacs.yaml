@@ -1,6 +1,10 @@
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
+  labels:
+    spacename: ${spacename}
+  name: emacs-${spacename}
+  namespace: ${namespace}
   annotations:
     nginx.ingress.kubernetes.io/proxy-read-timeout: "3600"
     nginx.ingress.kubernetes.io/proxy-send-timeout: "3600"
@@ -15,36 +19,33 @@ metadata:
       proxy_set_header Connection "upgrade";
       proxy_cache_bypass $http_upgrade;
       }
-  labels:
-    spacename: ${spacename}
-  name: vnc-${spacename}
 spec:
   ingressClassName: nginx
   rules:
-    - host: vnc-$space_domain}
+    - host: emacs-$space_domain}
       http:
         paths:
           - backend:
               service:
-                name: novnc-${spacename}
+                name: emacs-${spacename}
                 port:
                   number: 80
             path: /
             pathType: ImplementationSpecific
-    - host: vnc.${space_domain}
+    - host: emacs.${space_domain}
       http:
         paths:
           - backend:
               service:
-                name: novnc-${spacename}
+                name: emacs-${spacename}
                 port:
                   number: 80
             path: /
             pathType: ImplementationSpecific
   tls:
     - hosts:
-        - vnc-${space_domain}
+        - emacs-${space_domain}
       secretName: wildcard-tls
     - hosts:
-        - vnc.${space_domain}
+        - emacs.${space_domain}
       secretName: ${spacename}-wildcard-tls

@@ -2,6 +2,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: ttyd-${spacename}
+  namespace: ${namespace}
   labels:
     spacename: ${spacename}
 spec:

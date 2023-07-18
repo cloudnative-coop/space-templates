@@ -30,12 +30,13 @@ resource "null_resource" "namespace" {
     command = <<COMMAND
 curl -L -s \
   -H 'X-API-Key: ${var.pdns_api_key}' -H 'Content-Type: application/json' \
+  -D - \
   -d '${templatefile("./create_domain.tpl.json", {
-    DOMAIN = "${local.user_domain}",
+    DOMAIN = "${local.user_domain}.",
     NS1    = "ns.ii.nz",
     NS2    = "ns2.ii.nz",
     ACCOUNTNAME : "${var.pdns_account}",
-    KEYNAME : "${var.pdns_api_key}",
+    KEYNAME : "${var.dns_update_keyname}",
     IP : "${var.public_ip}"
 })}' ${var.pdns_api_url}/api/v1/servers/localhost/zones
 COMMAND

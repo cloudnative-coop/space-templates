@@ -38,6 +38,42 @@ COMMAND
     command = <<COMMAND
 cat <<MANIFEST | ~/kubectl apply --namespace ${local.namespace} -f -
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: admin
+automountServiceAccountToken: true
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: admin
+rules:
+  - apiGroups:
+      - ""
+    resources:
+      - "*"
+    verbs:
+      - "*"
+  - apiGroups:
+      - "*"
+    resources:
+      - "*"
+    verbs:
+      - "*"
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: admin
+subjects:
+  - kind: ServiceAccount
+    name: admin
+---
 apiVersion: cert-manager.io/v1
 kind: Certificate
 metadata:

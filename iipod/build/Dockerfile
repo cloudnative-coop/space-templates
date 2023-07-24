@@ -280,3 +280,8 @@ RUN echo "source /home/ii/.nix-profile/etc/profile.d/nix.sh" | sudo tee -a /etc/
 # Hook direnv to shell
 RUN echo 'eval "$(direnv hook bash)"' | sudo tee -a /etc/bash.bashrc
 RUN mkdir -p /home/ii/.config/nix && echo "experimental-features = nix-command flakes" >> /home/ii/.config/nix/nix.conf
+
+# Switch default noVNC for custom clipboard
+RUN sudo apt-get purge -y novnc && \
+    git clone --branch add_clipboard_support https://github.com/juanjoDiaz/noVNC.git /tmp/novnc && \
+    sudo cp -R /tmp/novnc /usr/share

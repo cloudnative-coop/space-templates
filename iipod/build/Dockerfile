@@ -267,9 +267,9 @@ RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && tr
 
 # Our tmux uses yank now
 COPY home/.tmux.conf /home/ii/.tmux.conf
-RUN sudo curl -LO https://raw.githubusercontent.com/sunaku/home/master/bin/yank /usr/local/bin/yank && sudo chmod +x /usr/local/bin/yank
+RUN sudo curl -L https://raw.githubusercontent.com/sunaku/home/master/bin/yank -o /usr/local/bin/yank && sudo chmod +x /usr/local/bin/yank
 # Update ttyd (evenutally remove from top of file when build time not an issue)
-RUN sudo curl -LO https://github.com/ii/ttyd/releases/download/2023.07.24-01/ttyd /usr/local/bin/ttyd && sudo chmod +x /usr/local/bin/ttyd
+RUN sudo curl -L https://github.com/ii/ttyd/releases/download/2023.07.24-01/ttyd -o /usr/local/bin/ttyd && sudo chmod +x /usr/local/bin/ttyd
 
 RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm && \
   git clone https://git::@github.com/dracula/tmux ~/.tmux/plugins/tmux && \

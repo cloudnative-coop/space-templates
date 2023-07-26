@@ -267,9 +267,20 @@ RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && tr
 
 # Our tmux uses yank now
 COPY home/.tmux.conf /home/ii/.tmux.conf
-RUN sudo curl -L https://raw.githubusercontent.com/sunaku/home/master/bin/yank -o /usr/local/bin/yank && sudo chmod +x /usr/local/bin/yank
+USER root
+RUN curl -L https://raw.githubusercontent.com/sunaku/home/master/bin/yank \
+  -o /usr/local/bin/yank && \
+  chmod +x /usr/local/bin/yank
 # Update ttyd (evenutally remove from top of file when build time not an issue)
-RUN sudo curl -L https://github.com/ii/ttyd/releases/download/2023.07.24-01/ttyd -o /usr/local/bin/ttyd && sudo chmod +x /usr/local/bin/ttyd
+RUN apt-get install -y cmake libwebsockets-dev libjson-c-dev && \
+  git clone https://github.com/ii/ttyd /tmp/ttyd && \
+  mkdir -p /tmp/ttyd/build && \
+  cd ~/ttyd/build && \
+  cmake .. && \
+  make install && \
+  dpkg -P ttyd
+USER $USER
+
 
 RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm && \
   git clone https://git::@github.com/dracula/tmux ~/.tmux/plugins/tmux && \

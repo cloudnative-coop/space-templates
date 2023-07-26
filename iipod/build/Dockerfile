@@ -278,7 +278,7 @@ RUN apt-get install -y cmake libwebsockets-dev libjson-c-dev && \
   cd /tmp/ttyd/build && \
   cmake .. && \
   make install && \
-  dpkg -P ttyd &&
+  dpkg -P ttyd && \
   rm -rf /tmp/ttyd
 USER $USER
 

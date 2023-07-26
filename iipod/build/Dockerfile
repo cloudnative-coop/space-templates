@@ -275,10 +275,11 @@ RUN curl -L https://raw.githubusercontent.com/sunaku/home/master/bin/yank \
 RUN apt-get install -y cmake libwebsockets-dev libjson-c-dev && \
   git clone https://github.com/ii/ttyd /tmp/ttyd && \
   mkdir -p /tmp/ttyd/build && \
-  cd ~/ttyd/build && \
+  cd /tmp/ttyd/build && \
   cmake .. && \
   make install && \
-  dpkg -P ttyd
+  dpkg -P ttyd &&
+  rm -rf /tmp/ttyd
 USER $USER
 
 

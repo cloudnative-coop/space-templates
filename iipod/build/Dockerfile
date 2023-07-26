@@ -265,8 +265,6 @@ RUN git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
 RUN yes | ~/.config/emacs/bin/doom install --env --fonts
 RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && true || true
 
-# Our tmux uses yank now
-COPY home/.tmux.conf /home/ii/.tmux.conf
 USER root
 RUN curl -L https://raw.githubusercontent.com/sunaku/home/master/bin/yank \
   -o /usr/local/bin/yank && \
@@ -282,7 +280,8 @@ RUN apt-get install -y cmake libwebsockets-dev libjson-c-dev && \
   rm -rf /tmp/ttyd
 USER $USER
 
-
+# Our tmux uses yank now
+COPY home/.tmux.conf /home/ii/.tmux.conf
 RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm && \
   git clone https://git::@github.com/dracula/tmux ~/.tmux/plugins/tmux && \
   ~/.tmux/plugins/tpm/bin/install_plugins

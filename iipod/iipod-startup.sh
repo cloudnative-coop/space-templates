@@ -3,7 +3,7 @@ set -x
 echo "Starting TMUX"
 tmux new -d -s $SPACE_NAME -n "iipod"
 echo "Starting TTYD"
-ttyd tmux at 2>&1 | tee /tmp/ttyd.log &
+ttyd --writable tmux at 2>&1 | tee /tmp/ttyd.log &
 # start broadwayd and emacs with provided ORG @ url
 # Check out the repo
 git clone "$GIT_REPO"

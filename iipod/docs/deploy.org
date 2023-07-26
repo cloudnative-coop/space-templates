@@ -1,0 +1,158 @@
+#+title: Deploy
+#+PROPERTY: header-args:tmux+ :session ":iipod"
+* cluster
+For now refer to https://github.com/cloudnative-nz/infra
+Your clusters needs a few things that are deployed there
+* image
+:PROPERTIES:
+:header-args:tmux+: :session ":iimage"
+:END:
+** ssh to root@sharing.io
+Be sure to connect with ssh agent forwarding:
+#+begin_src tmux
+ssh -A ii@sharing.io
+#+end_src
+** ensure current version
+#+begin_src tmux
+cd ~/space-templates && git pull
+#+end_src
+** optionally login to docker registry
+#+begin_src tmux
+docker login ghcr.io -u hh --password-stdin
+#+end_src
+** build the image
+#+begin_src tmux
+cd ~/space-templates/iipod/build
+export IMAGE=ghcr.io/cloudnative-coop/iipod:2023.07.26-03
+docker build -t $IMAGE .  && docker push $IMAGE
+#+end_src
+** Be sure and update your DEFAULT_CONTAINER_IMAGE
+in .envrc
+#+begin_src shell
+export DEFAULT_CONTAINER_IMAGE="ghcr.io/cloudnative-coop/iipod:2023.07.26-XX"
+#+end_src
+* .envrc
+#+begin_src shell
+export CODER_URL="https://space.cloudnative.nz"
+export CODER_DOMAIN="cloudnative.nz" #*.DOMAIN for spaces
+export LOCAL_IP="123.253.178.101" # local to the cluster for ingress
+export PUBLIC_IP="123.253.178.101" # external DNS / reachable by everyone
+# Need to create domains, so need PDNS account
+export PDNS_API_KEY=NEEDS_CREATE_DOMAIN_ADMIN # Usually pretty short
+export PDNS_API_URL="https://pdns.ii.nz" # We may run this per cluster later
+export PDNS_ACCOUNT="cloudnativenz" # Actually the PowerDNS Admin account
+# RFC2136 TSIG
+export DNS_UPDATE_SERVER="123.253.176.253" # DNS Server to connect to
+export DNS_UPDATE_KEYNAME="cloudnative.nz." # TSIG Key Name
+export DNS_UPDATE_KEYALGORITHM="hmac-sha256" # TSIG Key Algorithm
+export DNS_UPDATE_KEYSECRET=BASE64_TSIG_RFC2136
+# The rest of these are for the defaults for the template
+export DEFAULT_GIT_URL="https://github.com/cloudnative-nz/infra"
+export DEFAULT_ORG_URL="https://raw.githubusercontent.com/cloudnative-nz/infrasnoop/canon/org/demo.org"
+export DEFAULT_CONTAINER_IMAGE="ghcr.io/cloudnative-coop/iipod:2023.07.26-02"
+#+end_src
+* terraform
+:PROPERTIES:
+:header-args:tmux+: :session ":tfswitch"
+:END:
+** ssh
+#+begin_src tmux
+ssh -A ii@sharing.io
+#+end_src
+** tfswitch
+*** install
+#+begin_src tmux
+curl -L https://raw.githubusercontent.com/warrensbox/terraform-switcher/release/install.sh | sudo bash
+#+end_src
+*** ensure terraform version is 1.3.9
+
+I am noting that terraform has a newer version at 1.4.2!
+
+#+begin_src tmux
+export TF_VERSION=1.3.9
+tfswitch
+#+end_src
+** check terraform
+#+begin_src tmux
+terraform version
+#+end_src
+
+* coder
+:PROPERTIES:
+:header-args:tmux+: :session ":coder"
+:END:
+** optional ssh
+#+begin_src tmux
+ssh -A ii@sharing.io
+#+end_src
+** CODER_CONFIG_DIR
+#+begin_src tmux
+export CODER_CONFIG_DIR=~/.config/space.cloudnative.nz
+#+end_src
+** coder login
+#+begin_src tmux
+coder login https://space.cloudnative.nz
+#+end_src
+* template
+:PROPERTIES:
+:header-args:tmux+: :session ":template"
+:END:
+** optional ssh
+#+begin_src tmux
+ssh -A ii@sharing.io
+#+end_src
+** cd to iipod folder
+#+begin_src tmux
+cd ~/space-templates/iipod
+#+end_src
+** init terraform
+coder now supports speeding things up if you `terraform init` so .terraform.lock.hcl is pushed the template and cached.
+https://github.com/coder/coder/pull/7604/files
+
+#+begin_example
+WARN: No .terraform.lock.hcl file found
+  | When provisioning, Coder will be unable to cache providers without a lockfile and must download them from the internet each time.
+  | Create one by running  terraform init  in your template directory.
+#+end_example
+
+#+begin_src tmux
+terraform init
+#+end_src
+** push/create the template with terraform vars
+#+begin_src tmux
+cd ~/space-templates
+coder template push --create \
+    --yes \
+    --directory ~/space-templates/iipod \
+    --message "Updating Template because of X" \
+    --variable dns_update_keysecret=$DNS_UPDATE_KEYSECRET \
+    --variable pdns_account=$PDNS_ACCOUNT \
+    --variable pdns_api_key=$PDNS_API_KEY \
+    --variable pdns_api_url=$PDNS_API_URL \
+    --variable coder_url=$CODER_URL \
+    --variable coder_domain=$CODER_DOMAIN \
+    --variable local_ip=$LOCAL_IP \
+    --variable public_ip=$PUBLIC_IP \
+    --variable pdns_api_url=$DNS_API_URL \
+    --variable pdns_account=$DNS_ACCOUNT \
+    --variable dns_update_server=$DNS_UPDATE_SERVER \
+    --variable dns_update_keyname=$DNS_UPDATE_KEYNAME \
+    --variable dns_update_keyalgorithm=$DNS_UPDATE_KEYALGORITHM \
+    --variable default_git_url=$DEFAULT_GIT_URL \
+    --variable default_org_url=$DEFAULT_ORG_URL \
+    --variable default_container_image=$DEFAULT_CONTAINER_IMAGE \
+    iipod
+#+end_src
+* workspace
+** coder create with parameters
+#+begin_src tmux
+export CODER_RICH_PARAMETER_FILE=$(mktemp)
+export CODER_TEMPLATE_NAME=iipod
+export CODER_WORKSPACE_STOP_AFTER=99h
+cat <<-EOF > $CODER_RICH_PARAMETER_FILE
+container-image: $DEFAULT_CONTAINER_IMAGE
+git-url: $DEFAULT_GIT_URL
+org-url: $DEFAULT_ORG_URL
+EOF
+coder create --yes wed1247
+#+end_src

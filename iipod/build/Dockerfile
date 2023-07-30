@@ -19,7 +19,6 @@ RUN DEBIAN_FRONTEND=noninteractive \
     && apt-get update \
     && DEBIAN_FRONTEND="noninteractive" apt-get install --yes \
     tmux \
-    ttyd \
     tmate \
     bash-completion \
     less \
@@ -193,6 +192,20 @@ RUN set -x \
   && /bin/env GO111MODULE=on GOPATH=/usr/local/go /usr/local/go/bin/go install github.com/equinix/metal-cli/cmd/metal@v$METALCLI_VERSION \
   && /bin/env GO111MODULE=on GOPATH=/usr/local/go /usr/local/go/bin/go install github.com/google/ko@v$KO_VERSION
 
+# Use our fork of ttyd
+RUN apt-get install -y cmake libwebsockets-dev libjson-c-dev && \
+  git clone https://github.com/ii/ttyd /tmp/ttyd && \
+  mkdir -p /tmp/ttyd/build && \
+  cd /tmp/ttyd/build && \
+  cmake .. && \
+  make install && \
+  dpkg -P ttyd && \
+  rm -rf /tmp/ttyd
+
+# Install yank for our tmux+ttyd+osc52 support
+RUN curl -L https://raw.githubusercontent.com/sunaku/home/master/bin/yank \
+  -o /usr/local/bin/yank && \
+  chmod +x /usr/local/bin/yank
 
 RUN curl -s https://raw.githubusercontent.com/helm/helm/main/scripts/get-helm-3 | bash
 RUN sudo su -c "helm completion bash > /etc/bash_completion.d/helm"

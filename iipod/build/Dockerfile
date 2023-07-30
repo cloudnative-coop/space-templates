@@ -83,6 +83,9 @@ RUN DEBIAN_FRONTEND=noninteractive \
     firefox-esr \
     websockify \
     code \
+    cmake \
+    libwebsockets-dev \
+    libjson-c-dev \
 	&& ln -s /usr/bin/fdfind /usr/local/bin/fd \
 	&& rm -rf /var/lib/apt/lists/*
     # ubuntu-desktop \
@@ -206,8 +209,8 @@ RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-inst
 RUN curl -fsSL https://coder.com/install.sh | sh
 
 # Use our fork of ttyd
-RUN apt-get install -y cmake libwebsockets-dev libjson-c-dev && \
-  git clone https://github.com/ii/ttyd /tmp/ttyd && \
+# apt-get install -y cmake libwebsockets-dev libjson-c-dev
+RUN git clone https://github.com/ii/ttyd /tmp/ttyd && \
   mkdir -p /tmp/ttyd/build && \
   cd /tmp/ttyd/build && \
   cmake .. && \

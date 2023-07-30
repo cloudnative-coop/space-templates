@@ -88,12 +88,19 @@ RUN DEBIAN_FRONTEND=noninteractive \
     # ubuntu-desktop \
     # && apt-key fingerprint 0EBFCD88 \
 
-COPY arch-helper.sh /usr/local/lib/arch-helper.sh
+RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
+  && touch /etc/localtime
+
 # Settings for GO and crictl
 ENV GOROOT=/usr/local/go \
   GO_VERSION=1.20.5 \
   PATH="$PATH:/usr/local/go/bin:/usr/libexec/flatpak-xdg-utils:/home/ii/go/bin" \
   CONTAINERD_NAMESPACE=k8s.io
+
+# A helper to set ARCH_TYPE and ARCH_TYPE2
+COPY arch-helper.sh /usr/local/lib/arch-helper.sh
+
+# Install GO
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://dl.google.com/go/go${GO_VERSION}.linux-${ARCH_TYPE_2}.tar.gz \
     | tar --directory /usr/local --extract --ungzip
@@ -192,6 +199,10 @@ RUN set -x \
   && /bin/env GO111MODULE=on GOPATH=/usr/local/go /usr/local/go/bin/go install github.com/equinix/metal-cli/cmd/metal@v$METALCLI_VERSION \
   && /bin/env GO111MODULE=on GOPATH=/usr/local/go /usr/local/go/bin/go install github.com/google/ko@v$KO_VERSION
 
+# Install Code Server
+RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-install.log
+RUN curl -fsSL https://coder.com/install.sh | sh
+
 # Use our fork of ttyd
 RUN apt-get install -y cmake libwebsockets-dev libjson-c-dev && \
   git clone https://github.com/ii/ttyd /tmp/ttyd && \
@@ -213,7 +224,7 @@ RUN curl -s https://fluxcd.io/install.sh | bash
 RUN sudo su -c "flux completion bash > /etc/bash_completion.d/flux"
 RUN sudo su -c "kubectl completion bash > /etc/bash_completion.d/kubectl"
 
-# Ensure we have the depes for building emacs from HEAD
+# Ensure we have the deps for building emacs from HEAD
 RUN add-apt-repository ppa:ubuntu-elisp/ppa --yes && \
   sed -i -e 's/^#\ //' /etc/apt/sources.list.d/ubuntu-elisp-ubuntu-ppa-lunar.list && \
   DEBIAN_FRONTEND="noninteractive" apt-get update && \
@@ -224,7 +235,7 @@ RUN mkdir -p /usr/local/src && \
   cd /usr/local/src && \
   git clone --depth 1 https://git.savannah.gnu.org/git/emacs.git
 
-# Get emacs src
+# Build emacs from src with pgtk installing to /usr/local
 RUN cd /usr/local/src/emacs && \
   ./autogen.sh && \
   ./configure --prefix=/usr/local \
@@ -238,6 +249,7 @@ RUN cd /usr/local/src/emacs && \
   make -j 64 && \
   make install
 
+# Build emacs from src without pgtk installing to /usr/local
 RUN cd /usr/local/src/emacs && \
   ./autogen.sh && \
   ./configure --prefix=/usr/local/stow/emacs-x \
@@ -251,16 +263,10 @@ RUN cd /usr/local/src/emacs && \
   make -j 64 && \
   make install
 
-# Code Server
-RUN curl -fsSL https://code-server.dev/install.sh | sh  | tee ~/code-server-install.log
-RUN curl -fsSL https://coder.com/install.sh | sh
 # Links
 RUN ln -sf /usr/bin/firefox-esr /usr/bin/firefox
 RUN ln -s /usr/bin/coder /usr/local/bin/coop
 RUN ln -s /usr/bin/coder /usr/local/bin/space
-
-RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8 \
-  && touch /etc/localtime
 
 ARG USER=ii
 ENV LANG=en_US.utf8
@@ -277,21 +283,6 @@ RUN git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
 RUN git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
 RUN yes | ~/.config/emacs/bin/doom install --env --fonts
 RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && true || true
-
-USER root
-RUN curl -L https://raw.githubusercontent.com/sunaku/home/master/bin/yank \
-  -o /usr/local/bin/yank && \
-  chmod +x /usr/local/bin/yank
-# Update ttyd (evenutally remove from top of file when build time not an issue)
-RUN apt-get install -y cmake libwebsockets-dev libjson-c-dev && \
-  git clone https://github.com/ii/ttyd /tmp/ttyd && \
-  mkdir -p /tmp/ttyd/build && \
-  cd /tmp/ttyd/build && \
-  cmake .. && \
-  make install && \
-  dpkg -P ttyd && \
-  rm -rf /tmp/ttyd
-USER $USER
 
 # Our tmux uses yank now
 COPY home/.tmux.conf /home/ii/.tmux.conf

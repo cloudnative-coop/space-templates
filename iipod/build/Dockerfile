@@ -93,7 +93,7 @@ RUN localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 
 # Settings for GO and crictl
 ENV GOROOT=/usr/local/go \
-  GO_VERSION=1.20.5 \
+  GO_VERSION=1.20.6 \
   PATH="$PATH:/usr/local/go/bin:/usr/libexec/flatpak-xdg-utils:/home/ii/go/bin" \
   CONTAINERD_NAMESPACE=k8s.io
 
@@ -116,13 +116,13 @@ RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://storage.googleapis.com/kubernetes-release/release/v${KUBECTL_VERSION}/bin/linux/${ARCH_TYPE_2}/kubectl -o /usr/local/bin/kubectl \
     && chmod +x /usr/local/bin/kubectl
 # tilt binary
-ENV TILT_VERSION=0.32.4
+ENV TILT_VERSION=0.33.3
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -fsSL \
     https://github.com/tilt-dev/tilt/releases/download/v${TILT_VERSION}/tilt.${TILT_VERSION}.linux.${ARCH_TYPE_1}.tar.gz \
     | tar --directory /usr/local/bin --extract --ungzip tilt
 # gh cli
-ENV GH_VERSION=2.30.0
+ENV GH_VERSION=2.32.1
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -sSL https://github.com/cli/cli/releases/download/v${GH_VERSION}/gh_${GH_VERSION}_linux_${ARCH_TYPE_2}.tar.gz \
     | tar --directory /usr/local --extract --ungzip \
@@ -136,28 +136,29 @@ RUN . /usr/local/lib/arch-helper.sh \
     | tar --directory /usr/local/bin --extract --xz \
   --strip-components 1 tmate-${TMATE_VERSION}-static-linux-${ARCH_TYPE_3}/tmate
 # helm binary
-ENV HELM_VERSION=3.12.1
+ENV HELM_VERSION=3.12.2
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://get.helm.sh/helm-v${HELM_VERSION}-linux-${ARCH_TYPE_2}.tar.gz | tar --directory /usr/local/bin --extract -xz --strip-components 1 linux-${ARCH_TYPE_2}/helm
 # talosctl
-ENV TALOSCTL_VERSION=1.1.0
+ENV TALOSCTL_VERSION=1.4.7
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L -o /usr/local/bin/talosctl https://github.com/talos-systems/talos/releases/download/v${TALOSCTL_VERSION}/talosctl-linux-${ARCH_TYPE_2} && \
   chmod +x /usr/local/bin/talosctl
 # terraform
-ENV TERRAFORM_VERSION=1.5.0
+ENV TERRAFORM_VERSION=1.5.4
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_${ARCH_TYPE_2}.zip \
   | gunzip -c - > /usr/local/bin/terraform && \
   chmod +x /usr/local/bin/terraform
-ENV CRICTL_VERSION=1.27.0
+ENV CRICTL_VERSION=1.27.1
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://github.com/kubernetes-sigs/cri-tools/releases/download/v${CRICTL_VERSION}/crictl-v${CRICTL_VERSION}-linux-${ARCH_TYPE_2}.tar.gz \
   | tar --directory /usr/local/bin --extract --gunzip crictl
-ENV KUBECTX_VERSION=0.9.4
+ENV KUBECTX_VERSION=0.9.5
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://github.com/ahmetb/kubectx/releases/download/v${KUBECTX_VERSION}/kubectx_v${KUBECTX_VERSION}_linux_x86_64.tar.gz | tar --directory /usr/local/bin --extract --ungzip kubectx
-ENV FZF_VERSION=0.26.0
+# ENV FZF_VERSION=0.26.0 We are jumping from March 2021
+ENV FZF_VERSION=0.42.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://github.com/junegunn/fzf/releases/download/${FZF_VERSION}/fzf-${FZF_VERSION}-linux_${ARCH_TYPE_2}.tar.gz | tar --directory /usr/local/bin --extract --ungzip fzf
 ENV NERDCTL_VERSION=1.4.0
@@ -169,19 +170,20 @@ RUN curl -fsSL https://raw.githubusercontent.com/technomancy/leiningen/${LEIN_VE
     -o /usr/local/bin/lein \
     && chmod +x /usr/local/bin/lein \
     && lein version
-ENV KN_VERSION=1.37.0
+ENV KN_CLIENT_VERSION=1.11.0
 RUN . /usr/local/lib/arch-helper.sh \
-  && curl -L https://github.com/knative/client/releases/download/knative-v${KN_VERSION}/kn-linux-${ARCH_TYPE_2} -o /usr/local/bin/kn \
+  && curl -L https://github.com/knative/client/releases/download/knative-v${KN_CLIENT_VERSION}/kn-linux-${ARCH_TYPE_2} -o /usr/local/bin/kn \
   && chmod +x /usr/local/bin/kn
-ENV DIVE_VERSION=0.10.0
+ENV DIVE_VERSION=0.11.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://github.com/wagoodman/dive/releases/download/v${DIVE_VERSION}/dive_${DIVE_VERSION}_linux_${ARCH_TYPE_2}.tar.gz | tar --directory /usr/local/bin --extract --ungzip dive
 ENV UPTERM_VERSION=0.10.0
 RUN . /usr/local/lib/arch-helper.sh \
   && curl -L https://github.com/owenthereal/upterm/releases/download/v${UPTERM_VERSION}/upterm_linux_${ARCH_TYPE_2}.tar.gz | tar --directory /usr/local/bin --extract --ungzip upterm
-ENV METALCLI_VERSION=0.14.1 \
-  KO_VERSION=0.13.0 \
-  GOPLS_VERSION=0.10.0
+ENV METALCLI_VERSION=0.15.0 \
+  KO_VERSION=0.14.1 \
+  GOPLS_VERSION=0.12.4
+#  GOPLS_VERSION=0.10.0 # Also a big jump... 0.13.0 is just around the corner
 RUN set -x \
   && /bin/env GO111MODULE=on GOPATH=/usr/local/go /usr/local/go/bin/go install golang.org/x/tools/gopls@v$GOPLS_VERSION \
   && /bin/env GO111MODULE=on GOPATH=/usr/local/go /usr/local/go/bin/go install github.com/mikefarah/yq/v4@latest \

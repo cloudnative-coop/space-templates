@@ -1,1 +1,19 @@
-#+title: Coder Templates
+#+title: Coder Templates for cloud-native.coop
+
+* cloud native cooperation
+
+ii at it's heart is about creating space for people to help each other, and
+attempt to capture the output of that as Co-Authored-By everyone participating.
+
+ii also means instant infrastructure. What we author together requires tooling,
+and that tooling can vary from project to project. Many times this is
+documented, but having that infrastructure brought up 'instantly' is also core
+to the way we work.
+
+cloud native means more than kubernetes, and the spaces we need tooling and
+infrastructure on alternate operating systems.
+
+Longer term, cloud native is also more than using hosted cloud providers, but
+also being able to bring the "cloud down to earth". Something folks can download
+USB sticks to bring up cloud native environments before the understand how to
+even read the documentation.

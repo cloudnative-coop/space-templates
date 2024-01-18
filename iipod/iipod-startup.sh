@@ -31,31 +31,41 @@ git remote add ssh $GIT_REPO_SSH
 # TODO: don't dump logs into $HOME
 # mv code-server-install.log /tmp
 # start code-server
-mkdir ~/.config/code-server
+mkdir -p ~/.config/code-server
+cat <<-EOF > ~/.config/code-server/config.yaml
+bind-addr: 127.0.0.1:8080
+auth: none
+cert: false
+disable-telemetry: true
+disable-update-check: true
+disable-workspace-trust: true
+disable-getting-started-override: true
+app-name: pair-coder
+EOF
 echo "Starting Code-Server"
 code-server --auth none --port 13337 | tee /tmp/code-server.log &
 # Check out src
-(
-  echo "Setting up repos..."
-  mkdir ~/repos
-  cd ~repos
-  git clone https://github.com/cloudnative-coop/space-templates
-  cd ~/repos/space-templates
-  git remote add upstream git@github.com:cloudnative-coop/space-templates
-  # git clone https://github.com/cncf/apisnoop.git
-  # Setup Ticket-Writing
-  # git clone https://github.com/apisnoop/ticket-writing.git
-  # cd ~/repos/ticket-writing
-  # git remote add upstream git@github.com:apisnoop/ticket-writing.git
+# (
+#   echo "Setting up repos..."
+#   mkdir ~/repos
+#   cd ~repos
+#   git clone https://github.com/cloudnative-coop/space-templates
+#   cd ~/repos/space-templates
+#   git remote add upstream git@github.com:cloudnative-coop/space-templates
+#   # git clone https://github.com/cncf/apisnoop.git
+#   # Setup Ticket-Writing
+#   # git clone https://github.com/apisnoop/ticket-writing.git
+#   # cd ~/repos/ticket-writing
+#   # git remote add upstream git@github.com:apisnoop/ticket-writing.git
 
-  # Setup Kubernetes src
-  # mkdir -p ~/go/src/k8s.io
-  # cd ~/go/src/k8s.io
-  # git clone https://github.com/kubernetes/kubernetes.git
-  # cd kubernetes
-  # git remote add ii git@github.com:ii/kubernetes.git
-) 2>&1 >/tmp/src-clone.log &
-disown
+#   # Setup Kubernetes src
+#   # mkdir -p ~/go/src/k8s.io
+#   # cd ~/go/src/k8s.io
+#   # git clone https://github.com/kubernetes/kubernetes.git
+#   # cd kubernetes
+#   # git remote add ii git@github.com:ii/kubernetes.git
+# ) 2>&1 >/tmp/src-clone.log &
+# disown
 # Go ahead and start http server in a "services"
 tmux new -d -s $SESSION_NAME -n "ii"
 tmux new -d -s "services" -n "web" python3 -m http.server

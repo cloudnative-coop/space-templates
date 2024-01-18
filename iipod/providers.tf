@@ -2,19 +2,19 @@ terraform {
   required_providers {
     coder = {
       source  = "coder/coder"
-      version = "0.11.0" # Current as of July 10th 2023
+      version = "0.13.0" # Current as of January 17th 2024
     }
     equinix = {
       source  = "equinix/equinix"
-      version = "1.14.3" # Current as of June 11th 2023
+      version = "1.24.0"
     }
     dns = {
       source  = "hashicorp/dns"
-      version = "3.3.2"
+      version = "3.4.0"
     }
     helm = {
       source  = "hashicorp/helm"
-      version = "2.10.1"
+      version = "2.12.1"
     }
     # github = {
     #   source  = "integrations/github"

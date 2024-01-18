@@ -66,15 +66,15 @@ resource "kubernetes_deployment" "iipod" {
         hostname             = local.spacename
         service_account_name = "admin"
         security_context {
-          run_as_user = "1001"
-          fs_group    = "1001"
+          run_as_user = "1000"
+          fs_group    = "1000"
         }
         container {
           name    = "iipod"
           image   = data.coder_parameter.container-image.value
           command = ["sh", "-c", coder_agent.iipod.init_script]
           security_context {
-            run_as_user = "1001"
+            run_as_user = "1000"
           }
           env {
             name  = "CODER_AGENT_TOKEN"

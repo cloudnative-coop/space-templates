@@ -8,7 +8,7 @@ resource "coder_agent" "iipod" {
   connection_timeout      = 300
   startup_script          = file("./iipod-startup.sh")
   startup_script_timeout  = 300
-  shutdown_script         = "#!/bin/sh\necho Box is on it's way down!"
+  shutdown_script         = "#!/bin/sh\nkubectl delete svc,ing -l $SPACENAME\n"
   shutdown_script_timeout = 300
   env = {
     # GITHUB_TOKEN        = "$${data.coder_git_auth.github.access_token}"
@@ -22,6 +22,13 @@ resource "coder_agent" "iipod" {
     GIT_COMMITTER_NAME  = "${data.coder_workspace.ii.owner}"
     GIT_AUTHOR_EMAIL    = "${data.coder_workspace.ii.owner_email}"
     GIT_COMMITTER_EMAIL = "${data.coder_workspace.ii.owner_email}"
+  }
+  display_apps {
+    port_forwarding_helper = false
+    ssh_helper             = false
+    vscode                 = false
+    vscode_insiders        = false
+    web_terminal           = false
   }
   metadata {
     key          = "tmux-clients"

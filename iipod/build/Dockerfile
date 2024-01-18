@@ -1,24 +1,36 @@
 # FROM ubuntu:lunar-20230615
 FROM ubuntu:focal-20231211
 
+# install enough to setup apt repos
 RUN DEBIAN_FRONTEND=noninteractive \
     apt update \
     && apt upgrade -y \
     && DEBIAN_FRONTEND=noninteractive apt install --no-install-recommends -y \
       software-properties-common \
       gpg-agent \
-      curl \
-    && add-apt-repository ppa:git-core/ppa -y \
+      curl
+
+# setup apt repos
+RUN DEBIAN_FRONTEND=noninteractive \
+    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc \
+    | gpg --dearmor -o /usr/share/keyrings/microsoft.gpg \
+    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+    | gpg --dearmor -o /usr/share/keyrings/docker.gpg \
+    && curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg \
+    | gpg --dearmor -o /usr/share/keyrings/google.gpg \
     && add-apt-repository ppa:mozillateam/ppa -y \
-    && add-apt-repository "deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main" -y \
-    && add-apt-repository "deb https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" -y \
-    && apt-add-repository "deb http://packages.cloud.google.com/apt cloud-sdk main" -y \
-    && curl -fsSL https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /etc/apt/trusted.gpg.d/microsoft.gpg \
-    && curl -fsSL https://download.docker.com/linux/ubuntu/gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/docker.gpg \
-    && curl -fsSL https://packages.cloud.google.com/apt/doc/apt-key.gpg | gpg --dearmor -o /etc/apt/trusted.gpg.d/google.gpg \
-    && curl -fsSL https://deb.nodesource.com/setup_16.x | bash -x - \
-    && apt-get update \
-    && DEBIAN_FRONTEND="noninteractive" apt-get install --yes \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/microsoft.gpg] https://packages.microsoft.com/repos/vscode stable main" \
+    > /etc/apt/sources.list.d/microsoft.list \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" \
+    > /etc/apt/sources.list.d/docker.list \
+    && echo "deb [arch=amd64 signed-by=/usr/share/keyrings/google.gpg] http://packages.cloud.google.com/apt cloud-sdk main" \
+    > /etc/apt/sources.list.d/google.list \
+    && curl -fsSL https://deb.nodesource.com/setup_lts.x | bash -x - \
+    && DEBIAN_FRONTEND=noninteractive apt-get update
+
+# install main packages
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get install --yes \
     tmux \
     tmate \
     bash-completion \
@@ -32,7 +44,7 @@ RUN DEBIAN_FRONTEND=noninteractive \
     dpkg-dev \
     devscripts \
     language-pack-en \
-    libgccjit-12-dev \
+    libgccjit-10-dev \
     libgtk-3-bin \
     openssh-client \
     postgresql-client \
@@ -241,6 +253,50 @@ RUN mkdir -p /usr/local/src && \
   cd /usr/local/src && \
   git clone --depth 1 https://git.savannah.gnu.org/git/emacs.git
 
+
+# Links
+RUN ln -sf /usr/bin/firefox-esr /usr/bin/firefox
+RUN ln -s /usr/bin/coder /usr/local/bin/coop
+RUN ln -s /usr/bin/coder /usr/local/bin/space
+
+ARG USER=ii
+ENV LANG=en_US.utf8
+RUN useradd --groups sudo --no-create-home --shell /bin/bash ${USER} \
+	&& echo "${USER} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/${USER} \
+	&& chmod 0440 /etc/sudoers.d/${USER}
+
+USER $USER
+WORKDIR /home/${USER}
+RUN mkdir -p ~/.config
+
+# Doom Emacs
+RUN git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
+RUN git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
+
+# Our tmux uses yank now
+COPY home/.tmux.conf /home/ii/.tmux.conf
+RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm && \
+  git clone https://git::@github.com/dracula/tmux ~/.tmux/plugins/tmux && \
+  ~/.tmux/plugins/tpm/bin/install_plugins
+
+RUN mkdir -p ~/.config/code-server
+COPY home/.config/code-server/config.yaml /home/ii/.config/code-server/config.yaml
+
+# Nix
+RUN sudo install -d -m755 -o $(id -u) -g $(id -g) /nix
+RUN curl -L https://nixos.org/nix/install | sh
+RUN echo "source /home/ii/.nix-profile/etc/profile.d/nix.sh" | sudo tee -a /etc/bash.bashrc
+# Hook direnv to shell
+RUN echo 'eval "$(direnv hook bash)"' | sudo tee -a /etc/bash.bashrc
+RUN mkdir -p /home/ii/.config/nix && echo "experimental-features = nix-command flakes" >> /home/ii/.config/nix/nix.conf
+
+USER root
+# install libgccjit-9-dev
+# eventually move back up to the top after EMACS is happy
+RUN DEBIAN_FRONTEND=noninteractive \
+    apt-get install --yes \
+    libgccjit-9-dev
+
 # Build emacs from src with pgtk installing to /usr/local
 RUN cd /usr/local/src/emacs && \
   ./autogen.sh && \
@@ -269,40 +325,6 @@ RUN cd /usr/local/src/emacs && \
   make -j 64 && \
   make install
 
-# Links
-RUN ln -sf /usr/bin/firefox-esr /usr/bin/firefox
-RUN ln -s /usr/bin/coder /usr/local/bin/coop
-RUN ln -s /usr/bin/coder /usr/local/bin/space
-
-ARG USER=ii
-ENV LANG=en_US.utf8
-RUN useradd --groups sudo --no-create-home --shell /bin/bash ${USER} \
-	&& echo "${USER} ALL=(ALL) NOPASSWD:ALL" >/etc/sudoers.d/${USER} \
-	&& chmod 0440 /etc/sudoers.d/${USER}
-
-USER $USER
-WORKDIR /home/${USER}
-RUN mkdir -p ~/.config
-
-# Doom Emacs
-RUN git clone --depth 1 https://github.com/doomemacs/doomemacs ~/.config/emacs
-RUN git clone --depth 1 https://github.com/ii/doom-config ~/.config/doom
+USER ii
 RUN yes | ~/.config/emacs/bin/doom install --env --fonts
 RUN cd ~/.config/doom && git pull && ~/.config/emacs/bin/doom sync || true && true || true
-
-# Our tmux uses yank now
-COPY home/.tmux.conf /home/ii/.tmux.conf
-RUN git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm && \
-  git clone https://git::@github.com/dracula/tmux ~/.tmux/plugins/tmux && \
-  ~/.tmux/plugins/tpm/bin/install_plugins
-
-RUN mkdir -p ~/.config/code-server
-COPY home/.config/code-server/config.yaml /home/ii/.config/code-server/config.yaml
-
-# Nix
-RUN sudo install -d -m755 -o $(id -u) -g $(id -g) /nix
-RUN curl -L https://nixos.org/nix/install | sh
-RUN echo "source /home/ii/.nix-profile/etc/profile.d/nix.sh" | sudo tee -a /etc/bash.bashrc
-# Hook direnv to shell
-RUN echo 'eval "$(direnv hook bash)"' | sudo tee -a /etc/bash.bashrc
-RUN mkdir -p /home/ii/.config/nix && echo "experimental-features = nix-command flakes" >> /home/ii/.config/nix/nix.conf

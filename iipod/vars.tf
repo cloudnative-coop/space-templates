@@ -62,15 +62,16 @@ variable "pdns_api_url" {
   nullable = false
 }
 
-variable "pdns_account" {
-  type        = string
-  description = "PowerDNS Account to associate user domain to"
-  nullable    = false
-}
+# variable "pdns_account" {
+#   type        = string
+#   description = "PowerDNS Account to associate user domain to"
+#0   nullable    = false
+# }
 
 variable "dns_update_server" {
   type        = string
   description = "Nameserver for RFC2136 Updates"
+  default     = "123.253.177.110" # ns.ii.nz
   # default     = "123.253.176.253"
   nullable = false
   validation {
@@ -89,15 +90,15 @@ variable "dns_update_keyalgorithm" {
   type        = string
   description = "TSIG Algorithm for RFC2136 Updates"
   nullable    = false
-  # default     = "hmac-sha256"
+  default     = "hmac-sha256"
 }
 
-variable "dns_update_keysecret" {
-  type        = string
-  description = "TSIG Key Secret for RFC2136 Updates"
-  nullable    = false
-  # sensitive   = true
-}
+# variable "dns_update_keysecret" {
+#   type        = string
+#   description = "TSIG Key Secret for RFC2136 Updates"
+#   nullable    = false
+#   # sensitive   = true
+# }
 
 variable "default_container_image" {
   type        = string
@@ -135,16 +136,15 @@ variable "default_org_url" {
   }
 }
 
-variable "local_ip" {
-  type        = string
-  description = "Local LB IP"
-  nullable    = false
-  validation {
-    condition     = can(cidrhost("${var.local_ip}/32", 0))
-    error_message = "Must be valid IP Address"
-  }
-
-}
+# variable "local_ip" {
+#   type        = string
+#   description = "Local LB IP"
+#   nullable    = false
+#   validation {
+#     condition     = can(cidrhost("${var.local_ip}/32", 0))
+#     error_message = "Must be valid IP Address"
+#   }
+# }
 variable "public_ip" {
   type        = string
   description = "Public IP"

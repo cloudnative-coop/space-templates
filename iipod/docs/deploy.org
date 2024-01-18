@@ -1,11 +1,12 @@
 #+title: Deploy
-#+PROPERTY: header-args:tmux+ :session ":iipod"
+#+PROPERTY: header-args:tmux+ :session "0:iipod"
 * cluster
 For now refer to https://github.com/cloudnative-nz/infra
 Your clusters needs a few things that are deployed there
 * image
+
 :PROPERTIES:
-:header-args:tmux+: :session ":iimage"
+:header-args:tmux+: :session "0:iimage"
 :END:
 ** ssh to root@sharing.io
 Be sure to connect with ssh agent forwarding:
@@ -14,18 +15,28 @@ ssh -A ii@sharing.io
 #+end_src
 ** ensure current version
 #+begin_src tmux
-cd ~/space-templates && git pull
+cd ~/cloudnative-coop/space-templates && git pull
 #+end_src
 ** optionally login to docker registry
-#+begin_src tmux
-docker login ghcr.io -u hh --password-stdin
+
+You will need a token with : https://github.com/settings/tokens/new?scopes=write:packages
+
+#+begin_src shell
+echo $GITHUB_PACKAGE_TOKEN | docker login ghcr.io -u hh --password-stdin
 #+end_src
+
+#+RESULTS:
+#+begin_example
+Login Succeeded
+#+end_example
+
 ** build the image
 #+begin_src tmux
-cd ~/space-templates/iipod/build
-export IMAGE=ghcr.io/cloudnative-coop/iipod:2023.07.26-03
+cd ~/cloudnative-coop/space-templates/iipod/build
+export IMAGE=ghcr.io/cloudnative-coop/iipod:2024.01.18-01
 docker build -t $IMAGE .  && docker push $IMAGE
 #+end_src
+
 ** Be sure and update your DEFAULT_CONTAINER_IMAGE
 in .envrc
 #+begin_src shell
@@ -119,29 +130,36 @@ WARN: No .terraform.lock.hcl file found
 terraform init
 #+end_src
 ** push/create the template with terraform vars
-#+begin_src tmux
-cd ~/space-templates
+#+begin_src tmux :session ":template"
+cd ~/cloudnative-coop/space-templates
+. .envrc
 coder template push --create \
     --yes \
-    --directory ~/space-templates/iipod \
-    --message "Updating Template because of X" \
-    --variable dns_update_keysecret=$DNS_UPDATE_KEYSECRET \
-    --variable pdns_account=$PDNS_ACCOUNT \
-    --variable pdns_api_key=$PDNS_API_KEY \
-    --variable pdns_api_url=$PDNS_API_URL \
+    --directory ~/cloudnative-coop/space-templates/iipod \
     --variable coder_url=$CODER_URL \
     --variable coder_domain=$CODER_DOMAIN \
-    --variable local_ip=$LOCAL_IP \
     --variable public_ip=$PUBLIC_IP \
     --variable pdns_api_url=$DNS_API_URL \
     --variable pdns_account=$DNS_ACCOUNT \
-    --variable dns_update_server=$DNS_UPDATE_SERVER \
-    --variable dns_update_keyname=$DNS_UPDATE_KEYNAME \
-    --variable dns_update_keyalgorithm=$DNS_UPDATE_KEYALGORITHM \
     --variable default_git_url=$DEFAULT_GIT_URL \
     --variable default_org_url=$DEFAULT_ORG_URL \
     --variable default_container_image=$DEFAULT_CONTAINER_IMAGE \
-    iipod
+    --variable pdns_account=$PDNS_ACCOUNT \
+    --variable pdns_api_url=$PDNS_API_URL \
+    --variable pdns_api_key=$PDNS_API_KEY \
+    --variable dns_update_server=$PDNS_TSIG_SERVER \
+    --variable dns_update_keyname=$PDNS_TSIG_KEYNAME \
+    --variable dns_update_keysecret=$PDNS_TSIG_KEY \
+    --variable dns_update_keyalgorithm=$PDNS_TSIG_ALGO \
+    iipod \
+    --message "Updating Template manually @ `date`" \
+    --name "foo-bar-baz-`date +%T`"
+#+end_src
+#+begin_src shell
+#+end_src
+#+begin_src shell
+oder template push --create     --yes     --directory ~/cloudnative-coop/space-templates/iipod     --message "Updating Template because of `date`"     --variable dns_update_keysecret=$DNS_UPDATE_KEYSECRET     --variable pdns_account=$PDNS_ACCOUNT     --variable pdns_api_url=$PDNS_API_URL     --variable coder_url=$CODER_URL     --variable coder_domain=$CODER_DOMAIN     --variable local_ip=$LOCAL_IP     --variable public_ip=$PUBLIC_IP     --variable pdns_api_url=$DNS_API_URL     --variable pdns_account=$DNS_ACCOUNT     --variable default_git_url=$DEFAULT_GIT_URL     --variable default_org_url=$DEFAULT_ORG_URL     --variable default_container_image=$DEFAULT_CONTAINER_IMAGE  --name=funtimes   iipod
+# docker login ghcr.io -u hh --password-stdin
 #+end_src
 * workspace
 ** coder create with parameters
